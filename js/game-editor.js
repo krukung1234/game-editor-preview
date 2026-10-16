@@ -85,13 +85,28 @@
     for(const [key,label,type] of [['title','ชื่อเกมใหม่'],['topic','หัวข้อบทเรียน'],['description','คำอธิบายเกม','textarea'],['instructions','ข้อความคำแนะนำ','textarea'],['praise','ข้อความคำชม']]){
       const f=field(label,'editor-'+key,draft.meta[key],value=>{draft.meta[key]=value;mark()},type);meta.append(f);
     }
-    const subjectOptions=[...new Set([...APP_CONFIG.CATEGORIES,'ศิลปะ','ปฐมวัย','การงานอาชีพ','พลศึกษา',draft.meta.subject])];
-    const grades=['อนุบาล 1','อนุบาล 2','อนุบาล 3',...Array.from({length:6},(_,i)=>'ป.'+(i+1)),...Array.from({length:6},(_,i)=>'ม.'+(i+1))];if(!grades.includes(draft.meta.grade))grades.push(draft.meta.grade);
-    meta.insertBefore(selectField('วิชา','editor-subject',subjectOptions,draft.meta.subject,v=>{draft.meta.subject=v;mark()}),meta.children[1]);
-    meta.insertBefore(selectField('ระดับชั้น','editor-grade',grades,draft.meta.grade,v=>{draft.meta.grade=v;mark()}),meta.children[2]);
-    for(const id of ['editor-subject','editor-grade']){const select=meta.querySelector('#'+id);const custom=field('ระบุ'+(id==='editor-subject'?'วิชา':'ระดับชั้น')+'เอง',id+'-custom','',value=>{draft.meta[id==='editor-subject'?'subject':'grade']=value;mark()});custom.hidden=true;custom.querySelector('input').maxLength=id==='editor-subject'?100:50;select.append(el('option',{value:'__custom__',text:'อื่น ๆ (ระบุเอง)'}));select.addEventListener('change',()=>{custom.hidden=select.value!=='__custom__';if(!custom.hidden){draft.meta[id==='editor-subject'?'subject':'grade']=custom.querySelector('input').value;custom.querySelector('input').focus()}});select.parentElement.append(custom)}
-
+    // These controls read shared lists, but selection belongs only to this Working Copy.
+    const {subjects,gradeGroups,normalizeGrade}=LearningOptions;
+    const subjectBox=el('fieldset',{id:'editor-subject',class:'editor-choice-field'},[el('legend',{text:'วิชา'})]);
+    const subjectButtons=el('div',{class:'editor-choice-buttons'});
+    let selectedSubject=subjects.includes(draft.meta.subject)?draft.meta.subject:'อื่น ๆ';
+    const custom=field('ระบุชื่อวิชา','editor-subject-custom',selectedSubject==='อื่น ๆ'&&draft.meta.subject!=='อื่น ๆ'?draft.meta.subject:'',value=>{draft.meta.subject=value;mark()});
+    const customInput=custom.querySelector('input');customInput.maxLength=100;customInput.placeholder='เช่น ดนตรี หรือหน้าที่พลเมือง';
+    function updateSubjects(){custom.hidden=selectedSubject!=='อื่น ๆ';customInput.disabled=custom.hidden;for(const b of subjectButtons.children)b.setAttribute('aria-pressed',String(b.dataset.value===selectedSubject))}
+    for(const subject of subjects){const b=button(subject,()=>{if(selectedSubject===subject)return;selectedSubject=subject;draft.meta.subject=subject==='อื่น ๆ'?customInput.value:subject;updateSubjects();mark();if(subject==='อื่น ๆ')customInput.focus()});b.dataset.value=subject;subjectButtons.append(b)}
+    subjectBox.append(subjectButtons,custom);updateSubjects();
+    const gradeBox=el('fieldset',{id:'editor-grade',class:'editor-choice-field'},[el('legend',{text:'ระดับชั้น'})]);
+    const groups=el('div',{id:'editorGradeGroups',class:'editor-choice-buttons editor-grade-groups'}),levels=el('div',{id:'editorGradeLevels',class:'editor-choice-buttons'});
+    let group=Object.keys(gradeGroups).find(key=>gradeGroups[key].includes(normalizeGrade(draft.meta.grade)))||'ประถมศึกษา';
+    function updateGrades(){
+      for(const b of groups.children)b.setAttribute('aria-pressed',String(b.dataset.value===group));
+      levels.replaceChildren(...gradeGroups[group].map(grade=>{const b=button(grade,()=>{if(normalizeGrade(draft.meta.grade)===grade)return;draft.meta.grade=grade;for(const item of levels.children)item.setAttribute('aria-pressed',String(item.dataset.value===grade));mark()});b.dataset.value=grade;b.setAttribute('aria-pressed',String(normalizeGrade(draft.meta.grade)===grade));return b}));
+    }
+    for(const name of Object.keys(gradeGroups)){const b=button(name,()=>{if(group===name)return;group=name;draft.meta.grade='';updateGrades();mark()});b.dataset.value=name;groups.append(b)}
+    gradeBox.append(groups,levels);updateGrades();
+    const title=meta.children[0];title.classList.add('editor-field-wide');meta.insertBefore(subjectBox,meta.children[1]);meta.insertBefore(gradeBox,meta.children[2]);
   }
+
   function renderImages(){imagePanel.replaceChildren(imageField('ภาพหน้าปกเกม',draft.meta.cover,value=>draft.meta.cover=value),button('↺ คืนภาพต้นฉบับ',()=>{draft.meta.cover=original.meta.cover;releaseImages();mark();renderImages()}));imagesMounted=true}
   function selectSection(section){
     selectedSection=section;
@@ -173,7 +188,8 @@
     else if(error.field==='ราคา')target=document.getElementById('editor-price-'+(error.optionIndex||0));
     else if(error.field==='ตัวเลือก')target=document.getElementById('editor-option-'+(error.optionIndex||0));
     else target=document.getElementById(fields[error.field]);
-    if(target?.tagName==='SELECT'&&target.value==='__custom__')target=document.getElementById(target.id+'-custom');
+    if(target?.id==='editor-subject')target=!document.getElementById('editor-subject-custom').disabled?document.getElementById('editor-subject-custom'):target.querySelector('button');
+    if(target?.id==='editor-grade')target=document.querySelector('#editorGradeLevels button');
     target=target||panels[selectedSection].querySelector('input,textarea,button');target?.focus({preventScroll:true});target?.scrollIntoView({block:'center'});
   }
   async function ready(signal){
@@ -215,7 +231,7 @@
   function restoreOriginal(){if(!draft||!confirm('ต้องการคืนค่าข้อมูลเกมต้นฉบับหรือไม่? การเปลี่ยนแปลงที่ยังไม่ได้ดาวน์โหลดจะหายไป'))return;operation?.abort();operation=null;draft=adapter.clone(original);releaseImages();imageChecks.clear();dirty=false;downloadedSnapshot=null;activeZone='shopping';activeId=draft.questions.find(q=>q.zone===activeZone).id;missionsMounted=false;imagesMounted=false;details.replaceChildren();list.replaceChildren();imagePanel.replaceChildren();workspace.dataset.details='false';renderMeta();selectSection(selectedSection);announce('คืนค่าข้อมูลต้นฉบับครบทุกส่วนแล้ว',false,true)}
 
   const closeButton=button('×',close,'editor-close');closeButton.id='editorCloseBtn';closeButton.setAttribute('aria-label','ปิดหน้าต่างปรับแต่งเกม');
-  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • MINI CITY • รุ่น 20261016-9'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้เนื้อหา แล้วทดลองเล่นด้วยระบบเกมเดิม'})]),closeButton]);
+  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • MINI CITY • รุ่น 20261016-10'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้เนื้อหา แล้วทดลองเล่นด้วยระบบเกมเดิม'})]),closeButton]);
   const fixedHeading=el('div',{class:'editor-fixed-heading'},[heading,status]);
   const toolbar=el('div',{class:'editor-toolbar'},[el('h3',{text:'จัดการคำถามและคำตอบ'}),count,button('+ เพิ่มภารกิจ',()=>addQuestion(false))]);
   const workspace=el('div',{class:'editor-workspace'},[list,details]);workspace.dataset.details='false';

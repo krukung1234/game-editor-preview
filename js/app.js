@@ -396,8 +396,8 @@ const promptDetails = document.getElementById("promptDetails");
 const promptCustomSubject = document.getElementById("promptCustomSubject");
 const promptAiDesign = document.getElementById("promptAiDesign");
 const promptValidation = document.getElementById("promptValidation");
-const promptSubjects = ["สังคมศึกษา", "ภาษาไทย", "คณิตศาสตร์", "วิทยาศาสตร์", "ภาษาอังกฤษ", "สุขศึกษา", "ศิลปะ", "การงานอาชีพ", "วิทยาการคำนวณ", "อื่น ๆ"];
-const promptGradeGroups = {"อนุบาล": ["อ.1", "อ.2", "อ.3"], "ประถมศึกษา": Array.from({length:6}, (_,i) => "ป."+(i+1)), "มัธยมศึกษา": Array.from({length:6}, (_,i) => "ม."+(i+1))};
+const promptSubjects = LearningOptions.subjects;
+const promptGradeGroups = LearningOptions.gradeGroups;
 let selectedPromptGame = null, promptOpener = null, previousOverflow = "", promptSession = 0, copyingSession = null;
 let selectedPromptSubject = "", selectedPromptGrade = "", selectedPromptGroup = "ประถมศึกษา";
 
@@ -447,7 +447,7 @@ function resetPromptDefaults() {
   selectedPromptSubject = promptSubjects.includes(category) ? category : "อื่น ๆ";
   promptCustomSubject.value = selectedPromptSubject === "อื่น ๆ" && category !== "อื่น ๆ" ? category : "";
   const rawGrade = String(selectedPromptGame.grade || selectedPromptGame.gradeLevel || "").trim();
-  selectedPromptGrade = rawGrade.replace(/^อนุบาล\s*/, "อ.").replace(/^ประถมศึกษาปีที่\s*/, "ป.").replace(/^มัธยมศึกษาปีที่\s*/, "ม.");
+  selectedPromptGrade = LearningOptions.normalizeGrade(rawGrade);
   selectedPromptGroup = Object.keys(promptGradeGroups).find(group => promptGradeGroups[group].includes(selectedPromptGrade)) || "ประถมศึกษา";
   if (!promptGradeGroups[selectedPromptGroup].includes(selectedPromptGrade)) selectedPromptGrade = "";
   promptOriginal.value = selectedPromptGame.title || "เกม";
