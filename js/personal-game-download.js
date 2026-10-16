@@ -4,7 +4,6 @@
   const root=new URL('../',document.currentScript.src),encoder=new TextEncoder();
   const table=Uint32Array.from({length:256},(_,n)=>{for(let k=0;k<8;k++)n=n&1?0xedb88320^(n>>>1):n>>>1;return n>>>0});
   const crc32=bytes=>{let c=0xffffffff;for(const b of bytes)c=table[(c^b)&255]^(c>>>8);return(c^0xffffffff)>>>0};
-  const digest=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(n=>n.toString(16).padStart(2,'0')).join('');
   function zip(files){
     const parts=[],directory=[];let offset=0,centralSize=0;
     for(const [path,bytes] of files){
@@ -18,73 +17,77 @@
     const end=new Uint8Array(22),e=new DataView(end.buffer);e.setUint32(0,0x06054b50,true);e.setUint16(8,files.size,true);e.setUint16(10,files.size,true);e.setUint32(12,centralSize,true);e.setUint32(16,offset,true);
     return new Blob([...parts,...directory,end],{type:'application/zip'});
   }
-  async function get(url){
-    let r;
-    try{r=await fetch(url,{method:'GET',credentials:'omit',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(60000)})}
-    catch{throw Error('โหลดไฟล์สำหรับแพ็กเกมไม่ได้: '+decodeURIComponent(new URL(url,root).pathname)+' • กรุณาตรวจอินเทอร์เน็ต สิทธิ์ CORS และลองใหม่ ไม่มีการสร้าง ZIP ที่ขาดไฟล์')}
-    if(!r.ok||r.type==='opaque')throw Error('โหลดไฟล์สำหรับแพ็กเกมไม่ได้ ('+r.status+') กรุณาตรวจเครือข่ายและไฟล์ที่เผยแพร่');
-    return r;
+    async function get(url,signal){
+    const requestSignal=signal?AbortSignal.any([signal,AbortSignal.timeout(60000)]):AbortSignal.timeout(60000);
+    let response;try{response=await fetch(url,{method:'GET',credentials:'omit',referrerPolicy:'no-referrer',signal:requestSignal})}
+    catch(error){if(signal?.aborted)throw signal.reason;throw Error('โหลดไฟล์สำหรับแพ็กเกมไม่ได้: '+decodeURIComponent(new URL(url,root).pathname)+' • ตรวจอินเทอร์เน็ตและ CORS แล้วลองใหม่')}
+    if(!response.ok||response.type==='opaque')throw Error('โหลดไฟล์ไม่สำเร็จ ('+response.status+'): '+decodeURIComponent(new URL(url,root).pathname));
+    return response;
   }
-  async function download(adapter,input,progress=()=>{}){
-    const data=adapter.validate(input),files=new Map();let total=0;
-    const add=(name,bytes)=>{
-      if(!name||name.startsWith('/')||name.split('/').some(s=>s==='..')||name.includes('\\'))throw Error('เส้นทางไฟล์ไม่ถูกต้อง');
-      if(files.has(name))return;
-      total+=bytes.length;if(total>250*1024*1024)throw Error('เกมมีขนาดเกิน 250 MB กรุณาลดจำนวนหรือขนาดภาพ');files.set(name,bytes);
-    };
-    const text=(name,value)=>add(name,encoder.encode(value));
-    progress('กำลังอ่านเกมต้นฉบับ • ดาวน์โหลดรูปและไฟล์ AR ประมาณ 100 MB ต้องใช้อินเทอร์เน็ตในขั้นตอนนี้');
-    const manifest=await(await get(new URL('js/adapters/mini-city-package-manifest.json?v=personal-1',root))).json();
-    if(manifest.version!==1||manifest.adapterId!==adapter.id)throw Error('รายการไฟล์ไม่ตรงกับเกม');
-    const nativeURL=new URL('games/AR mini city/index.html',root),source=await(await get(nativeURL)).text();
-    const dom=new DOMParser().parseFromString(source,'text/html');
-    // Change only script element URLs in the exported copy; native inline game code is untouched.
-    for(const script of dom.querySelectorAll('script[src]')){
-      const url=new URL(script.getAttribute('src'),nativeURL);
-      if(url.origin===root.origin)continue;
-      if(url.pathname.endsWith('/hands/hands.js'))script.setAttribute('src','../../vendor/mediapipe/hands/hands.js');
-      else if(url.pathname.endsWith('/camera_utils/camera_utils.js'))script.setAttribute('src','../../vendor/mediapipe/camera_utils.js');
-      else throw Error('เกมมี script ภายนอกที่ยังไม่รองรับการแพ็ก');
+  const pause=()=>new Promise(resolve=>setTimeout(resolve,0));
+  function safeName(value){
+    let result='';for(const char of value.normalize('NFKC').trim()){const part=char.charCodeAt(0)<32||'<>:"/\\|?*'.includes(char)?'-':char;if(encoder.encode(result+part).length>180)break;result+=part}
+    result=result.replace(/[. ]+$/g,'')||'my-ar-game';if(/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(result))result='game-'+result;return result;
+  }
+  async function verifyZip(blob,files,signal){
+    const bytes=new Uint8Array(await blob.arrayBuffer()),view=new DataView(bytes.buffer);let position=0,count=0;
+    if(view.getUint32(bytes.length-22,true)!==0x06054b50||view.getUint16(bytes.length-12,true)!==files.size)throw Error('ตรวจโครงสร้าง ZIP ไม่ผ่าน');
+    for(const [name,data] of files){
+      signal?.throwIfAborted();if(view.getUint32(position,true)!==0x04034b50)throw Error('ZIP มีส่วนหัวไม่ถูกต้อง');
+      const length=view.getUint16(position+26,true),extra=view.getUint16(position+28,true),size=view.getUint32(position+18,true),start=position+30+length+extra;
+      if(new TextDecoder().decode(bytes.subarray(position+30,position+30+length))!==name||size!==data.length||crc32(bytes.subarray(start,start+size))!==view.getUint32(position+14,true))throw Error('ตรวจไฟล์ใน ZIP ไม่ผ่าน: '+name);
+      position=start+size;if(++count%3===0)await pause();
     }
-    const bootstrap=dom.createElement('script');bootstrap.setAttribute('src','../../personal-game-data.js');dom.head.prepend(bootstrap);dom.title=data.meta.title;
-    text('games/AR mini city/index.html','<!DOCTYPE html>\n'+dom.documentElement.outerHTML);
-    const local=['js/game-adapters.js','js/adapters/mini-city-runtime.js','css/mini-city-editor-play.css','images/editor-image-placeholder.svg',...manifest.nativeAssets];
-    let done=0;const jobs=[...new Set(local)].map(name=>({path:name,url:new URL(name,root).href})).concat(manifest.mediaPipe);
-    let next=0,failed=false;
-    async function worker(){while(!failed&&next<jobs.length){try{const job=jobs[next++],response=await get(job.url),bytes=new Uint8Array(await response.arrayBuffer());if(job.size!==undefined&&job.size!==bytes.length)throw Error('ไฟล์ AR ดาวน์โหลดไม่ครบ: '+job.path);add(job.path,bytes);progress('กำลังเก็บไฟล์ '+(++done)+'/'+jobs.length+' • '+(total/1024/1024).toFixed(1)+' MB')}catch(error){failed=true;throw error}}}
-    const workers=await Promise.allSettled(Array.from({length:4},worker));
-    const failure=workers.find(result=>result.status==='rejected');if(failure)throw failure.reason;
-    const cache=new Map();let imageIndex=0;
+    if(view.getUint32(position,true)!==0x02014b50)throw Error('ZIP ไม่มีสารบัญไฟล์');
+  }
+  async function download(adapter,input,progress=()=>{},{signal}={}){
+    const data=adapter.validate(input),files=new Map(),sources=new Map();let total=0;
+    const add=(name,bytes)=>{if(files.has(name))return;if(name.startsWith('/')||name.includes('\\')||name.split('/').includes('..'))throw Error('เส้นทางไฟล์ไม่ถูกต้อง');total+=bytes.length;if(total>250*1024*1024)throw Error('เกมมีขนาดเกิน 250 MB');files.set(name,bytes)};
+    const text=(name,value)=>add(name,encoder.encode(value));
+    const readText=async path=>await(await get(new URL(path,root),signal)).text();
+    progress('กำลังอ่านเกมต้นฉบับและรวมโค้ด • ต้องใช้อินเทอร์เน็ตระหว่างแพ็กไฟล์ AR');
+    const manifest=JSON.parse(await readText('js/adapters/mini-city-package-manifest.json?v=editor-20261016-9'));
+    if(manifest.version!==1||manifest.adapterId!==adapter.id)throw Error('รายการไฟล์ไม่ตรงกับเกม');
+    const source=await readText('games/AR mini city/index.html'),dom=new DOMParser().parseFromString(source,'text/html');
+    const jobs=manifest.nativeAssets.map(path=>({path,url:new URL(path,root).href})).concat(manifest.mediaPipe),resources=new Map();let next=0,done=0,failed=false;
+    async function worker(){while(!failed&&next<jobs.length){signal?.throwIfAborted();const job=jobs[next++];try{const response=await get(job.url,signal),bytes=new Uint8Array(await response.arrayBuffer());if(job.size!==undefined&&bytes.length!==job.size)throw Error('ไฟล์ AR ไม่ครบ: '+job.path);resources.set(job.path,bytes);progress('กำลังเก็บไฟล์ '+(++done)+'/'+jobs.length);await pause()}catch(error){failed=true;throw error}}}
+    const results=await Promise.allSettled(Array.from({length:4},worker)),failure=results.find(result=>result.status==='rejected');if(failure)throw failure.reason;
+    for(const path of manifest.nativeAssets){const relative=path.slice('games/AR mini city/'.length),name='images/'+relative;add(name,resources.get(path));sources.set(new URL(path,root).href,name)}
+    const inlineVendors=new Map();let license='';
+    for(const item of manifest.mediaPipe){const bytes=resources.get(item.path);if(item.path.endsWith('/hands.js')||item.path.endsWith('/camera_utils.js'))inlineVendors.set(item.path.split('/').pop(),new TextDecoder().decode(bytes));else if(item.path.endsWith('/LICENSE'))license=new TextDecoder().decode(bytes);else add('ar/'+item.path.split('/').pop(),bytes)}
+    let imageIndex=0;
     async function collectImage(value){
       if(!value)return '';
-      const url=adapter.resolveImage(value),u=new URL(url);
-      if(u.origin===root.origin&&u.pathname.startsWith(root.pathname)){
-        const nativePath=decodeURIComponent(u.pathname.slice(root.pathname.length));if(files.has(nativePath))return nativePath;
-      }
-      if(cache.has(url))return cache.get(url);
-      let response;try{response=await get(url)}catch{throw Error('เก็บรูปส่วนตัวไม่สำเร็จ อาจติด CORS/สิทธิ์หรือเครือข่าย กรุณาอัปโหลดรูปลงใน Editor แล้วดาวน์โหลดใหม่')}
-      const type=(response.headers.get('content-type')||'').split(';')[0],ext=({'image/png':'png','image/jpeg':'jpg','image/webp':'webp','image/gif':'gif'})[type];
-      if(!ext)throw Error('รูปส่วนตัวต้องเป็น PNG/JPEG/WebP/GIF ที่ดาวน์โหลดได้ครบ กรุณาอัปโหลดแทน URL นี้');
-      const name='games/AR mini city/assets/personal/image-'+String(++imageIndex).padStart(4,'0')+'.'+ext;
-      add(name,new Uint8Array(await response.arrayBuffer()));cache.set(url,name);return name;
+      const url=adapter.resolveImage(value);if(sources.has(url))return sources.get(url);
+      const response=await get(url,signal),type=(response.headers.get('content-type')||'').split(';')[0],extension=({'image/png':'png','image/jpeg':'jpg','image/webp':'webp','image/gif':'gif'})[type];if(!extension)throw Error('รูปส่วนตัวต้องเป็น JPG/PNG/WebP ที่อ่านได้');
+      const bytes=new Uint8Array(await response.arrayBuffer()),name='images/personal-'+(++imageIndex)+'.'+extension;add(name,bytes);sources.set(url,name);return name;
     }
     data.meta.cover=await collectImage(data.meta.cover);
     for(const q of data.questions){q.image=await collectImage(q.image);for(const o of q.options)o.image=await collectImage(o.image)}
-    const id=crypto.randomUUID();
-    text('personal-game-data.js','window.MiniCityPersonalGame='+JSON.stringify({version:1,id,data}).replaceAll('<','\\u003c')+';\n');
-    const page=dom.implementation.createHTMLDocument(data.meta.title);page.documentElement.lang='th';page.head.append(Object.assign(page.createElement('meta'),{name:'viewport',content:'width=device-width, initial-scale=1'}));
-    const heading=page.createElement('h1');heading.textContent=data.meta.title;
-    const note=page.createElement('p');note.textContent='เกมส่วนตัวของคุณ • เล่นด้วยคลิก/แตะได้หลังแตก ZIP ครบทุกไฟล์ • กล้อง/Hand Tracking แนะนำเปิดผ่าน localhost หรือ HTTPS และอนุญาตกล้อง';
-    const link=page.createElement('a');link.href='games/AR%20mini%20city/index.html';link.textContent='▶ เปิดเกมของฉัน';link.style.cssText='display:inline-block;background:#6940d9;color:white;padding:18px 30px;border-radius:14px;text-decoration:none;font-size:24px';
-    page.body.style.cssText='font-family:Tahoma,sans-serif;max-width:760px;margin:50px auto;padding:24px;color:#28164c;line-height:1.8';page.body.append(heading,note,link);
-    text('index.html','<!DOCTYPE html>\n'+page.documentElement.outerHTML);
-    text('README-TH.txt',`เกมส่วนตัว: ${input.meta.title}\n\n1. แตก ZIP ทั้งหมดก่อน เปิด index.html แล้วกดเปิดเกม\n2. คลิก/แตะ ภารกิจ คะแนน เสียงและภาพใช้ไฟล์ที่รวมมา ไม่ต้องเชื่อม GitHub หรือ Firebase\n3. รวม MediaPipe Hands 0.4.1675469240 และโมเดล/WASM แล้ว หากต้องการกล้อง/Hand Tracking ให้เปิดโฟลเดอร์นี้ผ่าน localhost หรือ HTTPS และอนุญาตกล้อง การเปิด file:// อาจเล่นคลิกได้แต่ browser บล็อกโหลดโมเดล AR\n4. ถ้ามี Python: เปิด terminal ในโฟลเดอร์นี้ รัน python -m http.server 8000 แล้วเปิด http://localhost:8000/ (หลังติดตั้ง Python แล้วไม่ต้องใช้อินเทอร์เน็ต)\n5. อุปกรณ์ต้องรองรับกล้อง/WebGL/WASM เสียงพูดภาษาไทยขึ้นกับเสียงที่ติดตั้งในเครื่อง การอนุญาตกล้องต้องได้รับจากผู้ใช้\n6. personal-game-data.js เป็นข้อมูลฉบับปรับแต่งสำหรับเล่นแพ็กนี้ บนเว็บไซต์ไม่มีระบบบันทึกฉบับร่างหรือนำเข้า/ส่งออก JSON\n7. ไม่ส่งการบันทึกหรือคะแนนกลับไปยัง GitHub/Firestore ฉบับนี้แยกจากต้นฉบับและผู้ใช้อื่น\n8. ควรเก็บไฟล์นี้เป็นการใช้ส่วนตัวตามสิทธิ์ของสื่อ/เกมต้นฉบับ และคงไฟล์ license ของ MediaPipe ที่รวมมา\n`);
-    const contents=[];for(const [name,bytes] of files)contents.push({path:name,size:bytes.length,sha256:await digest(bytes)});
-    text('PACKAGE-MANIFEST.json',JSON.stringify({version:1,adapterId:adapter.id,id,mediaPipeVersion:'0.4.1675469240',files:contents},null,2));
-    progress('กำลังสร้าง ZIP • '+(total/1024/1024).toFixed(1)+' MB');
-    await new Promise(resolve=>setTimeout(resolve,0));
-    const safeName=[...data.meta.title.normalize('NFKC')].map(char=>char.charCodeAt(0)<32||'<>:"/\\|?*'.includes(char)?'-':char).join('').replace(/[. ]+$/g,'').slice(0,100)||'my-ar-game';
-    const blob=zip(files),href=URL.createObjectURL(blob),a=document.createElement('a');a.href=href;a.download=safeName+'.zip';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),60000);
+    const nativeURL=new URL('games/AR mini city/index.html',root),localScripts={'/js/game-adapters.js':'js/game-adapters.js','/js/adapters/mini-city-runtime.js':'js/adapters/mini-city-runtime.js'};
+    // Inline only explicitly identified script elements; native game source remains unchanged.
+    for(const script of dom.querySelectorAll('script[src]')){
+      const url=new URL(script.getAttribute('src'),nativeURL);let code=url.hostname==='cdn.jsdelivr.net'?inlineVendors.get(url.pathname.split('/').pop()):undefined;
+      if(code===undefined){const path=Object.entries(localScripts).find(([suffix])=>url.origin===root.origin&&url.pathname.endsWith(suffix))?.[1];if(!path)throw Error('ยังรวม script นี้ไม่ได้: '+url.pathname);code=await readText(path)}
+      script.removeAttribute('src');script.textContent=code.replace(/<\/script/gi,'<\\/script');
+    }
+    if(dom.querySelector('link[rel=stylesheet]'))throw Error('เกมมี stylesheet ภายนอกที่ยังไม่มีตัวรวมไฟล์');
+    const charset=dom.head.querySelector('meta[charset]')||dom.createElement('meta');charset.setAttribute('charset','UTF-8');
+    const base=dom.createElement('base');base.href='images/';dom.head.prepend(charset,base);
+    const bootstrap=dom.createElement('script');bootstrap.textContent='window.MiniCityPersonalGame='+JSON.stringify({version:2,id:crypto.randomUUID(),data}).split('<').join(String.fromCharCode(92)+'u003c')+';';dom.head.insertBefore(bootstrap,base.nextSibling);
+    const css=dom.createElement('style');css.textContent=await readText('css/mini-city-editor-play.css');dom.head.append(css);dom.title=data.meta.title;
+    const help=dom.createElement('dialog');help.id='packageHelp';help.style.cssText='max-width:min(720px,90vw);max-height:80dvh;overflow:auto;padding:24px;border:1px solid #d7c8ed;border-radius:20px;font:16px/1.7 Tahoma,sans-serif';
+    const heading=dom.createElement('h2');heading.textContent='วิธีใช้เกมของฉัน';const note=dom.createElement('p');note.textContent='แตก ZIP ทั้งหมดแล้วเปิด index.html • คลิก/แตะเพื่อเล่นได้ กล้องและ Hand Tracking แนะนำ localhost หรือ HTTPS พร้อมอนุญาตกล้อง และอุปกรณ์ที่รองรับ WebGL/WASM การเปิด file:// อาจถูกบล็อกโมเดล AR เสียงพูดไทยขึ้นกับเสียงในเครื่อง';
+    const guide=dom.createElement('p');guide.textContent='บนคอมพิวเตอร์ที่มี Python: เปิด Terminal ในโฟลเดอร์เกม รัน python -m http.server 8000 แล้วเปิด http://localhost:8000/ • หากต้องการใช้งานผ่าน HTTPS ให้อัปโหลด index.html และโฟลเดอร์ images กับ ar ทั้งหมดไปยังโฮสต์แบบ static ที่รองรับ HTTPS เช่น GitHub Pages และเปิดจากลิงก์ HTTPS ห้ามย้ายเพียงไฟล์ index.html';
+    const licenseDetails=dom.createElement('details'),summary=dom.createElement('summary'),pre=dom.createElement('pre');summary.textContent='สิทธิ์การใช้งาน MediaPipe';pre.textContent=license;pre.style.whiteSpace='pre-wrap';licenseDetails.append(summary,pre);
+    const close=dom.createElement('form');close.method='dialog';const closeButton=dom.createElement('button');closeButton.textContent='กลับไปเล่นเกม';close.append(closeButton);help.append(heading,note,guide,licenseDetails,close);dom.body.append(help);
+    const links=dom.createElement('script');links.textContent="document.addEventListener('DOMContentLoaded',()=>{const b=document.createElement('button');b.textContent='วิธีเปิดเกม / กล้อง';b.style.cssText='position:absolute;bottom:18%;left:50%;transform:translateX(-50%);z-index:20;border:0;border-radius:16px;padding:8px 14px;background:white;color:#4c3286';b.onclick=()=>document.getElementById('packageHelp').showModal();document.getElementById('coverScreen').append(b)})";dom.body.append(links);
+    // Static assets keep their native asset paths under images/ through the document base.
+    text('index.html','<!DOCTYPE html>\n'+dom.documentElement.outerHTML);
+    resources.clear();inlineVendors.clear();signal?.throwIfAborted();progress('กำลังสร้างและตรวจ ZIP • '+(total/1024/1024).toFixed(1)+' MB');await pause();
+    const folder=safeName(data.meta.title),namedFiles=new Map([...files].map(([path,bytes])=>[folder+'/'+path,bytes]));
+    const blob=zip(namedFiles);await verifyZip(blob,namedFiles,signal);signal?.throwIfAborted();
+    const href=URL.createObjectURL(blob),link=document.createElement('a');link.href=href;link.download=folder+'.zip';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(href),60000);
   }
   window.PersonalGameDownload={download};
 })();

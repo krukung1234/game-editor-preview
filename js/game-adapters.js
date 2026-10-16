@@ -1,17 +1,19 @@
 /* Versioned, local-only adapter contract. Each future game registers its own adapter. */
 (() => {
   'use strict';
-  const root = new URL('../', document.currentScript.src);
+  const root = window.MiniCityPersonalGame ? new URL('./',location.href) : new URL('../', document.currentScript.src);
   const clone = value => JSON.parse(JSON.stringify(value));
   const zones = {shopping:'🛍️ แยกสินค้าและบริการ',health:'🏥 จับคู่คำถาม',education:'📚 จัดกระเป๋า',food:'🍎 ซื้อของ',service:'🛠️ ช่วยเมือง'};
-  const key = 'krukung.editor.v1.mini-city';
-  const runKey = 'krukung.editor.run.v1.mini-city';
-  const fail = message => { throw new Error(message); };
+  let validationField=null,validationQuestion=null,validationOption=null;
+  const fail=(message,location={})=>{throw Object.assign(new Error(message),{field:validationField,questionId:validationQuestion,optionIndex:validationOption},location)};
   function text(value, label, max=1000, optional=false) {
+    validationField=label;
     if (typeof value !== 'string' || (!optional && !value.trim()) || value.length>max) fail(label+' ไม่ถูกต้อง');
     return value.trim();
   }
   function image(value) {
+    if(window.MiniCityPersonalGame&&typeof value==='string'&&value.startsWith('images/')&&!value.includes('..')&&!/[<>"'\\?#]/.test(value))return value;
+    if(typeof value==='string'&&value.startsWith('blob:')){try{if(new URL(value).origin===root.origin)return value}catch{}}
     if (typeof value !== 'string' || value.length>1100000) fail('รูปภาพใหญ่เกินกำหนด');
     if(value.startsWith('assets/'))return image('games/AR mini city/'+value);
     if (!value || /^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(value)) return value;
@@ -23,12 +25,14 @@
     fail('รูปภาพต้องเป็น PNG/JPEG/WebP/GIF, HTTPS หรือรูปเดิมของเกม');
   }
   function validate(input) {
+    validationField=null;validationQuestion=null;validationOption=null;
     if(!input || input.schemaVersion!==1 || input.adapterId!=='mini-city') fail('ไฟล์นี้ไม่ใช่ข้อมูล Mini City รุ่นที่รองรับ');
     const meta=input.meta||{};
     const data={schemaVersion:1,adapterId:'mini-city',meta:{title:text(meta.title,'ชื่อเกม',200),description:text(meta.description||'','คำอธิบายเกม',2000,true),subject:text(meta.subject,'วิชา',100),grade:text(meta.grade,'ระดับชั้น',50),topic:text(meta.topic,'หัวข้อ',500),instructions:text(meta.instructions,'คำแนะนำ',2000),praise:text(meta.praise,'คำชม',500),cover:image(meta.cover||'')},questions:[]};
     if(!Array.isArray(input.questions)||input.questions.length<5||input.questions.length>100) fail('ต้องมีภารกิจอย่างน้อย 1 ข้อต่อด่าน และรวมไม่เกิน 100 ข้อ');
     const ids=new Set();
     for(const q of input.questions) {
+      validationQuestion=q?.id;validationField='คำถาม';validationOption=null;
       if(!q || !zones[q.zone] || typeof q.id!=='string' || !/^[a-zA-Z0-9_-]{1,60}$/.test(q.id) || ids.has(q.id)) fail('รหัสคำถามหรือด่านไม่ถูกต้อง/ซ้ำ');
       ids.add(q.id);
       const mode=q.zone==='food'?q.mode:'single';
@@ -37,12 +41,14 @@
       if(!Array.isArray(q.options)||q.options.length<2||q.options.length>6) fail('แต่ละข้อต้องมี 2–6 ตัวเลือก');
       if(q.zone==='shopping'&&q.options.length!==2) fail('แยกสินค้า/บริการต้องมี 2 ตัวเลือกตามกลไกเดิม');
       if(['food','education'].includes(q.zone)&&q.options.length!==6) fail('ด่านจัดกระเป๋า/ซื้อของต้องมี 6 ตัวเลือกตามกลไกเดิม');
-      for(const o of q.options) {
+      for(const [optionIndex,o] of q.options.entries()) {
+        validationOption=optionIndex;
         if(typeof o.correct!=='boolean') fail('กรุณาระบุเฉลย');
-        const price=Number(o.price||0);if(!Number.isFinite(price)||price<0||price>100000) fail('ราคาต้องเป็น 0–100000');
+        const price=Number(o.price||0);if(!Number.isFinite(price)||price<0||price>100000) fail('ราคาต้องเป็น 0–100000',{field:'ราคา'});
         n.options.push({label:text(o.label,'ตัวเลือก',200),image:image(o.image||''),correct:o.correct,price});
       }
-      if(new Set(n.options.map(o=>o.label.normalize('NFKC').toLocaleLowerCase())).size!==n.options.length)fail('ตัวเลือกซ้ำ กรุณาใช้ข้อความที่แตกต่างกันในแต่ละข้อ');
+      validationOption=null;
+      if(new Set(n.options.map(o=>o.label.normalize('NFKC').toLocaleLowerCase())).size!==n.options.length)fail('ตัวเลือกซ้ำ กรุณาใช้ข้อความที่แตกต่างกันในแต่ละข้อ',{field:'ตัวเลือก'});
       const answers=n.options.filter(o=>o.correct).length;
       if(n.zone==='education'||(n.zone==='food'&&mode==='list')) {if(answers!==3)fail('ด่านจัดกระเป๋า/ซื้อของตามรายการต้องมีคำตอบถูก 3 ข้อ');}
       else if(n.zone==='food') {
@@ -70,10 +76,10 @@
     }
     return false;
   }
-  const entry={id:'mini-city',zones,key,runKey,validate,matches:normalizeLocation,
+  const entry={id:'mini-city',zones,validate,matches:normalizeLocation,
     resolveImage:value=>value?new URL(image(value),root).href:'',
     fallbackImage:new URL('images/editor-image-placeholder.svg',root).href,
-    async defaults(){const r=await fetch(new URL('js/adapters/mini-city-defaults.json?v=editor-20261016-8',root),{cache:'no-store',credentials:'omit'});if(!r.ok)throw Error('โหลดข้อมูลต้นฉบับไม่สำเร็จ');return validate(await r.json())},
+    async defaults({signal}={}){const r=await fetch(new URL('js/adapters/mini-city-defaults.json?v=editor-20261016-9',root),{cache:'no-cache',credentials:'omit',signal});if(!r.ok)throw Error('โหลดข้อมูลต้นฉบับไม่สำเร็จ');return validate(await r.json())},
     launch(value){const data=validate(value),token=crypto.randomUUID(),url=new URL('personal-game-player.html',root);url.searchParams.set('editor','mini-city');url.searchParams.set('preview',token);return {url:url.href,data,token}},
     connectPreview(frame,run,onClose){
       const receive=event=>{

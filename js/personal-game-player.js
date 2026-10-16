@@ -20,8 +20,8 @@
     for(const script of copy.querySelectorAll('script[src]')){
       const url=new URL(script.getAttribute('src'),sourceURL);
       if(url.origin!==sourceURL.origin)continue;
-      if(url.pathname.endsWith('/js/game-adapters.js')){url.search='?v=editor-20261016-8';script.src=url.href;registry=true}
-      if(url.pathname.endsWith('/js/adapters/mini-city-runtime.js')){url.search='?v=editor-20261016-8';script.src=url.href;runtime=true}
+      if(url.pathname.endsWith('/js/game-adapters.js')){url.search='?v=editor-20261016-9';script.src=url.href;registry=true}
+      if(url.pathname.endsWith('/js/adapters/mini-city-runtime.js')){url.search='?v=editor-20261016-9';script.src=url.href;runtime=true}
     }
     if(!registry||!runtime)throw Error('เกมต้นฉบับรุ่นนี้ยังไม่มีจุดเชื่อม Mini City Adapter');
     // User data stays in parent/child memory only. No HTML substitution of questions or game logic.
