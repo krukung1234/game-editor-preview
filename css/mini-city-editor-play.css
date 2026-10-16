@@ -18,3 +18,9 @@
   .city-mission-map{width:100%;height:300px;min-height:300px}.mission-service-shelf{width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.mission-service-shelf .service-card{min-height:90px}.service-card span:not(.dwell){font-size:13px}.mission-popup.text-only{max-width:80%;width:80%}.mission-popup.text-only p{font-size:16px}
   .answer-badge{font-size:27px;max-width:90%;overflow-wrap:anywhere}.answer-sub{font-size:15px;line-height:1.4}.modal-box{width:96%;max-height:90dvh;overflow:auto}
 }
+
+/* Custom artwork changes only the image, never the native button coordinates. */
+.map-title{max-width:75%;overflow-wrap:anywhere;text-align:center}.zone-btn{overflow-wrap:anywhere}.zone-btn small{max-height:4.5em;overflow:auto}.editor-game-title,.qtag,.editor-mission-hint{overflow-wrap:anywhere}.editor-mission-hint{font-size:14px;text-align:center;margin:8px 0}.editor-question-image{object-fit:contain}.food-instruction{white-space:pre-wrap}
+@media(max-aspect-ratio:4/3){.map-title{max-width:90%}.zone-grid{max-height:65%;overflow:auto}.zone-btn{min-width:0}.editor-game-title{max-height:42%;overflow:auto}}
+
+.editor-game-title{max-height:40%;overflow:auto}.mission-popup p{white-space:pre-line}

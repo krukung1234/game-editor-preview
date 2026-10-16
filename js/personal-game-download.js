@@ -63,6 +63,8 @@
       const bytes=new Uint8Array(await response.arrayBuffer()),name='images/personal-'+(++imageIndex)+'.'+extension;add(name,bytes);sources.set(url,name);return name;
     }
     data.meta.cover=await collectImage(data.meta.cover);
+    for(const key of ['mapBackground','serviceMapBackground','backpackImage'])data.presentation[key]=await collectImage(data.presentation[key]);
+    for(const stage of Object.values(data.presentation.stages))stage.background=await collectImage(stage.background);
     for(const q of data.questions){q.image=await collectImage(q.image);for(const o of q.options)o.image=await collectImage(o.image)}
     const nativeURL=new URL('games/AR mini city/index.html',root),localScripts={'/js/game-adapters.js':'js/game-adapters.js','/js/adapters/mini-city-runtime.js':'js/adapters/mini-city-runtime.js'};
     // Inline only explicitly identified script elements; native game source remains unchanged.

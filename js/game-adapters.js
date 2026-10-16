@@ -4,6 +4,21 @@
   const root = window.MiniCityPersonalGame ? new URL('./',location.href) : new URL('../', document.currentScript.src);
   const clone = value => JSON.parse(JSON.stringify(value));
   const zones = {shopping:'🛍️ แยกสินค้าและบริการ',health:'🏥 จับคู่คำถาม',education:'📚 จัดกระเป๋า',food:'🍎 ซื้อของ',service:'🛠️ ช่วยเมือง'};
+  const sceneDefaults={
+    mapBackground:'games/AR mini city/assets/city_map.png',serviceMapBackground:'games/AR mini city/assets/city_map.png',backpackImage:'games/AR mini city/assets/product/product_schoolbag.png',
+    stages:Object.fromEntries([
+      ['shopping','🛍️ ย่านการค้า','แยกเข้าร้านให้ถูก'],['health','🏥 ย่านสุขภาพ','จับคู่อาการกับบริการ'],['education','📚 ย่านการศึกษา','จัดกระเป๋าไปเรียน'],['food','🍎 ย่านอาหาร','เลือกซื้อของตามรายการ'],['service','🛠️ ย่านบริการ','ภารกิจช่วยเมือง']
+    ].map(([id,name,description])=>[id,{name,description,instructions:'',background:'games/AR mini city/assets/'+id+'_zone.png'}]))
+  };
+  function presentation(value={}){
+    const result={stages:{}};
+    for(const key of ['mapBackground','serviceMapBackground','backpackImage']){validationField='รูปภาพ';try{result[key]=image(value[key]??sceneDefaults[key])}catch(error){throw Object.assign(error,{scene:key,field:'รูปภาพ'})}}
+    for(const id of Object.keys(zones)){
+      const stage=value.stages?.[id]||{},fallback=sceneDefaults.stages[id];
+      try{result.stages[id]={name:text(stage.name??fallback.name,'ชื่อด่าน',100),description:text(stage.description??fallback.description,'ข้อความด่าน',500,true),instructions:text(stage.instructions??'','คำแนะนำด่าน',1000,true),background:image(stage.background??fallback.background)};}catch(error){throw Object.assign(error,{stageId:id,...(/รูปภาพ|เส้นทาง/.test(error.message)?{scene:id,field:'รูปภาพ'}:{})})}
+    }
+    return result;
+  }
   let validationField=null,validationQuestion=null,validationOption=null;
   const fail=(message,location={})=>{throw Object.assign(new Error(message),{field:validationField,questionId:validationQuestion,optionIndex:validationOption},location)};
   function text(value, label, max=1000, optional=false) {
@@ -29,6 +44,7 @@
     if(!input || input.schemaVersion!==1 || input.adapterId!=='mini-city') fail('ไฟล์นี้ไม่ใช่ข้อมูล Mini City รุ่นที่รองรับ');
     const meta=input.meta||{};
     const data={schemaVersion:1,adapterId:'mini-city',meta:{title:text(meta.title,'ชื่อเกม',200),description:text(meta.description||'','คำอธิบายเกม',2000,true),subject:text(meta.subject,'วิชา',100),grade:text(meta.grade,'ระดับชั้น',50),topic:text(meta.topic,'หัวข้อ',500),instructions:text(meta.instructions,'คำแนะนำ',2000),praise:text(meta.praise,'คำชม',500),cover:image(meta.cover||'')},questions:[]};
+    data.presentation=presentation(input.presentation);
     if(!Array.isArray(input.questions)||input.questions.length<5||input.questions.length>100) fail('ต้องมีภารกิจอย่างน้อย 1 ข้อต่อด่าน และรวมไม่เกิน 100 ข้อ');
     const ids=new Set();
     for(const q of input.questions) {
@@ -76,10 +92,10 @@
     }
     return false;
   }
-  const entry={id:'mini-city',zones,validate,matches:normalizeLocation,
+  const entry={id:'mini-city',zones,presentation,validate,matches:normalizeLocation,
     resolveImage:value=>value?new URL(image(value),root).href:'',
     fallbackImage:new URL('images/editor-image-placeholder.svg',root).href,
-    async defaults({signal}={}){const r=await fetch(new URL('js/adapters/mini-city-defaults.json?v=editor-20261016-9',root),{cache:'no-cache',credentials:'omit',signal});if(!r.ok)throw Error('โหลดข้อมูลต้นฉบับไม่สำเร็จ');return validate(await r.json())},
+    async defaults({signal}={}){const r=await fetch(new URL('js/adapters/mini-city-defaults.json?v=editor-20261016-12',root),{cache:'no-cache',credentials:'omit',signal});if(!r.ok)throw Error('โหลดข้อมูลต้นฉบับไม่สำเร็จ');return validate(await r.json())},
     launch(value){const data=validate(value),token=crypto.randomUUID(),url=new URL('personal-game-player.html',root);url.searchParams.set('editor','mini-city');url.searchParams.set('preview',token);return {url:url.href,data,token}},
     connectPreview(frame,run,onClose){
       const receive=event=>{

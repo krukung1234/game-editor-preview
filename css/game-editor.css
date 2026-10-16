@@ -29,3 +29,11 @@
 .editor-close-confirmation::backdrop{background:#20173799;backdrop-filter:blur(3px)}.editor-close-confirmation h2{margin:0 0 12px;font-size:22px;line-height:1.45;color:#4e3087;overflow-wrap:anywhere}.editor-close-confirmation p{margin:0;color:#6a5b7d;overflow-wrap:anywhere}
 .editor-close-confirmation-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:24px}.editor-close-confirmation-actions button{min-width:0;min-height:46px;padding:10px 6px}.editor-close-confirmation :focus-visible{outline:3px solid #a58ae8;outline-offset:3px}
 @media(max-width:480px){.editor-close-confirmation{width:calc(100% - 24px);padding:22px 18px;border-radius:19px}.editor-close-confirmation h2{font-size:20px}.editor-close-confirmation-actions{gap:8px;margin-top:20px}}
+
+/* Editable native stages and scenes; no changes to Prompt or the game catalogue. */
+.editor-text-settings{border:1px solid #e3dafb;border-radius:14px;padding:14px;min-width:0}.editor-text-settings summary{cursor:pointer;color:#6444c3;font-weight:700}.editor-text-settings[open] .editor-field{margin-top:14px}
+.editor-stage-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;border:1px solid #e3dafb;border-radius:16px;padding:16px;margin:14px 0}.editor-stage-fields .editor-field:last-child{grid-column:1/-1}.editor-cover-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.editor-scene-card{min-width:0;border:1px solid #e3dafb;border-radius:16px;padding:14px}.editor-scene-card .editor-image{max-width:100%;width:220px;height:125px;object-fit:contain}.editor-scene-card>.editor-button{margin-top:10px}.editor-cover-images>.editor-note{grid-column:1/-1}.editor-zones button{overflow-wrap:anywhere;white-space:normal}
+@media(max-width:600px){.editor-stage-fields,.editor-cover-images{grid-template-columns:1fr}}
+
+/* Preserve a usable native stage when the editor is short in landscape. */
+.editor-play-preview{overflow:auto}.editor-preview-frame{min-height:360px}
