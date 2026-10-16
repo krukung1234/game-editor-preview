@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <meta name="krukung-build" content="editor-20261016-5">
   <title>ครูกุ้งสอนไอที | รวมเกมการศึกษา AR</title>
-  <link rel="stylesheet" href="css/style.css?v=editor-20261016-5">
+  <link rel="stylesheet" href="css/style.css?v=prompt-20261016-7">
 </head>
 <body>
   <div id="vipLogin" class="login-screen">
@@ -71,40 +71,39 @@
     <footer>© ครูกุ้งสอนไอที | Educational Game Hub<span class="hub-build">Preview • Game Editor รุ่น 20261016-5</span></footer>
   </div>
 
-  <div id="promptModal" data-prompt-version="20261016-2" class="prompt-modal" aria-hidden="true">
+  <div id="promptModal" data-prompt-version="20261016-7" class="prompt-modal" aria-hidden="true">
     <div class="prompt-modal-box" role="dialog" aria-modal="true" aria-labelledby="promptTitle">
-      <button type="button" class="prompt-close" id="promptCloseBtn" aria-label="ปิด">×</button>
-      <div class="prompt-modal-heading">
-        <span class="prompt-icon">📋</span>
-        <div>
-          <span class="prompt-version">ปรับแต่ง Prompt · รุ่น 20261016-2</span>
-          <h2 id="promptTitle">Prompt สำหรับสร้างเกม</h2>
-          <p>ปรับเนื้อหาสำหรับวิชาและระดับชั้นใหม่ แล้วคัดลอกไปใช้กับ AI พร้อมโค้ดเกมต้นฉบับ</p>
-        </div>
+      <header class="prompt-modal-heading">
+        <div><span class="prompt-version">Prompt · รุ่น 20261016-7</span><h2 id="promptTitle">📋 ปรับแต่ง Prompt</h2><p>เลือกบทเรียนใหม่ แล้วนำ Prompt ไปใช้กับ AI พร้อมโค้ดเกมต้นฉบับ</p></div>
+        <button type="button" class="prompt-close" id="promptCloseBtn" aria-label="ปิดหน้าต่าง Prompt">×</button>
+      </header>
+      <div class="prompt-body" id="promptBody">
+        <form id="promptForm" class="prompt-form" aria-describedby="promptHint">
+          <label>ชื่อเกมต้นฉบับ<input id="promptOriginal" readonly></label>
+          <fieldset><legend>วิชา</legend><div id="promptSubjects" class="prompt-choices"></div><label id="promptCustomLabel" hidden>ระบุวิชา<input id="promptCustomSubject" disabled maxlength="100" placeholder="เช่น ดนตรี หรือหน้าที่พลเมือง"></label></fieldset>
+          <fieldset><legend>ระดับชั้น</legend><div id="promptGradeGroups" class="prompt-groups"></div><div id="promptGrades" class="prompt-choices" aria-label="เลือกระดับชั้น"></div></fieldset>
+          <label>ชื่อเกมใหม่ <small>ไม่บังคับ · หากว่างจะใช้ชื่อเกมต้นฉบับ</small><input id="promptNewName" maxlength="200" placeholder="เช่น AR นักสำรวจสัตว์และถิ่นอาศัย"></label>
+          <label>หัวข้อหรือหน่วยการเรียนรู้<input id="promptTopic" required maxlength="500" placeholder="เช่น สัตว์และถิ่นอาศัย หรือเศษส่วนในชีวิตประจำวัน"></label>
+          <label class="prompt-ai"><input id="promptAiDesign" type="checkbox" role="switch" checked><span>✨ ให้ AI ออกแบบคำถามและคำตอบให้<small>สร้างเป็นข้อความ Prompt เท่านั้น ไม่มีการเรียก AI API</small></span></label>
+          <label>รายละเอียดเนื้อหา คำถาม และคำตอบที่ต้องการ <small>ไม่บังคับ</small><textarea id="promptDetails" rows="3" maxlength="20000" placeholder="เช่น 5 ข้อ ข้อละ 3 ตัวเลือก: ปลาอาศัยอยู่ที่ไหน? เฉลย: ในน้ำ พร้อมอธิบายสั้น ๆ"></textarea></label>
+          <p id="promptValidation" role="alert" hidden></p>
+        </form>
+        <p id="promptHint">เริ่มจากข้อมูลต้นฉบับทุกครั้ง การปรับ Prompt ไม่เปลี่ยนข้อมูลเกมบนเว็บไซต์</p>
+        <label class="prompt-result-label" for="promptText">Prompt ที่สร้าง</label>
+        <textarea id="promptText" readonly placeholder="เลือกวิชา ระดับชั้น และหัวข้อ แล้วกด ✨ สร้าง Prompt" aria-label="ข้อความ Prompt"></textarea>
       </div>
-      <form id="promptForm" class="prompt-form" aria-describedby="promptHint">
-        <label class="prompt-wide">ชื่อเกมต้นฉบับ<input id="promptOriginal" readonly></label>
-        <label>วิชา<select id="promptSubject" required><option value="">เลือกวิชา</option></select></label>
-        <label>ระดับชั้น<select id="promptGrade" required><option value="">เลือกระดับชั้น</option></select></label>
-        <label class="prompt-wide">ชื่อเกมใหม่<input id="promptNewName" required maxlength="200" placeholder="ชื่อเกมที่ต้องการสร้าง"></label>
-        <label class="prompt-wide">หัวข้อหรือหน่วยการเรียนรู้<input id="promptTopic" required maxlength="500"></label>
-        <label class="prompt-wide">รายละเอียดเนื้อหา คำถาม และคำตอบที่ต้องการ<textarea id="promptDetails" required rows="5" maxlength="20000" placeholder="ระบุเนื้อหา คำถาม ตัวเลือก และเฉลยที่ต้องการ"></textarea></label>
-        <button type="submit" class="copy-prompt-btn prompt-wide">✨ สร้าง Prompt</button>
-      </form>
-      <p id="promptHint">เลือกวิชาและระดับชั้น ระบุเนื้อหาที่ต้องการ แล้วกดสร้าง Prompt เพื่อนำไปใช้กับ AI</p>
-      <label for="promptText">Prompt ที่สร้าง</label>
-      <textarea id="promptText" readonly placeholder="Prompt จะแสดงที่นี่เมื่อกด ✨ สร้าง Prompt" aria-label="ข้อความ Prompt"></textarea>
-      <div class="prompt-modal-actions">
-        <button type="button" id="copyPromptBtn" disabled class="copy-prompt-btn">📋 คัดลอก Prompt</button>
-        <button type="button" id="closePromptBtn" class="close-prompt-btn">ปิด</button>
-      </div>
-      <div id="copyMessage" class="copy-message" role="status" aria-live="polite">✅ คัดลอก Prompt แล้ว</div>
+      <footer class="prompt-modal-actions">
+        <div id="copyMessage" class="copy-message" role="status" aria-live="polite"></div>
+        <button type="button" id="resetPromptBtn">↺ คืนค่าเริ่มต้น</button>
+        <button type="submit" form="promptForm" class="prompt-primary">✨ สร้าง Prompt</button>
+        <button type="button" id="copyPromptBtn" disabled>📋 คัดลอก Prompt</button>
+      </footer>
     </div>
   </div>
 
   <script src="js/config.js?v=20261016-1"></script>
   <script src="js/game-adapters.js?v=editor-3"></script>
   <script src="js/game-editor.js?v=editor-3"></script>
-  <script src="js/app.js?v=editor-20261016-5"></script>
+  <script src="js/app.js?v=prompt-20261016-7"></script>
 </body>
 </html>

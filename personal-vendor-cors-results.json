@@ -1,0 +1,70 @@
+{
+  "result": "PASS",
+  "files": [
+    {
+      "path": "vendor/mediapipe/hands/hand_landmark_full.tflite",
+      "type": "cors",
+      "size": 5478688
+    },
+    {
+      "path": "vendor/mediapipe/hands/hand_landmark_lite.tflite",
+      "type": "cors",
+      "size": 2071408
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands.binarypb",
+      "type": "cors",
+      "size": 550
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands.js",
+      "type": "cors",
+      "size": 45581
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_packed_assets.data",
+      "type": "cors",
+      "size": 4326731
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_packed_assets_loader.js",
+      "type": "cors",
+      "size": 8327
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_simd_wasm_bin.data",
+      "type": "cors",
+      "size": 0
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_simd_wasm_bin.js",
+      "type": "cors",
+      "size": 276479
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_simd_wasm_bin.wasm",
+      "type": "cors",
+      "size": 6026259
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_wasm_bin.js",
+      "type": "cors",
+      "size": 276474
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_wasm_bin.wasm",
+      "type": "cors",
+      "size": 5917209
+    },
+    {
+      "path": "vendor/mediapipe/camera_utils.js",
+      "type": "cors",
+      "size": 7881
+    },
+    {
+      "path": "vendor/mediapipe/LICENSE",
+      "type": "cors",
+      "size": 12331
+    }
+  ]
+}

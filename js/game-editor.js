@@ -13,6 +13,7 @@
   const inputs={};
   const body=el('div',{id:'editorBody',class:'editor-body'});
   let pageOverflow='';
+  let downloading=false;
   let moreButton,moreMenu;
   let imageSequence=0;
   const uid=()=>crypto.randomUUID().replaceAll('-','');
@@ -131,13 +132,29 @@
   async function importFile(event){try{const file=event.target.files[0];if(!file)return;if(file.size>5000000)throw Error('ไฟล์ JSON ต้องไม่เกิน 5 MB');const data=adapter.validate(JSON.parse(await file.text()));draft=data;dirty=true;activeId=draft.questions.find(q=>q.zone===activeZone).id;preview.hidden=true;renderMeta();renderQuestions();announce('นำเข้าข้อมูลแล้ว ตรวจสอบและกดบันทึกเพื่อเก็บฉบับนี้')}catch(e){announce('นำเข้าไม่ได้: '+e.message,true)}finally{event.target.value=''}}
   const importInput=el('input',{id:'editorImport',type:'file',accept:'.json,application/json',onchange:importFile});importInput.hidden=true;
   function exportData(){try{const blob=new Blob([JSON.stringify(checked(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);const a=el('a',{href:url,download:'mini-city-custom.json'});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);announce('ส่งออก JSON แล้ว สามารถนำไปนำเข้าบนเครื่องอื่นได้')}catch(e){announce(e.message,true)}}
+  function loadSaved(){
+    try{
+      const saved=adapter.read();if(!saved){announce('ยังไม่มีฉบับที่บันทึกในเบราว์เซอร์นี้');return}
+      if(dirty&&!confirm('โหลดฉบับที่บันทึกไว้แทนข้อมูลที่กำลังแก้ไขหรือไม่?'))return;
+      draft=adapter.clone(saved);dirty=false;activeId=draft.questions.find(q=>q.zone===activeZone).id;preview.hidden=true;renderMeta();renderQuestions();body.scrollTop=0;announce('โหลดฉบับส่วนตัวจากเบราว์เซอร์นี้แล้ว • ต้นฉบับไม่เปลี่ยน');
+    }catch(error){announce('โหลดฉบับส่วนตัวไม่ได้: '+error.message,true)}
+  }
+  async function downloadGame(){
+    if(downloading)return;
+    try{
+      const data=checked();downloading=true;announce('กำลังเตรียมเกมพร้อมรูปและไฟล์ AR… กรุณารอ');
+      if(!window.PersonalGameDownload)throw Error('โหลดโมดูลดาวน์โหลดไม่สำเร็จ กรุณารีเฟรชหน้า');
+      await PersonalGameDownload.download(adapter,data,message=>announce(message));
+      announce('ดาวน์โหลด ZIP แล้ว • แตกไฟล์ทั้งหมดและอ่าน README-TH.txt • ใช้ JSON ใน ZIP เพื่อแก้ไขต่อ');
+    }catch(error){announce('ดาวน์โหลดไม่สำเร็จ: '+error.message,true)}finally{downloading=false}
+  }
   function close(){if(dirty&&!confirm('มีข้อมูลที่ยังไม่บันทึก ต้องการปิดโดยไม่บันทึกหรือไม่?'))return;closeMore(false);document.body.style.overflow=pageOverflow;dialog.close();opener?.focus()}
   function closeMore(focus=true){if(!moreMenu)return;moreMenu.hidden=true;moreButton.setAttribute('aria-expanded','false');if(focus)moreButton.focus()}
   function menuAction(label,action){const b=button(label,()=>{closeMore(false);action()},'editor-more-item');b.setAttribute('role','menuitem');return b}
   moreButton=button('⋯ เพิ่มเติม',()=>{const opening=moreMenu.hidden;moreMenu.hidden=!opening;moreButton.setAttribute('aria-expanded',String(opening));if(opening)moreMenu.querySelector('button').focus()});
   moreButton.id='editorMoreBtn';moreButton.setAttribute('aria-haspopup','menu');moreButton.setAttribute('aria-expanded','false');moreButton.setAttribute('aria-controls','editorMoreMenu');
   moreMenu=el('div',{id:'editorMoreMenu',class:'editor-more-menu'});moreMenu.setAttribute('role','menu');moreMenu.setAttribute('aria-label','เพิ่มเติม');moreMenu.hidden=true;
-  moreMenu.append(menuAction('👁 ดูตัวอย่างข้อมูล',showPreview),menuAction('ส่งออก JSON',exportData),menuAction('นำเข้า JSON',()=>importInput.click()),menuAction('คืนค่าเกมต้นฉบับ',()=>{
+  moreMenu.append(menuAction('👁 ดูตัวอย่างข้อมูล',showPreview),menuAction('⬇ ดาวน์โหลดเกมของฉัน',downloadGame),menuAction('โหลดฉบับที่บันทึกในเบราว์เซอร์',loadSaved),menuAction('ส่งออก JSON',exportData),menuAction('นำเข้า JSON',()=>importInput.click()),menuAction('คืนค่าเกมต้นฉบับ',()=>{
     if(!confirm('คืนค่าเนื้อหาเป็นต้นฉบับ? ฉบับที่บันทึกไว้ยังคงอยู่จนกว่าจะกดบันทึกทับ'))return;
     draft=adapter.clone(original);activeId=draft.questions.find(q=>q.zone===activeZone).id;preview.hidden=true;renderMeta();renderQuestions();mark();body.scrollTop=0;
   }));
@@ -152,9 +169,9 @@
   });
   document.addEventListener('pointerdown',event=>{if(!moreMenu.hidden&&!moreMenu.contains(event.target)&&!moreButton.contains(event.target))closeMore(false)});
   const closeButton=button('×',close,'editor-close');closeButton.id='editorCloseBtn';closeButton.setAttribute('aria-label','ปิดหน้าต่างปรับแต่งเกม');
-  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • MINI CITY • รุ่น 20261016-5'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้เนื้อหา แล้วทดลองเล่นด้วยระบบเกมเดิม'})]),closeButton]);
+  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • MINI CITY • รุ่น 20261016-6'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้เนื้อหา แล้วทดลองเล่นด้วยระบบเกมเดิม'})]),closeButton]);
   const fixedHeading=el('div',{class:'editor-fixed-heading'},[heading,status]);
-  body.append(el('p',{class:'editor-note',text:'ข้อมูลเก็บเฉพาะเบราว์เซอร์นี้ หากใช้เครื่องอื่น ให้ส่งออก JSON แล้วนำเข้าในเครื่องปลายทาง'}),meta,el('div',{class:'editor-toolbar'},[el('h3',{text:'จัดการคำถามและคำตอบ'}),count,button('+ เพิ่มภารกิจ',()=>{
+  body.append(el('p',{class:'editor-note',text:'ต้นฉบับอ่านอย่างเดียว • การบันทึก/ทดลองเล่นเก็บเฉพาะเบราว์เซอร์นี้ • เริ่มจากต้นฉบับทุกครั้ง หรือโหลดฉบับส่วนตัวผ่านเมนูเพิ่มเติม'}),meta,el('div',{class:'editor-toolbar'},[el('h3',{text:'จัดการคำถามและคำตอบ'}),count,button('+ เพิ่มภารกิจ',()=>{
     const same=draft.questions.filter(q=>q.zone===activeZone);
     if(activeZone==='service'&&same.length>=6){announce('แผนที่ช่วยเมืองรองรับสูงสุด 6 จุด',true);return}
     if(draft.questions.length>=100){announce('รองรับสูงสุด 100 ภารกิจ',true);return}
@@ -169,5 +186,5 @@
   dialog.addEventListener('close',()=>{if(!dialog.open){document.body.style.overflow=pageOverflow;closeMore(false)}});
   dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)close()}});
   document.body.append(dialog);preview.hidden=true;
-  window.GameEditor={async open(game,button){if(loading||dialog.open)return;loading=true;opener=button;adapter=GameAdapters.find(game);if(!adapter){loading=false;return}try{original=await adapter.defaults();original.meta.description=game.description||original.meta.description;let warning='';try{draft=adapter.read()||adapter.clone(original)}catch(error){draft=adapter.clone(original);warning='ฉบับที่เก็บไว้อ่านไม่ได้: '+error.message+' • เปิดต้นฉบับให้แทน ข้อมูลเดิมยังไม่ถูกลบ'}dirty=false;activeZone='shopping';activeId=draft.questions.find(q=>q.zone===activeZone).id;renderMeta();renderQuestions();preview.hidden=true;announce(warning||'เริ่มจากข้อมูลเกมต้นฉบับ หรือฉบับล่าสุดที่บันทึกในเบราว์เซอร์นี้',Boolean(warning));closeMore(false);pageOverflow=document.body.style.overflow;document.body.style.overflow='hidden';dialog.showModal();body.scrollTop=0}catch(error){alert('เปิดตัวแก้ไขไม่ได้: '+error.message)}finally{loading=false}}};
+  window.GameEditor={async open(game,button){if(loading||dialog.open)return;loading=true;opener=button;adapter=GameAdapters.find(game);if(!adapter){loading=false;return}try{original=await adapter.defaults();original.meta.description=game.description||original.meta.description;draft=adapter.clone(original);dirty=false;activeZone='shopping';activeId=draft.questions.find(q=>q.zone===activeZone).id;renderMeta();renderQuestions();preview.hidden=true;announce('เริ่มจากต้นฉบับเสมอ • โหลดฉบับส่วนตัวได้จาก ⋯ เพิ่มเติม');closeMore(false);pageOverflow=document.body.style.overflow;document.body.style.overflow='hidden';dialog.showModal();body.scrollTop=0}catch(error){alert('เปิดตัวแก้ไขไม่ได้: '+error.message)}finally{loading=false}}};
 })();

@@ -15,7 +15,7 @@ const promptTitle = document.getElementById("promptTitle");
 const promptText = document.getElementById("promptText");
 const copyPromptBtn = document.getElementById("copyPromptBtn");
 const promptCloseBtn = document.getElementById("promptCloseBtn");
-const closePromptBtn = document.getElementById("closePromptBtn");
+
 const copyMessage = document.getElementById("copyMessage");
 
 let games = [];
@@ -390,68 +390,118 @@ search.addEventListener("input", render);
 
 const promptForm = document.getElementById("promptForm");
 const promptOriginal = document.getElementById("promptOriginal");
-const promptSubject = document.getElementById("promptSubject");
-const promptGrade = document.getElementById("promptGrade");
 const promptNewName = document.getElementById("promptNewName");
 const promptTopic = document.getElementById("promptTopic");
 const promptDetails = document.getElementById("promptDetails");
-let selectedPromptGame = null;
-let promptOpener = null;
-let previousOverflow = "";
-let promptSession = 0;
-let copying = false;
-
-[...new Set([...APP_CONFIG.CATEGORIES, "ศิลปะ", "การงานอาชีพ", "พลศึกษา", "ปฐมวัย"])]
-  .forEach(value => promptSubject.add(new Option(value, value)));
-["อนุบาล 1", "อนุบาล 2", "อนุบาล 3", ...Array.from({length:6}, (_,i) => "ป." + (i+1)), ...Array.from({length:6}, (_,i) => "ม." + (i+1))]
-  .forEach(value => promptGrade.add(new Option(value, value)));
+const promptCustomSubject = document.getElementById("promptCustomSubject");
+const promptAiDesign = document.getElementById("promptAiDesign");
+const promptValidation = document.getElementById("promptValidation");
+const promptSubjects = ["สังคมศึกษา", "ภาษาไทย", "คณิตศาสตร์", "วิทยาศาสตร์", "ภาษาอังกฤษ", "สุขศึกษา", "ศิลปะ", "การงานอาชีพ", "วิทยาการคำนวณ", "อื่น ๆ"];
+const promptGradeGroups = {"อนุบาล": ["อ.1", "อ.2", "อ.3"], "ประถมศึกษา": Array.from({length:6}, (_,i) => "ป."+(i+1)), "มัธยมศึกษา": Array.from({length:6}, (_,i) => "ม."+(i+1))};
+let selectedPromptGame = null, promptOpener = null, previousOverflow = "", promptSession = 0, copyingSession = null;
+let selectedPromptSubject = "", selectedPromptGrade = "", selectedPromptGroup = "ประถมศึกษา";
 
 function resetPromptOutput() {
   promptText.value = "";
   copyPromptBtn.disabled = true;
   copyPromptBtn.textContent = "📋 คัดลอก Prompt";
   copyMessage.classList.remove("show", "error");
+  promptValidation.hidden = true;
   promptSession++;
+}
+
+function renderPromptChoices(containerId, values, selected, choose) {
+  const container = document.getElementById(containerId);
+  container.replaceChildren(...values.map(value => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = value;
+    button.setAttribute("aria-pressed", String(value === selected));
+    button.addEventListener("click", () => {
+      choose(value);
+      resetPromptOutput();
+      renderPromptControls();
+      [...document.getElementById(containerId).children].find(item => item.textContent === value)?.focus({preventScroll:true});
+    });
+    return button;
+  }));
+}
+
+function renderPromptControls() {
+  renderPromptChoices("promptSubjects", promptSubjects, selectedPromptSubject, value => { selectedPromptSubject = value; });
+  const custom = selectedPromptSubject === "อื่น ๆ";
+  document.getElementById("promptCustomLabel").hidden = !custom;
+  promptCustomSubject.disabled = !custom;
+  promptCustomSubject.required = custom;
+  renderPromptChoices("promptGradeGroups", Object.keys(promptGradeGroups), selectedPromptGroup, value => {
+    if (value !== selectedPromptGroup) selectedPromptGrade = "";
+    selectedPromptGroup = value;
+  });
+  renderPromptChoices("promptGrades", promptGradeGroups[selectedPromptGroup], selectedPromptGrade, value => { selectedPromptGrade = value; });
+}
+
+function resetPromptDefaults() {
+  if (!selectedPromptGame) return;
+  promptForm.reset();
+  const category = selectedPromptGame.category || "";
+  selectedPromptSubject = promptSubjects.includes(category) ? category : "อื่น ๆ";
+  promptCustomSubject.value = selectedPromptSubject === "อื่น ๆ" && category !== "อื่น ๆ" ? category : "";
+  const rawGrade = String(selectedPromptGame.grade || selectedPromptGame.gradeLevel || "").trim();
+  selectedPromptGrade = rawGrade.replace(/^อนุบาล\s*/, "อ.").replace(/^ประถมศึกษาปีที่\s*/, "ป.").replace(/^มัธยมศึกษาปีที่\s*/, "ม.");
+  selectedPromptGroup = Object.keys(promptGradeGroups).find(group => promptGradeGroups[group].includes(selectedPromptGrade)) || "ประถมศึกษา";
+  if (!promptGradeGroups[selectedPromptGroup].includes(selectedPromptGrade)) selectedPromptGrade = "";
+  promptOriginal.value = selectedPromptGame.title || "เกม";
+  promptTitle.textContent = "📋 ปรับแต่ง Prompt: " + promptOriginal.value;
+  resetPromptOutput();
+  renderPromptControls();
+  document.getElementById("promptBody").scrollTop = 0;
 }
 
 function openPrompt(gameId) {
   const game = games.find(item => String(item.id) === String(gameId));
   if (!game || !hasPrompt(game)) { alert("เกมนี้ยังไม่มี Prompt"); return; }
   promptOpener = document.activeElement;
-  selectedPromptGame = game;
-  promptForm.reset();
-  resetPromptOutput();
-  promptTitle.textContent = "ปรับแต่ง Prompt: " + (game.title || "เกม");
-  promptOriginal.value = game.title || "เกม";
-  promptSubject.value = game.category || "";
+  // Snapshot only: form changes must never mutate the catalogue or Firestore data.
+  selectedPromptGame = {title:game.title, category:game.category, grade:game.grade, gradeLevel:game.gradeLevel, prompt:game.prompt};
+  resetPromptDefaults();
   previousOverflow = document.body.style.overflow;
   promptModal.classList.add("show");
   promptModal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
   site.inert = true;
-  promptSubject.focus({ preventScroll: true });
-  promptModal.querySelector(".prompt-modal-box").scrollTop = 0;
+  promptCloseBtn.focus({preventScroll:true});
 }
 
+document.getElementById("resetPromptBtn").addEventListener("click", resetPromptDefaults);
 promptForm.addEventListener("input", resetPromptOutput);
 promptForm.addEventListener("change", resetPromptOutput);
 promptForm.addEventListener("submit", event => {
   event.preventDefault();
-  if (!selectedPromptGame || !promptForm.reportValidity()) return;
-  const fields = [promptNewName, promptTopic, promptDetails];
-  const blank = fields.find(field => !field.value.trim());
-  if (blank) { blank.setCustomValidity("กรุณากรอกข้อมูลที่ไม่ใช่ช่องว่าง"); blank.reportValidity(); blank.setCustomValidity(""); return; }
+  if (!selectedPromptGame) return;
   resetPromptOutput();
+  const subject = selectedPromptSubject === "อื่น ๆ" ? promptCustomSubject.value.trim() : selectedPromptSubject;
+  const missing = !subject ? "กรุณาเลือกหรือระบุวิชา" : !selectedPromptGrade ? "กรุณาเลือกระดับชั้น" : !promptTopic.value.trim() ? "กรุณาระบุหัวข้อหรือหน่วยการเรียนรู้" : "";
+  if (missing) {
+    promptValidation.textContent = missing;
+    promptValidation.hidden = false;
+    const target = !subject ? promptCustomSubject : !selectedPromptGrade ? document.querySelector("#promptGrades button") : promptTopic;
+    target.focus();
+    return;
+  }
+  if (!promptForm.reportValidity()) return;
   promptText.value = [
-    "ปรับปรุงเกมต้นฉบับโดยใช้โค้ดเดิมเป็นฐาน ห้ามสร้างเกมใหม่ทดแทนหรือเปลี่ยนโครงสร้างโดยไม่จำเป็น",
-    "ชื่อเกมต้นฉบับ: " + (selectedPromptGame.title || "เกม"),
-    "ชื่อเกมใหม่: " + promptNewName.value.trim(),
-    "วิชา: " + promptSubject.value,
-    "ระดับชั้น: " + promptGrade.value,
+    "ปรับปรุงเกมโดยใช้โค้ดเกมต้นฉบับเป็นฐาน ห้ามสร้างเกมใหม่ทดแทนหรือเปลี่ยนโครงสร้างโดยไม่จำเป็น และห้ามทำให้ฟังก์ชันเดิมเสียหาย",
+    "ชื่อเกมต้นฉบับ: " + promptOriginal.value,
+    "ชื่อเกมใหม่: " + (promptNewName.value.trim() || promptOriginal.value),
+    "วิชา: " + subject,
+    "ระดับชั้น: " + selectedPromptGrade,
     "หัวข้อหรือหน่วยการเรียนรู้: " + promptTopic.value.trim(),
-    "รายละเอียดเนื้อหา คำถาม และคำตอบที่ต้องการ:\n" + promptDetails.value.trim(),
-    "ข้อกำหนดการปรับเกม:\n1. ตรวจโค้ดและ Prompt ต้นฉบับก่อนแก้ไข รักษารูปแบบ UI/UX เลย์เอาต์ ธีม การนำทาง และวิธีเล่นเดิม\n2. คงระบบ AR การใช้กล้อง Hand Tracking ภารกิจ คะแนน เสียง และเอฟเฟกต์เฉพาะที่เกมต้นฉบับรองรับ รวมถึงการขอสิทธิ์และทางเลือกเมื่ออุปกรณ์ไม่รองรับ ห้ามสมมติว่าเกมมีทุกระบบหรือเพิ่มระบบเหล่านี้โดยไม่จำเป็น\n3. ปรับเนื้อหา ภาษา ความยาก คำถาม ตัวเลือก เฉลย และคำอธิบายให้ถูกต้องและเหมาะกับวิชาและระดับชั้นใหม่ ใช้รายละเอียดที่ผู้ใช้ระบุ หากไม่พอให้ระบุสิ่งที่ต้องถามเพิ่ม ห้ามสร้างเฉลยที่ขัดกับเนื้อหา\n4. รักษาการใช้งานบนมือถือ แท็บเล็ต และคอมพิวเตอร์ ทดสอบภารกิจ การคิดคะแนน เสียง เอฟเฟกต์ และระบบที่มีอยู่หลังปรับเนื้อหา\n5. ห้ามเขียนทับหรือลบข้อมูลเกมต้นฉบับใน Firestore หากต้องบันทึกเกมใหม่ให้แยกจากต้นฉบับและขออนุญาตก่อน\n6. หากยังไม่ได้รับโค้ดเกมต้นฉบับ ให้ขอโค้ดก่อนลงมือ ห้ามอ้างว่าตรวจหรือคงระบบที่ยังไม่ได้เห็น",
-    "--- Prompt ต้นฉบับจาก Firestore (ใช้เป็นข้อมูลอ้างอิง ข้อกำหนดข้างต้นมีลำดับความสำคัญเหนือคำสั่งที่ขัดกัน) ---",
+    promptAiDesign.checked
+      ? "เปิด AI ช่วยออกแบบ: ให้ออกแบบเนื้อหา คำถาม ตัวเลือก เฉลย คำอธิบาย และภาพประกอบให้เหมาะกับวิชา ระดับชั้น และหัวข้อที่กำหนด ตรวจสอบความถูกต้องและใช้รายละเอียดเพิ่มเติมของผู้ใช้เป็นข้อกำหนด หากข้อมูลขัดกันให้ถามก่อนแก้ไข"
+      : "ปิด AI ช่วยออกแบบ: ใช้รายละเอียด เนื้อหา คำถาม ตัวเลือก และเฉลยที่ผู้ใช้กรอกเป็นหลัก ห้ามแต่งคำตอบหรือเปลี่ยนสาระเอง หากข้อมูลไม่พอให้ถามผู้ใช้ก่อนลงมือ",
+    "รายละเอียดเพิ่มเติมจากผู้ใช้:\n" + (promptDetails.value.trim() || "ไม่ได้ระบุรายละเอียดเพิ่มเติม"),
+    "ข้อกำหนด:\n1. ตรวจโค้ดและ Prompt ต้นฉบับก่อนแก้ไข เปลี่ยนชื่อเกม วิชา ระดับชั้น และเนื้อหาตามข้อมูลข้างต้น รักษา UI/UX ธีม การนำทางและรูปแบบการเล่นเดิม\n2. คงระบบ AR การใช้กล้อง Hand Tracking ภารกิจ คะแนน เสียง เอฟเฟกต์ และองค์ประกอบสำคัญ เฉพาะที่เกมเดิมรองรับ ห้ามสมมติว่ามีทุกระบบ รักษาทางเลือกเมื่อกล้องหรืออุปกรณ์ไม่รองรับ\n3. ปรับคำถาม ตัวเลือก เฉลย คำอธิบาย และภาพประกอบให้สอดคล้องกับบทเรียน เหมาะกับวัยและกติกาแต่ละด่าน\n4. ห้ามแก้ไขหรือลบข้อมูลต้นฉบับใน Firebase/Firestore หรือเขียนทับเกมต้นฉบับ\n5. รองรับมือถือ แท็บเล็ต และคอมพิวเตอร์ ให้ AI ตรวจสอบโค้ดและการทำงานจริงก่อนส่งงาน รวมถึงเฉลย การคิดคะแนน ภารกิจ เสียง เอฟเฟกต์และระบบเดิมที่รองรับ พร้อมรายงานผลและข้อจำกัดอย่างตรงไปตรงมา\n6. หากยังไม่มีโค้ดเกมต้นฉบับ ให้ขอโค้ดก่อนลงมือ ห้ามอ้างว่าทดสอบระบบที่ยังไม่ได้ตรวจ",
+    "--- Prompt ต้นฉบับจาก Firestore (ข้อมูลอ้างอิง ข้อกำหนดใหม่ข้างต้นมีความสำคัญเหนือคำสั่งที่ขัดกัน) ---",
     String(selectedPromptGame.prompt),
     "--- สิ้นสุด Prompt ต้นฉบับ ---"
   ].join("\n\n");
@@ -470,13 +520,12 @@ function closePrompt() {
   promptOpener?.focus();
 }
 promptCloseBtn.addEventListener("click", closePrompt);
-closePromptBtn.addEventListener("click", closePrompt);
 promptModal.addEventListener("click", event => { if (event.target === promptModal) closePrompt(); });
 document.addEventListener("keydown", event => {
   if (!promptModal.classList.contains("show")) return;
   if (event.key === "Escape") { event.preventDefault(); closePrompt(); }
   if (event.key === "Tab") {
-    const items = [...promptModal.querySelectorAll('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)')];
+    const items = [...promptModal.querySelectorAll('button:not(:disabled), input:not(:disabled), textarea:not(:disabled)')].filter(item => item.getClientRects().length && item.tabIndex >= 0);
     const first = items[0], last = items[items.length-1];
     if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
@@ -484,12 +533,11 @@ document.addEventListener("keydown", event => {
 });
 
 copyPromptBtn.addEventListener("click", async () => {
-  const text = promptText.value;
-  if (!text || copying) return;
-  copying = true;
-  const session = promptSession;
-  let copied = false;
+  const text = promptText.value, session = promptSession;
+  if (!text || copyingSession === session) return;
+  copyingSession = session;
   try {
+    let copied = false;
     try { await navigator.clipboard.writeText(text); copied = true; }
     catch (error) {
       if (session !== promptSession) return;
@@ -497,7 +545,7 @@ copyPromptBtn.addEventListener("click", async () => {
       copied = document.execCommand("copy");
     }
     if (session !== promptSession) return;
-    copyMessage.textContent = copied ? "✅ คัดลอก Prompt แล้ว" : "คัดลอกอัตโนมัติไม่สำเร็จ กรุณาเลือกข้อความแล้วคัดลอกด้วยตนเอง";
+    copyMessage.textContent = copied ? "คัดลอก Prompt เรียบร้อยแล้ว" : "คัดลอกอัตโนมัติไม่สำเร็จ กรุณาเลือกข้อความแล้วคัดลอกด้วยตนเอง";
     copyMessage.classList.toggle("error", !copied);
     copyMessage.classList.add("show");
     copyPromptBtn.textContent = copied ? "✅ คัดลอกแล้ว" : "📋 ลองคัดลอกอีกครั้ง";
@@ -506,5 +554,5 @@ copyPromptBtn.addEventListener("click", async () => {
       copyMessage.textContent = "คัดลอกไม่สำเร็จ กรุณาเลือกข้อความแล้วคัดลอกด้วยตนเอง";
       copyMessage.classList.add("show", "error");
     }
-  } finally { copying = false; }
+  } finally { if (copyingSession === session) copyingSession = null; }
 });

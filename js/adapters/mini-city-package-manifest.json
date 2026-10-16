@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "adapterId": "mini-city",
+  "nativeAssets": [
+    "games/AR mini city/assets/cover.png",
+    "games/AR mini city/assets/city_map.png",
+    "games/AR mini city/assets/shopping_zone.png",
+    "games/AR mini city/assets/health_zone.png",
+    "games/AR mini city/assets/education_zone.png",
+    "games/AR mini city/assets/food_zone.png",
+    "games/AR mini city/assets/service_zone.png",
+    "games/AR mini city/assets/product/product_rice.png",
+    "games/AR mini city/assets/product/product_milk.png",
+    "games/AR mini city/assets/product/product_bread.png",
+    "games/AR mini city/assets/product/product_egg.png",
+    "games/AR mini city/assets/product/product_fruit.png",
+    "games/AR mini city/assets/product/product_vegetable.png",
+    "games/AR mini city/assets/product/product_water.png",
+    "games/AR mini city/assets/product/product_juice.png",
+    "games/AR mini city/assets/product/product_pencil.png",
+    "games/AR mini city/assets/product/product_notebook.png",
+    "games/AR mini city/assets/product/product_crayons.png",
+    "games/AR mini city/assets/product/product_schoolbag.png",
+    "games/AR mini city/assets/product/product_book.png",
+    "games/AR mini city/assets/product/product_toy_car.png",
+    "games/AR mini city/assets/product/product_teddy_bear.png",
+    "games/AR mini city/assets/product/product_ball.png",
+    "games/AR mini city/assets/product/product_shirt.png",
+    "games/AR mini city/assets/product/product_shoes.png",
+    "games/AR mini city/assets/product/product_hat.png",
+    "games/AR mini city/assets/product/product_soap.png",
+    "games/AR mini city/assets/product/product_toothbrush.png",
+    "games/AR mini city/assets/product/product_shampoo.png",
+    "games/AR mini city/assets/product/product_bicycle.png",
+    "games/AR mini city/assets/product/product_phone.png",
+    "games/AR mini city/assets/service/service_ (1).png",
+    "games/AR mini city/assets/service/service_ (2).png",
+    "games/AR mini city/assets/service/service_ (3).png",
+    "games/AR mini city/assets/service/service_ (4).png",
+    "games/AR mini city/assets/service/service_ (5).png",
+    "games/AR mini city/assets/service/service_ (6).png",
+    "games/AR mini city/assets/service/service_ (7).png",
+    "games/AR mini city/assets/service/service_ (8).png",
+    "games/AR mini city/assets/service/service_ (9).png",
+    "games/AR mini city/assets/service/service_ (10).png",
+    "games/AR mini city/assets/service/service_ (11).png",
+    "games/AR mini city/assets/service/service_ (12).png",
+    "games/AR mini city/assets/mission/mission (1).png",
+    "games/AR mini city/assets/mission/mission (12).png",
+    "games/AR mini city/assets/mission/mission (6).png",
+    "games/AR mini city/assets/mission/mission (7).png",
+    "games/AR mini city/assets/mission/mission (8).png",
+    "games/AR mini city/assets/mission/mission (9).png",
+    "games/AR mini city/assets/mission/mission (11).png",
+    "games/AR mini city/assets/mission/mission (10).png",
+    "games/AR mini city/assets/mission/mission (5).png",
+    "games/AR mini city/assets/mission/mission (4).png",
+    "games/AR mini city/assets/mission/mission (2).png",
+    "games/AR mini city/assets/mission/mission (3).png",
+    "games/AR mini city/cover.png"
+  ],
+  "mediaPipe": [
+    {
+      "path": "vendor/mediapipe/hands/hand_landmark_full.tflite",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hand_landmark_full.tflite",
+      "size": 5478688
+    },
+    {
+      "path": "vendor/mediapipe/hands/hand_landmark_lite.tflite",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hand_landmark_lite.tflite",
+      "size": 2071408
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands.binarypb",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.binarypb",
+      "size": 550
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands.js",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js",
+      "size": 45581
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_packed_assets.data",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands_solution_packed_assets.data",
+      "size": 4326731
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_packed_assets_loader.js",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands_solution_packed_assets_loader.js",
+      "size": 8327
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_simd_wasm_bin.data",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands_solution_simd_wasm_bin.data",
+      "size": 0
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_simd_wasm_bin.js",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands_solution_simd_wasm_bin.js",
+      "size": 276479
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_simd_wasm_bin.wasm",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands_solution_simd_wasm_bin.wasm",
+      "size": 6026259
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_wasm_bin.js",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands_solution_wasm_bin.js",
+      "size": 276474
+    },
+    {
+      "path": "vendor/mediapipe/hands/hands_solution_wasm_bin.wasm",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands_solution_wasm_bin.wasm",
+      "size": 5917209
+    },
+    {
+      "path": "vendor/mediapipe/camera_utils.js",
+      "url": "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js"
+    },
+    {
+      "path": "vendor/mediapipe/LICENSE",
+      "url": "https://raw.githubusercontent.com/google-ai-edge/mediapipe/master/LICENSE"
+    }
+  ]
+}

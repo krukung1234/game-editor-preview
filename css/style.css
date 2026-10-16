@@ -51,16 +51,9 @@ button,input,textarea{font:inherit}.hidden{display:none!important}
 .mini-about{padding:34px;text-align:center;background:#fff;border-radius:28px;box-shadow:0 12px 30px #1e16430d}.mini-about h2{margin-top:0}.mini-about p{max-width:800px;margin:0 auto;color:#55536c;line-height:1.7}
 footer{padding:36px;text-align:center;color:#60657e;font-weight:800}
 
-.prompt-modal{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(20,17,50,.7);backdrop-filter:blur(6px)}.prompt-modal.show{display:flex}
-.prompt-modal-box{position:relative;width:min(920px,100%);max-height:90vh;overflow-y:auto;padding:30px;border:1px solid #ebe6ff;border-radius:28px;background:#fff;box-shadow:0 30px 90px rgba(24,15,70,.35)}
-.prompt-modal-heading{display:flex;align-items:flex-start;gap:14px;padding-right:45px}.prompt-icon{width:52px;height:52px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;border-radius:16px;background:#eee9ff;font-size:27px}.prompt-modal-heading h2{margin:0 0 6px;color:#28146f;font-size:26px}.prompt-modal-heading p{margin:0 0 18px;color:#686078;font-size:15px;line-height:1.65}
-.prompt-close{position:absolute;top:17px;right:18px;width:43px;height:43px;padding:0;border:0;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#463879;background:#f1eefb;font:29px/1 Arial;cursor:pointer}
-#promptText{width:100%;min-height:390px;padding:20px;resize:vertical;border:2px solid #e4dcfc;border-radius:19px;outline:none;color:#282238;background:#fbfaff;font-size:15px;line-height:1.75}
-#promptText:focus{border-color:#7257ef}.prompt-modal-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:18px}.copy-prompt-btn,.close-prompt-btn{min-height:48px;padding:11px 23px;border:0;border-radius:999px;font-weight:700;cursor:pointer}.copy-prompt-btn{color:#fff;background:linear-gradient(135deg,#7458f2,#5045ee);box-shadow:0 9px 20px rgba(80,69,238,.24)}.close-prompt-btn{color:#514873;background:#efebf8}.copy-message{display:none;margin-top:14px;padding:11px;border-radius:13px;color:#187346;background:#e8fff2;text-align:center;font-weight:700}.copy-message.show{display:block}
-
 @media(max-width:1180px){.game-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.subject-strip{overflow-x:auto;scrollbar-width:thin}.subject-tab{flex:0 0 220px}}
 @media(max-width:880px){.topbar{align-items:flex-start}.topbar nav{gap:12px;flex-wrap:wrap}.game-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.section-head{align-items:flex-start;flex-direction:column}.section-tools{width:100%}.compact-search{width:100%;max-width:none}.container{width:min(100% - 34px,1420px)}}
-@media(max-width:620px){.topbar{position:relative;padding:15px 18px;flex-direction:column}.topbar nav{width:100%;justify-content:center}.topbar nav>a:not(.admin-link){font-size:14px}.brand b{font-size:22px}.category-area{padding:0 12px}.subject-strip{border-radius:14px}.subject-tab{flex-basis:190px;padding:14px 16px}.game-grid{grid-template-columns:1fr;gap:20px}.game-card{min-height:490px}.cover{height:auto;aspect-ratio:16/9;flex-basis:auto}.section-tools{align-items:stretch;flex-direction:column}.game-count{text-align:left}.game-info h3{font-size:22px}.prompt-modal{padding:12px}.prompt-modal-box{max-height:94vh;padding:22px 16px;border-radius:21px}.prompt-modal-heading{padding-right:36px}.prompt-icon{width:44px;height:44px;font-size:22px}.prompt-modal-heading h2{font-size:20px}#promptText{min-height:340px;padding:15px}.prompt-modal-actions{flex-direction:column}.copy-prompt-btn,.close-prompt-btn{width:100%}}
+@media(max-width:620px){.topbar{position:relative;padding:15px 18px;flex-direction:column}.topbar nav{width:100%;justify-content:center}.topbar nav>a:not(.admin-link){font-size:14px}.brand b{font-size:22px}.category-area{padding:0 12px}.subject-strip{border-radius:14px}.subject-tab{flex-basis:190px;padding:14px 16px}.game-grid{grid-template-columns:1fr;gap:20px}.game-card{min-height:490px}.cover{height:auto;aspect-ratio:16/9;flex-basis:auto}.section-tools{align-items:stretch;flex-direction:column}.game-count{text-align:left}.game-info h3{font-size:22px}}
 
 
 /* Compatibility layer for cached older app.js */
@@ -79,25 +72,27 @@ footer{padding:36px;text-align:center;color:#60657e;font-weight:800}
 .game-card .meta>.tag{margin-bottom:10px}
 @media(max-width:1180px){#chips .chip{flex:0 0 210px}}
 
-/* Prompt customization: retain existing hub and modal styling. */
-.prompt-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:18px}
-.prompt-form label{display:flex;flex-direction:column;gap:7px;min-width:0;font-weight:700}
-.prompt-wide{grid-column:1/-1}
-.prompt-form input,.prompt-form select,.prompt-form textarea{width:100%;min-width:0;padding:12px;border:1px solid #dcd4ee;border-radius:12px;font:inherit;color:var(--ink);background:#fff}
-.prompt-form input[readonly]{background:#f1eefb}
-.prompt-form textarea{resize:vertical}.prompt-form :focus-visible,.prompt-modal button:focus-visible{outline:3px solid #7257ef;outline-offset:2px}
-.prompt-modal button:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
-#promptHint{color:var(--muted);font-size:14px}.copy-message.error{color:#9d2222;background:#fff0f0}
-.prompt-modal-box{max-height:calc(100dvh - 44px);overscroll-behavior:contain}
-@media(max-width:620px){.prompt-form{grid-template-columns:minmax(0,1fr)}.prompt-modal-box{max-height:calc(100dvh - 24px)}.prompt-form input,.prompt-form select,.prompt-form textarea{font-size:16px}}
-
-/* Prompt release 20261016-2 */
 .prompt-version{display:inline-block;margin-bottom:8px;padding:4px 10px;border-radius:999px;background:#eee9ff;color:#57439a;font-size:12px;font-weight:700}
-.prompt-form{padding:18px;border:1px solid #e8e1f8;border-radius:18px;background:#fcfaff}
-.prompt-form label{line-height:1.6}.prompt-form input,.prompt-form select{min-height:48px}
-.prompt-modal-box>label[for="promptText"]{display:block;margin:20px 0 8px;font-weight:700}
-.prompt-modal-heading h2{overflow-wrap:anywhere}#promptText{min-height:260px}
-@media(max-width:620px){.prompt-form{padding:14px;gap:14px}.prompt-modal-heading{gap:10px}.prompt-version{font-size:11px}.prompt-icon{display:none}}
+
+/* Prompt dialog: scoped independently of the game editor. */
+.prompt-modal{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:16px;background:#21163caa;backdrop-filter:blur(6px)}
+.prompt-modal.show{display:flex}
+.prompt-modal-box{display:flex;flex-direction:column;width:min(880px,100%);height:min(900px,calc(100dvh - 32px));min-height:0;overflow:hidden;border:1px solid #e6def8;border-radius:26px;background:#fff;box-shadow:0 24px 80px #25144655;color:var(--ink)}
+.prompt-modal-heading{display:flex;flex:none;gap:12px;align-items:flex-start;justify-content:space-between;padding:18px 24px 14px;border-bottom:1px solid #eee7fa;background:#fcfaff;min-width:0}
+.prompt-modal-heading>div{min-width:0}.prompt-modal-heading h2{margin:0;font-size:23px;line-height:1.45;overflow-wrap:anywhere}.prompt-modal-heading p{margin:5px 0 0;font-size:14px;color:var(--muted)}
+.prompt-close{flex:none;width:40px;height:40px;border:0;border-radius:50%;background:#eee7ff;color:#57439a;font-size:28px;cursor:pointer}
+.prompt-body{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:20px 24px;overflow-wrap:anywhere}
+.prompt-form{display:grid;gap:16px}.prompt-form label{display:flex;flex-direction:column;gap:6px;font-weight:700;min-width:0}.prompt-form small{font-weight:400;color:var(--muted);font-size:13px}.prompt-form input:not([type=checkbox]),.prompt-form textarea,#promptText{width:100%;min-width:0;padding:11px 13px;border:1px solid #dbd1ef;border-radius:12px;background:#fff;color:var(--ink);font:inherit;line-height:1.6}
+.prompt-form input[readonly]{background:#f3effa}.prompt-form textarea{resize:vertical}.prompt-form fieldset{min-width:0;margin:0;padding:0;border:0}.prompt-form legend{padding:0;margin-bottom:8px;font-weight:700}
+.prompt-choices{display:flex;flex-wrap:wrap;gap:8px}.prompt-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.prompt-modal button{font:inherit;cursor:pointer}.prompt-choices button,.prompt-groups button{min-height:42px;padding:8px 13px;border:1px solid #ded4f4;border-radius:12px;color:#60478b;background:#fff;font-size:14px}
+.prompt-modal button[aria-pressed=true]{background:#7351d8;color:#fff;border-color:#7351d8;box-shadow:0 3px 10px #7351d822}
+#promptCustomLabel{margin-top:10px}.prompt-form [hidden]{display:none!important}.prompt-form .prompt-ai{display:flex;flex-direction:row;align-items:center;padding:12px;border:1px solid #e4d9fb;border-radius:14px;background:#f8f4ff;gap:10px}.prompt-ai input{appearance:none;position:relative;width:40px;height:24px;margin:0;flex:none;border:1px solid #b6a8ce;border-radius:999px;background:#d6cde4;cursor:pointer}.prompt-ai input::before{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:white;box-shadow:0 1px 3px #38225333;transition:transform .15s}.prompt-ai input:checked{background:#7351d8;border-color:#7351d8}.prompt-ai input:checked::before{transform:translateX(16px)}.prompt-ai small{display:block;margin-top:3px}
+#promptHint{font-size:13px;color:var(--muted);margin:16px 0}.prompt-result-label{display:block;font-weight:700;margin-bottom:8px}#promptText{height:180px;min-height:180px;max-height:180px;resize:none;overflow:auto;background:#fcfaff;font-size:14px}
+.prompt-modal-actions{flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px 24px;border-top:1px solid #e8dff6;background:#fff;margin:0;text-align:center}
+.prompt-modal-actions button{min-width:0;min-height:46px;padding:9px 6px;border:1px solid #ddd1f2;border-radius:12px;background:#faf7ff;color:#60418d;font-weight:700;font-size:14px}.prompt-modal-actions .prompt-primary{background:#7351d8;color:white;border-color:#7351d8}.prompt-modal button:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+.prompt-modal :focus-visible{outline:3px solid #9270ee;outline-offset:2px}.copy-message{display:none;grid-column:1/-1;color:#187346;font-size:13px;font-weight:400}.copy-message.show{display:block}.copy-message.error,#promptValidation{color:#a92a39}#promptValidation{margin:0;font-size:14px}
+@media(max-width:620px){.prompt-modal{padding:8px}.prompt-modal-box{height:calc(100dvh - 16px);border-radius:19px}.prompt-modal-heading{padding:13px 14px 10px}.prompt-modal-heading h2{font-size:18px}.prompt-modal-heading p{font-size:12px}.prompt-body{padding:16px 14px}.prompt-modal-actions{padding:10px;gap:6px}.prompt-modal-actions button{font-size:12px;padding:8px 3px}.prompt-groups{gap:5px}.prompt-groups button{padding:8px 3px;font-size:13px}.prompt-form input:not([type=checkbox]),.prompt-form textarea{font-size:16px}}
 
 /* Mini City editor: isolated from Prompt and game styles. */
 .edit-game-button{min-width:0;min-height:44px;padding:9px 6px;border:0;border-radius:999px;background:linear-gradient(135deg,#4689ff,#2862ed);color:#fff;font:700 13px 'Sarabun',sans-serif;cursor:pointer;white-space:nowrap}

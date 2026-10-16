@@ -72,10 +72,10 @@
   const entry={id:'mini-city',zones,key,runKey,validate,matches:normalizeLocation,
     resolveImage:value=>value?new URL(image(value),root).href:'',
     fallbackImage:new URL('images/editor-image-placeholder.svg',root).href,
-    async defaults(){const r=await fetch(new URL('js/adapters/mini-city-defaults.json?v=editor-2',root));if(!r.ok)throw Error('โหลดข้อมูลต้นฉบับไม่สำเร็จ');return validate(await r.json())},
+    async defaults(){const r=await fetch(new URL('js/adapters/mini-city-defaults.json?v=personal-1',root),{cache:'no-store',credentials:'omit'});if(!r.ok)throw Error('โหลดข้อมูลต้นฉบับไม่สำเร็จ');return validate(await r.json())},
     read(){const value=localStorage.getItem(key);return value?validate(JSON.parse(value)):null},
     save(value){const data=validate(value);try{localStorage.setItem(key,JSON.stringify(data))}catch{fail('บันทึกไม่ได้ พื้นที่เบราว์เซอร์เต็มหรือไม่อนุญาต กรุณาส่งออก JSON')}return data},
-    launch(value){const data=validate(value);try{localStorage.setItem(runKey,JSON.stringify(data))}catch{fail('เตรียมเกมไม่ได้ พื้นที่เบราว์เซอร์เต็ม กรุณาลดรูปภาพ')}return new URL('games/AR mini city/index.html?editor=mini-city',root).href},
+    launch(value){const data=validate(value),id=crypto.randomUUID();try{sessionStorage.setItem(runKey,JSON.stringify({id,data}))}catch{fail('เตรียมเกมไม่ได้ พื้นที่ของแท็บเต็ม กรุณาส่งออก JSON หรือลดรูปภาพ')}const url=new URL('personal-game-player.html',root);url.searchParams.set('editor','mini-city');url.searchParams.set('draft',id);return url.href},
     clone,image
   };
   const registry=new Map([['mini-city',entry]]);

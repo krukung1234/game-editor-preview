@@ -1,0 +1,34 @@
+{
+  "result": "PASS",
+  "browser": "Chrome headless",
+  "viewports": [
+    "1440x1000",
+    "768x1024",
+    "375x812",
+    "320x568",
+    "844x390"
+  ],
+  "jsErrors": [],
+  "externalWrites": [],
+  "fileChooserEvents": [
+    "ภาพหน้าปกเกม",
+    "editorImport",
+    "ภาพประกอบคำถาม",
+    "ภาพตัวเลือก 1"
+  ],
+  "tests": [
+    "15 grade changes plus real select keyboard interaction: zero file chooser events",
+    "grade change only modifies grade and preserves questions/options/images",
+    "image caption and image clicks do not open chooser",
+    "explicit choose image button and JSON import open chooser",
+    "question and option edits persist after repeated saves",
+    "three main buttons and six secondary menu actions",
+    "stationary heading/footer; inner content only scrolls; no horizontal overflow",
+    "menu keyboard navigation, Escape and outside dismissal",
+    "native assets paths, image decode, empty and failed-image fallback",
+    "delete confirmation cancel/accept",
+    "add mission per native zone and six-point service limit",
+    "export/import, save, restore defaults, close/reopen"
+  ],
+  "limitation": "Firebase mocked; browser viewports emulated; real OS chooser represented by browser filechooser events"
+}

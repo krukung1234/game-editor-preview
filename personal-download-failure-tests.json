@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "inaccessibleImageStopsZip": true,
+  "noPartialDownload": true,
+  "draftPreserved": true,
+  "previewUsesFreshRuntime": true,
+  "staleRuntimeRequests": 0,
+  "jsErrors": []
+}

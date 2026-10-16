@@ -1,0 +1,32 @@
+{
+  "result": "PASS",
+  "sourceCommit": "fa3780d",
+  "twoIndependentBrowserContexts": true,
+  "freshOriginalOnEveryOpen": true,
+  "sharedWriteRequests": [],
+  "offlineExternalRequests": [],
+  "jsErrors": [],
+  "zipFiles": 80,
+  "zipMB": 103.4,
+  "nativeInlineScriptUnchanged": true,
+  "realMediaPipeInferenceWithFakeCamera": true,
+  "offlineLocalhostAllFiveZones": true,
+  "fileSchemeClickPlay": true,
+  "tests": [
+    "A saves, B sees original; B saves without changing A",
+    "each reopen starts original; saved variants load only explicitly",
+    "session-scoped preview URL does not reveal data to browser B",
+    "real download ZIP CRC, SHA256 and original native script preservation",
+    "all images, customized content, local MediaPipe SDK/models/WASM included",
+    "downloaded game all five native zones, correct/wrong answers and scores",
+    "real SDK inference on fake camera with all external network blocked",
+    "file:// start and answer with embedded personal snapshot",
+    "no Firebase, repository or third-party write calls"
+  ],
+  "limitations": [
+    "camera permission and browser/WebGL/WASM support required",
+    "file:// can block AR model loading; use localhost/HTTPS",
+    "physical hand/camera and OS-specific speech voices not verified",
+    "central Firestore server-side access rules not modified or audited"
+  ]
+}

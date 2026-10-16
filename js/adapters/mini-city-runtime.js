@@ -16,10 +16,20 @@
   }
   window.MiniCityAdapter={attach(api){
     adapter.nativeDefaults=fromNative(api);
-    if(new URLSearchParams(location.search).get('editor')!=='mini-city')return;
+    const packaged=window.MiniCityPersonalGame;
+    const query=new URLSearchParams(location.search);
+    if(!packaged&&query.get('editor')!=='mini-city')return;
     let data;
-    try{const raw=localStorage.getItem(adapter.runKey);if(!raw)throw Error('ไม่พบข้อมูลทดลองเล่นในเบราว์เซอร์นี้ กรุณาเปิดจากหน้าปรับแต่งเกม');data=adapter.validate(JSON.parse(raw))}
+    try{
+      if(packaged)data=adapter.validate(packaged.data);
+      else if(query.has('draft')){const raw=sessionStorage.getItem(adapter.runKey),snapshot=raw?JSON.parse(raw):null;if(!snapshot||snapshot.id!==query.get('draft'))throw Error('ไม่พบฉบับทดลองเล่นในแท็บนี้ กรุณากลับไปเปิดจากตัวแก้ไขเกม');data=adapter.validate(snapshot.data)}
+      else{const raw=localStorage.getItem(adapter.runKey);if(!raw)throw Error('ไม่พบข้อมูลทดลองเล่นในเบราว์เซอร์นี้ กรุณาเปิดจากหน้าปรับแต่งเกม');data=adapter.validate(JSON.parse(raw))}
+    }
     catch(error){api.showError(error.message);return}
+    if(packaged&&window.Hands){
+      const NativeHands=window.Hands;
+      window.Hands=class extends NativeHands{constructor(options){super({...options,locateFile:file=>new URL('../../vendor/mediapipe/hands/'+file,document.baseURI).href})}};
+    }
     const zoneQuestions=z=>data.questions.filter(q=>q.zone===z);
     const names=new Map(),assets=new Map();
     const token=(q,i)=>'MCX_'+q.id+'_'+i+'_X';
@@ -54,10 +64,10 @@
       setFeedback(text){original.setFeedback(translate(text))},
       showAnswerFeedback(options){const answer=api.getRound().zone==='shopping'?current().title+': '+current().options.find(o=>o.correct).label:translate(options.correctText);original.showAnswerFeedback({...options,correctText:answer});document.getElementById('sideScore').textContent=api.getRound().score+' คะแนน';if(options.correct)document.getElementById('answerTitle').textContent=data.meta.praise},
       help(){original.help();const p=document.createElement('p');p.textContent=data.meta.instructions;document.getElementById('modalBox').prepend(p)},
-      saveState(){try{localStorage.setItem(adapter.runKey+'.progress',JSON.stringify(api.getState()))}catch{}}
+      saveState(){try{if(packaged)localStorage.setItem('mini-city-personal.'+packaged.id+'.progress',JSON.stringify(api.getState()));else sessionStorage.setItem(adapter.runKey+'.progress',JSON.stringify(api.getState()))}catch{}}
     });
     api.setState({stars:0,completed:[],unlocked:1});
-    const responsive=document.createElement('link');responsive.rel='stylesheet';responsive.href=new URL('../../css/mini-city-editor-play.css?v=editor-2',location.href).href;document.head.append(responsive);
+    const responsive=document.createElement('link');responsive.rel='stylesheet';responsive.href=new URL('../../css/mini-city-editor-play.css?v=editor-2',document.baseURI).href;document.head.append(responsive);
     document.title=data.meta.title;
     const cover=document.querySelector('#coverScreen .bg');if(cover){if(data.meta.cover)cover.src=adapter.resolveImage(data.meta.cover);else{cover.removeAttribute('src');cover.hidden=true}}
     const badge=document.createElement('div');badge.className='editor-game-title';badge.textContent=data.meta.title+' • '+data.meta.subject+' '+data.meta.grade+' • '+data.meta.topic;document.querySelector('#coverScreen').append(badge);
@@ -65,7 +75,7 @@
     if(data.meta.description){const description=document.createElement('small');description.style.cssText='display:block;margin-top:6px;font-size:13px;line-height:1.5';description.textContent=data.meta.description;badge.append(description)}
     // The native button already holds the original help callback; append after it renders.
     document.getElementById('helpBtn').addEventListener('click',()=>{const p=document.createElement('p');p.textContent=data.meta.instructions;document.getElementById('modalBox').prepend(p)});
-    const back=document.createElement('a');back.href='../../index.html';back.className='editor-return';back.textContent='← กลับหน้าหลัก / ปรับแต่ง';document.body.append(back);
+    const back=document.createElement('a');back.href='../../index.html';back.className='editor-return';back.textContent=packaged?'← หน้าหลักเกมของฉัน':'← กลับหน้าหลัก / ปรับแต่ง';document.body.append(back);
     const style=document.createElement('style');style.textContent='.editor-game-title{position:absolute;top:3%;left:10%;right:10%;z-index:15;padding:10px;border-radius:16px;text-align:center;background:#fffef5ed;color:#164f7a;font-weight:bold}.editor-question-image{max-width:28%;max-height:90px;object-fit:contain;flex-shrink:0}.mission-popup .editor-question-image{max-width:80%;max-height:80px}';document.head.append(style);
     const feedback=document.getElementById('feedback');feedback.style.setProperty('--editor-praise',JSON.stringify(data.meta.praise));style.textContent+='body .feedback::after{content:var(--editor-praise)}.editor-return{position:fixed;bottom:6px;right:8px;z-index:95;background:#fff;color:#164f7a;padding:6px 12px;border-radius:16px;font-size:12px;text-decoration:none}';
     api.renderMap();
