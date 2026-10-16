@@ -13,6 +13,7 @@
   }
   function image(value) {
     if (typeof value !== 'string' || value.length>1100000) fail('รูปภาพใหญ่เกินกำหนด');
+    if(value.startsWith('assets/'))return image('games/AR mini city/'+value);
     if (!value || /^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(value)) return value;
     if (value.startsWith('games/AR mini city/assets/') || value==='games/AR mini city/cover.png') {
       if (value.includes('..') || /[<>"'\\?#]/.test(value)) fail('เส้นทางรูปภาพไม่ถูกต้อง');
@@ -69,7 +70,8 @@
     return false;
   }
   const entry={id:'mini-city',zones,key,runKey,validate,matches:normalizeLocation,
-    resolveImage:value=>value?new URL(value,root).href:'',
+    resolveImage:value=>value?new URL(image(value),root).href:'',
+    fallbackImage:new URL('images/editor-image-placeholder.svg',root).href,
     async defaults(){const r=await fetch(new URL('js/adapters/mini-city-defaults.json?v=editor-2',root));if(!r.ok)throw Error('โหลดข้อมูลต้นฉบับไม่สำเร็จ');return validate(await r.json())},
     read(){const value=localStorage.getItem(key);return value?validate(JSON.parse(value)):null},
     save(value){const data=validate(value);try{localStorage.setItem(key,JSON.stringify(data))}catch{fail('บันทึกไม่ได้ พื้นที่เบราว์เซอร์เต็มหรือไม่อนุญาต กรุณาส่งออก JSON')}return data},

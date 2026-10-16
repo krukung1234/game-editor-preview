@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150">
+  <rect width="200" height="150" rx="16" fill="#f1edfa"/>
+  <rect x="56" y="25" width="88" height="64" rx="9" fill="#fff" stroke="#b4a4d5" stroke-width="3"/>
+  <circle cx="79" cy="44" r="8" fill="#d4c6ee"/>
+  <path d="M61 83l25-24 17 16 14-14 22 22" fill="none" stroke="#ac98ce" stroke-width="5" stroke-linejoin="round"/>
+  <text x="100" y="122" text-anchor="middle" font-family="Tahoma, sans-serif" font-size="14" fill="#75618e">ภาพสำรอง</text>
+</svg>
