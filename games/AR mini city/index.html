@@ -159,6 +159,8 @@ button{font:inherit;cursor:pointer}.app{width:100%;height:100%;display:grid;plac
   <div class="camera-layer" id="cameraLayer"><video id="cameraVideo" playsinline muted></video><div class="hand-cursor" id="handCursor"></div></div>
   <div class="modal" id="modal"><div class="modal-box" id="modalBox"></div></div>
 </main></div>
+<script src="../../js/game-adapters.js?v=editor-1"></script>
+<script src="../../js/adapters/mini-city-runtime.js?v=editor-1"></script>
 <script>
 (()=>{
 'use strict';
@@ -225,7 +227,7 @@ function resetDwell(){if(dwell.el){const b=dwell.el.querySelector('.dwell');if(b
 function toggleSound(){soundOn=!soundOn;document.querySelectorAll('#soundBtn,#soundBtn2,#soundBtn3').forEach(b=>b.textContent=soundOn?'🔊':'🔇')}
 
 /* V8 GAMEPLAY OVERRIDE — the original camera, dwell targeting, assets, and map stay intact. */
-const productByName=name=>products.find(item=>item[0]===name);
+let productByName=name=>products.find(item=>item[0]===name);
 const serviceByLabel=name=>services.find(item=>item[0]===name);
 const missionByAnswer=name=>missions.find(item=>item.answer===name);
 const pricedProduct=(name,price)=>({name,img:productByName(name)[1],price});
@@ -327,6 +329,14 @@ function selectOption(kind,value,element){if(kind==='education')return selectEdu
 function confirmResetAll(){showModal('<h2>ล้างทุกด่าน?</h2><p>คะแนนรวม ดาว และสถานะด่านทั้งหมดจะถูกล้าง<br>เพื่อเริ่มเล่นกับเด็กคนใหม่</p><button class="mini-btn red" id="yesResetAll">ล้างทุกด่าน</button> <button class="mini-btn alt" id="noResetAll">ยกเลิก</button>');setTimeout(()=>{document.getElementById('yesResetAll').addEventListener('click',()=>{state={stars:0,completed:[],unlocked:1};saveState();stopAR();hideModal();show('map')});document.getElementById('noResetAll').addEventListener('click',hideModal)},0)}
 document.getElementById('resetBtnPlay').addEventListener('click',confirmResetAll);
 document.getElementById('startBtn').addEventListener('click',()=>show('map'));document.getElementById('helpBtn').addEventListener('click',help);document.querySelectorAll('#soundBtn,#soundBtn2,#soundBtn3').forEach(b=>b.addEventListener('click',toggleSound));document.getElementById('backMap').addEventListener('click',()=>show('map'));document.querySelectorAll('#arBtnMap,#arBtnPlay').forEach(b=>b.addEventListener('click',toggleAR));document.getElementById('resetBtn').addEventListener('click',()=>{showModal('<h2>เริ่มเกมใหม่?</h2><p>ดาวและด่านที่ปลดล็อกทั้งหมดจะถูกล้าง</p><button class="mini-btn red" id="yesReset">ล้างข้อมูล</button> <button class="mini-btn alt" id="noReset">ยกเลิก</button>');setTimeout(()=>{document.getElementById('yesReset').addEventListener('click',()=>{state={stars:0,completed:[],unlocked:1};saveState();hideModal();renderMap()});document.getElementById('noReset').addEventListener('click',hideModal)},0)});
+
+// Explicit adapter boundary: no HTML text substitution at play time.
+window.MiniCityAdapter?.attach({
+  data:gameData,healthChoices,zoneDefs,productByName,getRound:()=>round,getState:()=>state,setState:value=>{state=value},renderMap,
+  functions:{prepareZone,renderCommerce,renderHealth,renderEducation,renderFood,renderServiceMission,setFeedback,showAnswerFeedback,help,productByName},
+  install(f){prepareZone=f.prepareZone;renderCommerce=f.renderCommerce;renderHealth=f.renderHealth;renderEducation=f.renderEducation;renderFood=f.renderFood;renderServiceMission=f.renderServiceMission;setFeedback=f.setFeedback;showAnswerFeedback=f.showAnswerFeedback;help=f.help;saveState=f.saveState;productByName=f.productByName},
+  showError(message){const box=document.createElement('div');box.style.cssText='position:fixed;inset:0;background:white;color:#123;padding:30px;z-index:10000';const p=document.createElement('p');p.textContent=message;const a=document.createElement('a');a.href='../../index.html';a.textContent='กลับหน้าหลักเพื่อปรับแต่งเกม';box.append(p,a);document.body.append(box)}
+});
 renderMap();
 })();
 </script>

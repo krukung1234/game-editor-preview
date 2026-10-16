@@ -307,6 +307,11 @@ function render() {
         ? "#"
         : `game-player.html?url=${encodeURIComponent(url)}&title=${encodeURIComponent(game.title || "เกม")}`;
 
+      const editorAdapter = window.GameAdapters?.find(game);
+      const editorButton = editorAdapter
+        ? `<button type="button" class="edit-game-button" data-edit-game-id="${safeText(game.id)}">⚙️ ปรับแต่งเกม</button>`
+        : `<span class="editor-unsupported">⚙️ ยังไม่รองรับการปรับแต่ง</span>`;
+
       const promptButton = hasPrompt(game)
         ? `
           <button
@@ -344,6 +349,7 @@ function render() {
             <div class="card-bottom">
               <div class="game-buttons ${promptButton ? "" : "single"}">
                 ${promptButton}
+                ${editorButton}
                 <a
                   class="play ${soon ? "soon" : ""}"
                   href="${safeText(playHref)}"
@@ -358,6 +364,13 @@ function render() {
       `;
     })
     .join("");
+
+  document.querySelectorAll(".edit-game-button").forEach(button => {
+    button.addEventListener("click", () => {
+      const game = games.find(item => String(item.id) === button.dataset.editGameId);
+      if (game) window.GameEditor.open(game, button);
+    });
+  });
 
   document.querySelectorAll(".prompt-button")
     .forEach(button => {

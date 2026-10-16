@@ -1,0 +1,721 @@
+{
+  "schemaVersion": 1,
+  "adapterId": "mini-city",
+  "meta": {
+    "title": "AR Mini City สินค้าและบริการ",
+    "subject": "สังคมศึกษา",
+    "grade": "ป.1",
+    "topic": "สินค้าและบริการ",
+    "instructions": "คลิกหรือแตะตัวเลือก หรือเปิดกล้องแล้วชี้นิ้วค้างที่ปุ่ม 3 วินาที",
+    "praise": "เก่งมาก! ไปต่อกันเลย",
+    "cover": "games/AR mini city/cover.png"
+  },
+  "questions": [
+    {
+      "id": "shopping-0",
+      "zone": "shopping",
+      "title": "ข้าวสาร",
+      "image": "games/AR mini city/assets/product/product_rice.png",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "สินค้า",
+          "image": "",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "บริการ",
+          "image": "",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "shopping-1",
+      "zone": "shopping",
+      "title": "นม",
+      "image": "games/AR mini city/assets/product/product_milk.png",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "สินค้า",
+          "image": "",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "บริการ",
+          "image": "",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "shopping-2",
+      "zone": "shopping",
+      "title": "ดินสอ",
+      "image": "games/AR mini city/assets/product/product_pencil.png",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "สินค้า",
+          "image": "",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "บริการ",
+          "image": "",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "shopping-3",
+      "zone": "shopping",
+      "title": "ตรวจฟัน",
+      "image": "games/AR mini city/assets/service/service_%20(2).png",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "สินค้า",
+          "image": "",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "บริการ",
+          "image": "",
+          "correct": true,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "shopping-4",
+      "zone": "shopping",
+      "title": "ส่งพัสดุ",
+      "image": "games/AR mini city/assets/service/service_%20(6).png",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "สินค้า",
+          "image": "",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "บริการ",
+          "image": "",
+          "correct": true,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "shopping-5",
+      "zone": "shopping",
+      "title": "ซ่อมจักรยาน",
+      "image": "games/AR mini city/assets/service/service_%20(4).png",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "สินค้า",
+          "image": "",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "บริการ",
+          "image": "",
+          "correct": true,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "health-0",
+      "zone": "health",
+      "title": "ปวดฟัน ควรทำอย่างไร?",
+      "image": "",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "ไปพบทันตแพทย์",
+          "image": "games/AR mini city/assets/service/service_%20(2).png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "สระผม",
+          "image": "games/AR mini city/assets/product/product_shampoo.png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "แปรงฟัน",
+          "image": "games/AR mini city/assets/product/product_toothbrush.png",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "health-1",
+      "zone": "health",
+      "title": "รู้สึกไม่สบาย ควรไปที่ไหน?",
+      "image": "",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "ไปหาหมอ",
+          "image": "games/AR mini city/assets/service/service_%20(3).png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "ไปพบทันตแพทย์",
+          "image": "games/AR mini city/assets/service/service_%20(2).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "สระผม",
+          "image": "games/AR mini city/assets/product/product_shampoo.png",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "health-2",
+      "zone": "health",
+      "title": "อยากให้ฟันสะอาด ควรทำอย่างไร?",
+      "image": "",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "แปรงฟัน",
+          "image": "games/AR mini city/assets/product/product_toothbrush.png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "ไปหาหมอ",
+          "image": "games/AR mini city/assets/service/service_%20(3).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ล้างมือด้วยสบู่",
+          "image": "games/AR mini city/assets/product/product_soap.png",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "health-3",
+      "zone": "health",
+      "title": "มือสกปรกก่อนกินอาหาร ควรทำอย่างไร?",
+      "image": "",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "ล้างมือด้วยสบู่",
+          "image": "games/AR mini city/assets/product/product_soap.png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "สระผม",
+          "image": "games/AR mini city/assets/product/product_shampoo.png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ไปพบทันตแพทย์",
+          "image": "games/AR mini city/assets/service/service_%20(2).png",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "health-4",
+      "zone": "health",
+      "title": "มีไข้และเจ็บคอ ควรขอความช่วยเหลือจากใคร?",
+      "image": "",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "ไปหาหมอ",
+          "image": "games/AR mini city/assets/service/service_%20(3).png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "แปรงฟัน",
+          "image": "games/AR mini city/assets/product/product_toothbrush.png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ล้างมือด้วยสบู่",
+          "image": "games/AR mini city/assets/product/product_soap.png",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "education-0",
+      "zone": "education",
+      "title": "วันนี้เรียนศิลปะ",
+      "image": "",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "สีเทียน",
+          "image": "games/AR mini city/assets/product/product_crayons.png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "ดินสอ",
+          "image": "games/AR mini city/assets/product/product_pencil.png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "สมุด",
+          "image": "games/AR mini city/assets/product/product_notebook.png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "ลูกบอล",
+          "image": "games/AR mini city/assets/product/product_ball.png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "โทรศัพท์มือถือ",
+          "image": "games/AR mini city/assets/product/product_phone.png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "รถของเล่น",
+          "image": "games/AR mini city/assets/product/product_toy_car.png",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "education-1",
+      "zone": "education",
+      "title": "วันนี้เรียนคณิตศาสตร์",
+      "image": "",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "ดินสอ",
+          "image": "games/AR mini city/assets/product/product_pencil.png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "สมุด",
+          "image": "games/AR mini city/assets/product/product_notebook.png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "หนังสือ",
+          "image": "games/AR mini city/assets/product/product_book.png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "ลูกบอล",
+          "image": "games/AR mini city/assets/product/product_ball.png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ตุ๊กตาหมี",
+          "image": "games/AR mini city/assets/product/product_teddy_bear.png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "โทรศัพท์มือถือ",
+          "image": "games/AR mini city/assets/product/product_phone.png",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "education-2",
+      "zone": "education",
+      "title": "วันนี้ต้องไปห้องสมุด",
+      "image": "games/AR mini city/assets/mission/mission%20(2).png",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "หนังสือ",
+          "image": "games/AR mini city/assets/product/product_book.png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "สมุด",
+          "image": "games/AR mini city/assets/product/product_notebook.png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "กระเป๋านักเรียน",
+          "image": "games/AR mini city/assets/product/product_schoolbag.png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "น้ำผลไม้",
+          "image": "games/AR mini city/assets/product/product_juice.png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "รถของเล่น",
+          "image": "games/AR mini city/assets/product/product_toy_car.png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ลูกบอล",
+          "image": "games/AR mini city/assets/product/product_ball.png",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "food-0",
+      "zone": "food",
+      "title": "ซื้อของสำหรับอาหารเช้า",
+      "image": "",
+      "hint": "เลือกของตามรายการให้ครบ 3 อย่าง",
+      "mode": "list",
+      "budget": 0,
+      "options": [
+        {
+          "label": "นม",
+          "image": "games/AR mini city/assets/product/product_milk.png",
+          "correct": true,
+          "price": 10
+        },
+        {
+          "label": "ไข่ไก่",
+          "image": "games/AR mini city/assets/product/product_egg.png",
+          "correct": true,
+          "price": 12
+        },
+        {
+          "label": "ขนมปัง",
+          "image": "games/AR mini city/assets/product/product_bread.png",
+          "correct": true,
+          "price": 15
+        },
+        {
+          "label": "น้ำผลไม้",
+          "image": "games/AR mini city/assets/product/product_juice.png",
+          "correct": false,
+          "price": 20
+        },
+        {
+          "label": "ผัก",
+          "image": "games/AR mini city/assets/product/product_vegetable.png",
+          "correct": false,
+          "price": 15
+        },
+        {
+          "label": "ข้าวสาร",
+          "image": "games/AR mini city/assets/product/product_rice.png",
+          "correct": false,
+          "price": 25
+        }
+      ]
+    },
+    {
+      "id": "food-1",
+      "zone": "food",
+      "title": "มีเงิน 40 บาท",
+      "image": "",
+      "hint": "เลือกของ 3 อย่าง โดยห้ามเกินงบ",
+      "mode": "budget",
+      "budget": 40,
+      "options": [
+        {
+          "label": "นม",
+          "image": "games/AR mini city/assets/product/product_milk.png",
+          "correct": false,
+          "price": 10
+        },
+        {
+          "label": "ไข่ไก่",
+          "image": "games/AR mini city/assets/product/product_egg.png",
+          "correct": false,
+          "price": 12
+        },
+        {
+          "label": "ขนมปัง",
+          "image": "games/AR mini city/assets/product/product_bread.png",
+          "correct": false,
+          "price": 15
+        },
+        {
+          "label": "น้ำผลไม้",
+          "image": "games/AR mini city/assets/product/product_juice.png",
+          "correct": false,
+          "price": 20
+        },
+        {
+          "label": "ผัก",
+          "image": "games/AR mini city/assets/product/product_vegetable.png",
+          "correct": false,
+          "price": 15
+        },
+        {
+          "label": "ข้าวสาร",
+          "image": "games/AR mini city/assets/product/product_rice.png",
+          "correct": false,
+          "price": 25
+        }
+      ]
+    },
+    {
+      "id": "food-2",
+      "zone": "food",
+      "title": "มีเงิน 40 บาท",
+      "image": "",
+      "hint": "เลือกของ 3 อย่าง ให้เหลือเงินน้อยที่สุด",
+      "mode": "plan",
+      "budget": 40,
+      "options": [
+        {
+          "label": "นม",
+          "image": "games/AR mini city/assets/product/product_milk.png",
+          "correct": false,
+          "price": 10
+        },
+        {
+          "label": "ไข่ไก่",
+          "image": "games/AR mini city/assets/product/product_egg.png",
+          "correct": false,
+          "price": 12
+        },
+        {
+          "label": "ขนมปัง",
+          "image": "games/AR mini city/assets/product/product_bread.png",
+          "correct": false,
+          "price": 15
+        },
+        {
+          "label": "น้ำผลไม้",
+          "image": "games/AR mini city/assets/product/product_juice.png",
+          "correct": false,
+          "price": 20
+        },
+        {
+          "label": "ผัก",
+          "image": "games/AR mini city/assets/product/product_vegetable.png",
+          "correct": false,
+          "price": 15
+        },
+        {
+          "label": "ข้าวสาร",
+          "image": "games/AR mini city/assets/product/product_rice.png",
+          "correct": false,
+          "price": 25
+        }
+      ]
+    },
+    {
+      "id": "service-0",
+      "zone": "service",
+      "title": "รถเสียระหว่างเดินทาง\nควรขอความช่วยเหลือจากใคร?",
+      "image": "",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "ช่างซ่อมรถ",
+          "image": "games/AR mini city/assets/service/service_%20(5).png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "ไปรษณีย์",
+          "image": "games/AR mini city/assets/service/service_%20(6).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ปั๊มน้ำมัน",
+          "image": "games/AR mini city/assets/service/service_%20(11).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ธนาคาร",
+          "image": "games/AR mini city/assets/service/service_%20(7).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ครู",
+          "image": "games/AR mini city/assets/service/service_%20(9).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "แพทย์",
+          "image": "games/AR mini city/assets/service/service_%20(3).png",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "service-1",
+      "zone": "service",
+      "title": "มีกล่องพัสดุ\nต้องการส่งให้เพื่อน ควรไปที่ใด?",
+      "image": "",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "ช่างซ่อมรถ",
+          "image": "games/AR mini city/assets/service/service_%20(5).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ไปรษณีย์",
+          "image": "games/AR mini city/assets/service/service_%20(6).png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "ปั๊มน้ำมัน",
+          "image": "games/AR mini city/assets/service/service_%20(11).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ธนาคาร",
+          "image": "games/AR mini city/assets/service/service_%20(7).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ครู",
+          "image": "games/AR mini city/assets/service/service_%20(9).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "แพทย์",
+          "image": "games/AR mini city/assets/service/service_%20(3).png",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    },
+    {
+      "id": "service-2",
+      "zone": "service",
+      "title": "ไฟเตือนน้ำมันขึ้น\nควรใช้บริการใด?",
+      "image": "",
+      "hint": "",
+      "mode": "single",
+      "budget": 0,
+      "options": [
+        {
+          "label": "ช่างซ่อมรถ",
+          "image": "games/AR mini city/assets/service/service_%20(5).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ไปรษณีย์",
+          "image": "games/AR mini city/assets/service/service_%20(6).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ปั๊มน้ำมัน",
+          "image": "games/AR mini city/assets/service/service_%20(11).png",
+          "correct": true,
+          "price": 0
+        },
+        {
+          "label": "ธนาคาร",
+          "image": "games/AR mini city/assets/service/service_%20(7).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "ครู",
+          "image": "games/AR mini city/assets/service/service_%20(9).png",
+          "correct": false,
+          "price": 0
+        },
+        {
+          "label": "แพทย์",
+          "image": "games/AR mini city/assets/service/service_%20(3).png",
+          "correct": false,
+          "price": 0
+        }
+      ]
+    }
+  ]
+}

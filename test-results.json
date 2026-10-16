@@ -1,0 +1,31 @@
+{
+  "result": "PASS",
+  "browser": "Chrome headless",
+  "viewports": [
+    "375x812",
+    "768x1024",
+    "1440x1000"
+  ],
+  "jsErrors": [],
+  "externalWrites": [],
+  "tests": [
+    "31 cards; one supported adapter and 30 unsupported labels",
+    "VIP login and editor integration",
+    "question add/edit/delete/reorder and option correctness",
+    "cover/question image upload",
+    "safe text labels containing HTML symbols",
+    "JSON export/import roundtrip and invalid import atomicity",
+    "local storage persistence and restore defaults",
+    "all five native games with edited data",
+    "shopping 1/2; health 1/2; education 2/3; food 4/9; service 1/2",
+    "native correct/wrong feedback and score",
+    "camera denial fallback, fake camera on/off, synthetic 3-second hand dwell",
+    "original game progress unchanged",
+    "direct original play ignores customized draft"
+  ],
+  "limitations": [
+    "Firebase mocked; no production writes",
+    "camera video and hand results simulated; physical camera/real MediaPipe not verified",
+    "mobile tested by viewport emulation, not a physical phone"
+  ]
+}
