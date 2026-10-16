@@ -1,0 +1,1427 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>AR Math - ภารกิจสูตรคูณ ป.4 - ป.6</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --glass: rgba(255, 255, 255, 0.16);
+      --glass-strong: rgba(255, 255, 255, 0.26);
+      --line: rgba(255, 255, 255, 0.42);
+      --ink: #ffffff;
+      --cyan: #35e7ff;
+      --gold: #ffd54a;
+      --good: #26f48f;
+      --warn: #ffd447;
+      --bad: #ff4b5f;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #09121f;
+      font-family: ui-rounded, "Noto Sans Thai", "Tahoma", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    body {
+      touch-action: none;
+      user-select: none;
+    }
+
+    #gameCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      background: #0b1726;
+    }
+
+    .glass {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.1));
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      box-shadow: 0 18px 60px rgba(2, 8, 23, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+      backdrop-filter: blur(18px) saturate(130%);
+      -webkit-backdrop-filter: blur(18px) saturate(130%);
+    }
+
+    .text-stroke {
+      text-shadow:
+        0 3px 0 rgba(22, 68, 124, 0.8),
+        0 8px 22px rgba(0, 0, 0, 0.4);
+    }
+
+    .hud-pill {
+      min-height: 44px;
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .question-box {
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, #ffe680, #ffbd31 58%, #f18a1f);
+      border: 3px solid rgba(111, 69, 18, 0.95);
+      box-shadow:
+        inset 0 3px 0 rgba(255, 255, 255, 0.46),
+        0 10px 0 rgba(111, 64, 17, 0.85),
+        0 16px 32px rgba(0, 0, 0, 0.28);
+      color: #5d3514;
+    }
+
+    .timer-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #25f083, #9cff55);
+      box-shadow: 0 0 18px rgba(45, 255, 157, 0.62);
+      transform-origin: left center;
+      transition: width 120ms linear, background 120ms linear, box-shadow 120ms linear;
+    }
+
+    .overlay-panel {
+      max-width: min(680px, calc(100vw - 28px));
+      border-radius: 8px;
+    }
+
+    .primary-btn {
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffef7a, #ffb927 70%, #ec861c);
+      color: #5a3214;
+      border: 2px solid rgba(98, 62, 19, 0.8);
+      box-shadow: 0 8px 0 rgba(99, 60, 16, 0.8), 0 16px 30px rgba(0, 0, 0, 0.28);
+      transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+    }
+
+    .primary-btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 rgba(99, 60, 16, 0.8), 0 8px 18px rgba(0, 0, 0, 0.22);
+    }
+
+    .secondary-btn {
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.36);
+      background: rgba(255, 255, 255, 0.16);
+      color: white;
+    }
+
+    .shake {
+      animation: shake-screen 360ms cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes shake-screen {
+      10%, 90% { transform: translate3d(-2px, 1px, 0); }
+      20%, 80% { transform: translate3d(4px, -2px, 0); }
+      30%, 50%, 70% { transform: translate3d(-7px, 3px, 0); }
+      40%, 60% { transform: translate3d(7px, -3px, 0); }
+    }
+
+    @media (max-width: 700px) {
+      .hud-pill {
+        min-height: 38px;
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+
+      .question-box {
+        font-size: clamp(22px, 7vw, 38px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" aria-label="AR Math game canvas"></canvas>
+  <video id="webcam" playsinline muted class="hidden"></video>
+
+  <main id="uiLayer" class="fixed inset-0 pointer-events-none">
+    <section id="hud" class="absolute left-0 right-0 top-0 z-20 p-3 sm:p-4 opacity-0 transition-opacity duration-300">
+      <div class="mx-auto flex max-w-6xl flex-col gap-3">
+        <div class="grid grid-cols-3 gap-2 sm:grid-cols-[1fr_auto_1fr] sm:items-start">
+          <div class="flex flex-wrap gap-2">
+            <div class="hud-pill glass text-white">
+              <span class="text-lg">⭐</span>
+              <span id="scoreText" class="font-extrabold">คะแนน: 0</span>
+            </div>
+            <div class="hud-pill glass text-white">
+              <span class="text-lg">❤️</span>
+              <span id="livesText" class="font-extrabold">ชีวิต: ❤️❤️❤️</span>
+            </div>
+            <div class="hud-pill glass text-white">
+              <span class="text-lg">🏁</span>
+              <span id="missionText" class="font-extrabold">ข้อ 1/20</span>
+            </div>
+          </div>
+
+          <div class="question-box px-5 py-2 text-center text-3xl font-black sm:min-w-[280px] sm:px-8 sm:text-5xl">
+            <span id="questionText">7 × 8 = ?</span>
+          </div>
+
+          <div class="flex flex-wrap justify-end gap-2">
+            <div class="hud-pill glass text-white">
+              <span class="text-lg">⏱</span>
+              <span id="timeText" class="font-extrabold">10.0s</span>
+            </div>
+            <div class="hud-pill glass text-white">
+              <span class="text-lg">🤏</span>
+              <span id="handText" class="font-extrabold">ค้นหามือ</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass h-4 overflow-hidden rounded-full p-1">
+          <div class="h-full rounded-full bg-black/20">
+            <div id="timerFill" class="timer-fill"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cameraStatus" class="absolute bottom-4 left-1/2 z-30 hidden w-[min(680px,calc(100vw-28px))] -translate-x-1/2 rounded-lg border border-amber-200/60 bg-amber-950/72 px-4 py-3 text-center text-sm font-semibold text-amber-50 backdrop-blur-md"></section>
+
+    <section id="startScreen" class="pointer-events-auto fixed inset-0 z-40 grid place-items-center p-4">
+      <div class="absolute inset-0 bg-slate-950/35 backdrop-blur-[2px]"></div>
+      <div class="overlay-panel glass relative overflow-hidden p-5 text-white sm:p-7">
+        <div class="relative">
+          <p class="mb-2 text-sm font-black uppercase tracking-[0.18em] text-cyan-100">Web AR Math Mission</p>
+          <h1 class="text-stroke text-4xl font-black leading-tight sm:text-6xl">AR Math<br>ภารกิจสูตรคูณ</h1>
+          <p class="mt-4 text-base font-semibold leading-7 text-slate-100 sm:text-lg">
+            ตอบโจทย์สูตรคูณ 20 ข้อในฉากผจญภัย ใช้มือจีบนิ้วโป้งกับนิ้วชี้ให้เป็นเป้าสแกน แล้วเล็งไปที่ลูกคำตอบให้ทันเวลา
+          </p>
+
+          <div class="mt-5 grid gap-3 sm:grid-cols-3">
+            <div class="rounded-lg border border-white/22 bg-white/12 p-3">
+              <div class="text-2xl">🤏</div>
+              <div class="mt-1 font-extrabold">จีบนิ้วเพื่อเลือก</div>
+              <div class="text-sm text-slate-200">โครงมือสีทองคือพร้อมตอบ</div>
+            </div>
+            <div class="rounded-lg border border-white/22 bg-white/12 p-3">
+              <div class="text-2xl">⏱</div>
+              <div class="mt-1 font-extrabold">10 วินาทีต่อข้อ</div>
+              <div class="text-sm text-slate-200">หมดเวลานับเป็นตอบผิด</div>
+            </div>
+            <div class="rounded-lg border border-white/22 bg-white/12 p-3">
+              <div class="text-2xl">⭐</div>
+              <div class="mt-1 font-extrabold">เก็บดาวคะแนน</div>
+              <div class="text-sm text-slate-200">ตอบถูกมีเอฟเฟกต์ดาว</div>
+            </div>
+          </div>
+
+          <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <button id="startBtn" type="button" class="primary-btn px-6 py-3 text-xl font-black">เริ่มภารกิจ</button>
+            <p class="text-sm font-medium text-slate-200">ต้องอนุญาตกล้องในเบราว์เซอร์ หากไม่มีกล้องสามารถกดเมาส์ค้างเพื่อทดสอบเป้าได้</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="answerModal" class="pointer-events-auto fixed inset-0 z-50 hidden place-items-center p-4">
+      <div class="absolute inset-0 bg-slate-950/50 backdrop-blur-sm"></div>
+      <div class="overlay-panel glass relative p-6 text-center text-white">
+        <p id="modalTitle" class="text-3xl font-black text-rose-200">พลาดไปนิด!</p>
+        <p id="modalMessage" class="mt-3 text-xl font-extrabold"></p>
+        <p id="modalHint" class="mt-2 text-sm text-slate-200">เตรียมไปภารกิจถัดไป...</p>
+      </div>
+    </section>
+
+    <section id="gameOverScreen" class="pointer-events-auto fixed inset-0 z-50 hidden place-items-center p-4">
+      <div class="absolute inset-0 bg-slate-950/55 backdrop-blur-sm"></div>
+      <div class="overlay-panel glass relative p-6 text-center text-white sm:p-8">
+        <p class="text-sm font-black uppercase tracking-[0.18em] text-emerald-100">Mission Complete</p>
+        <h2 class="text-stroke mt-2 text-4xl font-black sm:text-6xl">สรุปผลภารกิจ</h2>
+        <div class="mt-5 grid gap-3 sm:grid-cols-3">
+          <div class="rounded-lg border border-white/24 bg-white/12 p-4">
+            <div class="text-sm text-slate-200">คะแนน</div>
+            <div id="finalScore" class="text-3xl font-black">0</div>
+          </div>
+          <div class="rounded-lg border border-white/24 bg-white/12 p-4">
+            <div class="text-sm text-slate-200">ตอบถูก</div>
+            <div id="finalCorrect" class="text-3xl font-black">0/20</div>
+          </div>
+          <div class="rounded-lg border border-white/24 bg-white/12 p-4">
+            <div class="text-sm text-slate-200">ระดับ</div>
+            <div id="finalRank" class="text-3xl font-black">A</div>
+          </div>
+        </div>
+        <button id="restartBtn" type="button" class="primary-btn mt-7 px-6 py-3 text-xl font-black">เล่นอีกครั้ง</button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d", { alpha: false });
+    const video = document.getElementById("webcam");
+
+    const hud = document.getElementById("hud");
+    const scoreText = document.getElementById("scoreText");
+    const livesText = document.getElementById("livesText");
+    const missionText = document.getElementById("missionText");
+    const questionText = document.getElementById("questionText");
+    const timeText = document.getElementById("timeText");
+    const handText = document.getElementById("handText");
+    const timerFill = document.getElementById("timerFill");
+    const startScreen = document.getElementById("startScreen");
+    const startBtn = document.getElementById("startBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const answerModal = document.getElementById("answerModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalMessage = document.getElementById("modalMessage");
+    const modalHint = document.getElementById("modalHint");
+    const gameOverScreen = document.getElementById("gameOverScreen");
+    const finalScore = document.getElementById("finalScore");
+    const finalCorrect = document.getElementById("finalCorrect");
+    const finalRank = document.getElementById("finalRank");
+    const cameraStatus = document.getElementById("cameraStatus");
+
+    const TOTAL_QUESTIONS = 20;
+    const QUESTION_SECONDS = 10;
+    const OPTION_COUNT = 3;
+    const MISSION_TITLES = [
+      "เก็บเหรียญสูตรคูณ",
+      "ข้ามสะพานตัวเลข",
+      "ปลดล็อกประตูคูณ",
+      "ช่วยเพื่อนบล็อกแดง",
+      "ปีนเขาคำตอบไว",
+      "ซ่อมรางเหรียญทอง",
+      "เปิดกล่องสมบัติ",
+      "วิ่งผ่านอุโมงค์คูณ",
+      "เก็บดาวพลังใจ",
+      "ชาร์จจรวดตัวเลข",
+      "ผ่านป่าโจทย์ไว",
+      "หยุดเมฆคำตอบหลอก",
+      "เปิดป้าย Mission",
+      "ไล่จับเหรียญพิเศษ",
+      "ข้ามหลุมคูณยาก",
+      "ปลุกพลัง AI Scanner",
+      "ชนะด่านเวลาจำกัด",
+      "รวมพลังสูตรคูณ",
+      "เปิดทางสู่เส้นชัย",
+      "ภารกิจพิชิตสูตรคูณ"
+    ];
+    const MEDIAPIPE_SOURCES = [
+      {
+        name: "jsDelivr latest",
+        moduleUrl: "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs",
+        wasmUrl: "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
+      },
+      {
+        name: "jsDelivr pinned",
+        moduleUrl: "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/vision_bundle.mjs",
+        wasmUrl: "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
+      },
+      {
+        name: "unpkg pinned",
+        moduleUrl: "https://unpkg.com/@mediapipe/tasks-vision@0.10.22/vision_bundle.mjs",
+        wasmUrl: "https://unpkg.com/@mediapipe/tasks-vision@0.10.22/wasm"
+      }
+    ];
+    const HAND_MODEL_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
+    const HAND_CONNECTIONS = [
+      [0, 1], [1, 2], [2, 3], [3, 4],
+      [0, 5], [5, 6], [6, 7], [7, 8],
+      [5, 9], [9, 10], [10, 11], [11, 12],
+      [9, 13], [13, 14], [14, 15], [15, 16],
+      [13, 17], [0, 17], [17, 18], [18, 19], [19, 20]
+    ];
+
+    let dpr = 1;
+    let cw = 1280;
+    let ch = 720;
+    let handLandmarker = null;
+    let mediaReady = false;
+    let trackingReady = false;
+    let trackingStatusTimer = null;
+    let trackingFailureCount = 0;
+    let lastVideoTime = -1;
+    let handLandmarks = null;
+    let pinchPoint = null;
+    let isPinching = false;
+    let mousePoint = null;
+    let mouseDown = false;
+    let audioCtx = null;
+    let gameStarted = false;
+    let isAcceptingInput = false;
+    let questions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let coinCount = 0;
+    let lives = 3;
+    let correctCount = 0;
+    let questionStartMs = 0;
+    let answers = [];
+    let particles = [];
+    let shakeUntil = 0;
+    let worldProgress = 0;
+    let nextQuestionTimeout = null;
+
+    const player = {
+      x: 0,
+      y: 0,
+      run: 0,
+      collectX: 0,
+      collectUntil: 0,
+      mood: "ready"
+    };
+
+    function resizeCanvas() {
+      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      cw = Math.floor(window.innerWidth);
+      ch = Math.floor(window.innerHeight);
+      canvas.width = Math.floor(cw * dpr);
+      canvas.height = Math.floor(ch * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      layoutAnswers();
+    }
+
+    function showStatus(message, tone = "warn") {
+      cameraStatus.textContent = message;
+      cameraStatus.classList.remove("hidden", "bg-amber-950/72", "bg-rose-950/72", "bg-slate-950/72");
+      cameraStatus.classList.add(tone === "bad" ? "bg-rose-950/72" : tone === "info" ? "bg-slate-950/72" : "bg-amber-950/72");
+    }
+
+    function hideStatus() {
+      cameraStatus.classList.add("hidden");
+    }
+
+    function showTemporaryStatus(message, tone = "info", ms = 1600) {
+      clearTimeout(trackingStatusTimer);
+      showStatus(message, tone);
+      const expectedMessage = message;
+      trackingStatusTimer = setTimeout(() => {
+        if (cameraStatus.textContent === expectedMessage) hideStatus();
+      }, ms);
+    }
+
+    function shortError(err) {
+      return String(err?.message || err || "unknown error").replace(/\s+/g, " ").slice(0, 180);
+    }
+
+    async function withTimeout(promise, ms, label) {
+      let timer = null;
+      const timeout = new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`${label} ใช้เวลานานเกินไป`)), ms);
+      });
+      try {
+        return await Promise.race([promise, timeout]);
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    async function createHandTrackerFromSource(source) {
+      const module = await withTimeout(import(source.moduleUrl), 12000, `โหลด MediaPipe (${source.name})`);
+      const vision = await withTimeout(
+        module.FilesetResolver.forVisionTasks(source.wasmUrl),
+        12000,
+        `โหลด WASM (${source.name})`
+      );
+
+      const commonOptions = {
+        runningMode: "VIDEO",
+        numHands: 1,
+        minHandDetectionConfidence: 0.5,
+        minHandPresenceConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      };
+
+      try {
+        return await withTimeout(
+          module.HandLandmarker.createFromOptions(vision, {
+            baseOptions: {
+              modelAssetPath: HAND_MODEL_URL
+            },
+            ...commonOptions
+          }),
+          16000,
+          `สร้าง HandLandmarker CPU (${source.name})`
+        );
+      } catch (cpuErr) {
+        return await withTimeout(
+          module.HandLandmarker.createFromOptions(vision, {
+            baseOptions: {
+              modelAssetPath: HAND_MODEL_URL,
+              delegate: "GPU"
+            },
+            ...commonOptions
+          }),
+          16000,
+          `สร้าง HandLandmarker GPU (${source.name})`
+        );
+      }
+    }
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }
+
+    function playCorrectSound() {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, now + i * 0.055);
+        gain.gain.setValueAtTime(0, now + i * 0.055);
+        gain.gain.linearRampToValueAtTime(0.16, now + i * 0.055 + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.055 + 0.22);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(now + i * 0.055);
+        osc.stop(now + i * 0.055 + 0.24);
+      });
+    }
+
+    function playWrongSound() {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const filter = audioCtx.createBiquadFilter();
+      osc.type = "sawtooth";
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(900, now);
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(82, now + 0.42);
+      gain.gain.setValueAtTime(0.16, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.48);
+      osc.connect(filter).connect(gain).connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.5);
+    }
+
+    function generateQuestions() {
+      return Array.from({ length: TOTAL_QUESTIONS }, () => {
+        const a = randomInt(2, 12);
+        const b = randomInt(2, 12);
+        return { a, b, correct: a * b };
+      });
+    }
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function shuffle(items) {
+      const arr = [...items];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function getMissionName(index) {
+      return MISSION_TITLES[index % MISSION_TITLES.length];
+    }
+
+    function buildOptions(correct) {
+      const values = new Set([correct]);
+      const offsets = [-12, -10, -8, -6, -4, -3, -2, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 18];
+      const shuffledOffsets = shuffle(offsets);
+      for (const off of shuffledOffsets) {
+        if (values.size >= OPTION_COUNT) break;
+        const candidate = correct + off;
+        if (candidate > 0) values.add(candidate);
+      }
+      while (values.size < OPTION_COUNT) values.add(randomInt(4, 144));
+      return shuffle([...values]);
+    }
+
+    function layoutAnswers() {
+      if (!questions.length || currentIndex >= questions.length) return;
+      const radius = Math.max(48, Math.min(76, cw * 0.058));
+      const yBase = Math.max(ch * 0.44, Math.min(ch * 0.61, ch - radius * 3.25));
+      const xs = [0.26, 0.5, 0.74].map(v => cw * v);
+      const yOffsets = [12, -24, 12].map(v => v * Math.min(1.1, cw / 1200));
+      const values = answers.length ? answers.map(a => a.value) : buildOptions(questions[currentIndex].correct);
+      answers = values.map((value, i) => ({
+        value,
+        x: xs[i],
+        y: yBase + yOffsets[i],
+        baseY: yBase + yOffsets[i],
+        r: radius,
+        phase: i * 1.7 + Math.random() * 0.4,
+        selected: false,
+        correct: value === questions[currentIndex].correct
+      }));
+    }
+
+    function resetGame() {
+      clearTimeout(nextQuestionTimeout);
+      score = 0;
+      coinCount = 0;
+      lives = 3;
+      correctCount = 0;
+      currentIndex = 0;
+      worldProgress = 0;
+      particles = [];
+      questions = generateQuestions();
+      answers = buildOptions(questions[currentIndex].correct).map(value => ({ value }));
+      layoutAnswers();
+      player.mood = "ready";
+      player.collectUntil = 0;
+      startQuestion();
+      gameOverScreen.classList.add("hidden");
+      answerModal.classList.add("hidden");
+      hud.classList.remove("opacity-0");
+      hud.classList.add("opacity-100");
+    }
+
+    function startQuestion() {
+      const q = questions[currentIndex];
+      isAcceptingInput = true;
+      questionStartMs = performance.now();
+      answers = buildOptions(q.correct).map(value => ({ value }));
+      layoutAnswers();
+      player.mood = "ready";
+      showTemporaryStatus(`ภารกิจ ${currentIndex + 1}: ${getMissionName(currentIndex)}`, "info", 1700);
+      updateHud(QUESTION_SECONDS);
+    }
+
+    function updateHud(timeLeft) {
+      const q = questions[Math.min(currentIndex, questions.length - 1)];
+      scoreText.textContent = `คะแนน: ${score}  |  เหรียญ: ${coinCount}`;
+      livesText.textContent = `ชีวิต: ${"❤️".repeat(lives)}${"🤍".repeat(3 - lives)}`;
+      missionText.textContent = `ภารกิจ ${Math.min(currentIndex + 1, TOTAL_QUESTIONS)}/${TOTAL_QUESTIONS}`;
+      questionText.textContent = `${q.a} × ${q.b} = ?`;
+      timeText.textContent = `${Math.max(0, timeLeft).toFixed(1)}s`;
+      const ratio = Math.max(0, Math.min(1, timeLeft / QUESTION_SECONDS));
+      timerFill.style.width = `${ratio * 100}%`;
+      if (ratio > 0.55) {
+        timerFill.style.background = "linear-gradient(90deg, #20ef84, #9dff5d)";
+        timerFill.style.boxShadow = "0 0 18px rgba(45, 255, 157, 0.62)";
+      } else if (ratio > 0.25) {
+        timerFill.style.background = "linear-gradient(90deg, #fff66d, #ffb72d)";
+        timerFill.style.boxShadow = "0 0 18px rgba(255, 220, 74, 0.62)";
+      } else {
+        timerFill.style.background = "linear-gradient(90deg, #ff6877, #ff1f45)";
+        timerFill.style.boxShadow = "0 0 18px rgba(255, 68, 92, 0.72)";
+      }
+    }
+
+    async function setupCameraAndTracking() {
+      showStatus("กำลังเปิดกล้องและเตรียมระบบจับมือ...", "info");
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "user",
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: false
+        });
+        video.srcObject = stream;
+        await video.play();
+        mediaReady = true;
+        hideStatus();
+      } catch (err) {
+        mediaReady = false;
+        showStatus("เปิดกล้องไม่ได้: โปรดอนุญาต Webcam หรือใช้เมาส์กดค้างเพื่อทดสอบการตอบ", "bad");
+      }
+
+      const errors = [];
+      for (const source of MEDIAPIPE_SOURCES) {
+        try {
+          showStatus(`กำลังโหลด AI Hand Tracking (${source.name})...`, "info");
+          handLandmarker = await createHandTrackerFromSource(source);
+          trackingReady = true;
+          trackingFailureCount = 0;
+          showTemporaryStatus("ระบบจับมือพร้อมแล้ว: ยกมือขึ้นแล้วจีบนิ้วเพื่อเล็งเป้า", "info");
+          return;
+        } catch (err) {
+          errors.push(`${source.name}: ${shortError(err)}`);
+        }
+      }
+
+      trackingReady = false;
+      showStatus(`โหลดระบบจับมือไม่สำเร็จ: ${errors[errors.length - 1] || "ไม่ทราบสาเหตุ"} | ใช้เมาส์กดค้างเพื่อทดสอบเกมได้`, "bad");
+    }
+
+    function updateHandTracking(now) {
+      if (!mediaReady || !trackingReady || !handLandmarker || !video.videoWidth || video.readyState < 2) {
+        handLandmarks = null;
+        if (mousePoint && mouseDown) {
+          pinchPoint = { ...mousePoint };
+          isPinching = true;
+        } else if (!mediaReady || !trackingReady) {
+          pinchPoint = null;
+          isPinching = false;
+        }
+        return;
+      }
+
+      if (video.currentTime !== lastVideoTime) {
+        lastVideoTime = video.currentTime;
+        const result = detectHandLandmarks(now);
+        handLandmarks = result?.landmarks?.[0] || null;
+        if (handLandmarks) {
+          trackingFailureCount = 0;
+          if (!cameraStatus.classList.contains("hidden")) hideStatus();
+          const thumb = mirroredPoint(handLandmarks[4]);
+          const index = mirroredPoint(handLandmarks[8]);
+          const dx = thumb.x - index.x;
+          const dy = thumb.y - index.y;
+          const pinchDistance = Math.hypot(dx, dy);
+          const threshold = Math.max(28, Math.min(58, cw * 0.045));
+          isPinching = pinchDistance < threshold;
+          pinchPoint = {
+            x: (thumb.x + index.x) / 2,
+            y: (thumb.y + index.y) / 2
+          };
+        } else if (mousePoint && mouseDown) {
+          pinchPoint = { ...mousePoint };
+          isPinching = true;
+        } else {
+          pinchPoint = null;
+          isPinching = false;
+        }
+      }
+    }
+
+    function mirroredPoint(landmark) {
+      return {
+        x: (1 - landmark.x) * cw,
+        y: landmark.y * ch,
+        z: landmark.z || 0
+      };
+    }
+
+    function detectHandLandmarks(now) {
+      try {
+        return handLandmarker.detectForVideo(video, now);
+      } catch (err) {
+        try {
+          return handLandmarker.detectForVideo(video);
+        } catch (fallbackErr) {
+          trackingFailureCount += 1;
+          if (trackingFailureCount === 1 || trackingFailureCount % 90 === 0) {
+            showStatus(`อ่านพิกัดมือไม่สำเร็จ: ${shortError(fallbackErr)} | ใช้เมาส์กดค้างเพื่อทดสอบเกมได้`, "bad");
+          }
+          return null;
+        }
+      }
+    }
+
+    function checkAnswerHover() {
+      if (!gameStarted || !isAcceptingInput || !isPinching || !pinchPoint) return;
+      for (const option of answers) {
+        const dist = Math.hypot(pinchPoint.x - option.x, pinchPoint.y - option.y);
+        if (dist <= option.r * 0.92) {
+          submitAnswer(option);
+          break;
+        }
+      }
+    }
+
+    function submitAnswer(option, timedOut = false) {
+      if (!isAcceptingInput) return;
+      isAcceptingInput = false;
+      const q = questions[currentIndex];
+      const isCorrect = !timedOut && option?.value === q.correct;
+      if (option) option.selected = true;
+
+      if (isCorrect) {
+        score += 100 + Math.round(getTimeLeft() * 10);
+        coinCount += 1;
+        correctCount += 1;
+        player.mood = "happy";
+        player.collectX = option.x;
+        player.collectUntil = performance.now() + 980;
+        worldProgress += 1 / TOTAL_QUESTIONS;
+        playCorrectSound();
+        spawnStarBurst(option.x, option.y);
+        spawnCoinCollect(option.x, option.y);
+        modalTitle.textContent = "ภารกิจสำเร็จ!";
+        modalTitle.classList.remove("text-rose-200");
+        modalTitle.classList.add("text-emerald-200");
+        modalMessage.textContent = `ผ่านภารกิจ ${currentIndex + 1}: ${getMissionName(currentIndex)}  ได้รับ +1 เหรียญ`;
+        modalHint.textContent = currentIndex + 1 >= TOTAL_QUESTIONS
+          ? "ยอดเยี่ยม! กำลังสรุปผลภารกิจทั้งหมด..."
+          : `ต่อไป ภารกิจ ${currentIndex + 2}: ${getMissionName(currentIndex + 1)}`;
+        answerModal.classList.remove("hidden");
+        answerModal.classList.add("grid");
+        nextQuestionTimeout = setTimeout(() => {
+          answerModal.classList.add("hidden");
+          answerModal.classList.remove("grid");
+          advanceQuestion();
+        }, 1650);
+      } else {
+        lives = Math.max(0, lives - 1);
+        player.mood = "sad";
+        playWrongSound();
+        shakeUntil = performance.now() + 380;
+        document.body.classList.add("shake");
+        setTimeout(() => document.body.classList.remove("shake"), 400);
+        modalTitle.classList.remove("text-emerald-200");
+        modalTitle.classList.add("text-rose-200");
+        modalTitle.textContent = timedOut ? "หมดเวลา!" : "พลาดไปนิด!";
+        modalMessage.textContent = `คำตอบที่ถูกต้องคือ ${q.a} × ${q.b} = ${q.correct}`;
+        modalHint.textContent = lives <= 0
+          ? "หัวใจหมดแล้ว กำลังสรุปผลภารกิจ..."
+          : currentIndex + 1 >= TOTAL_QUESTIONS
+            ? `เหลือหัวใจ ${lives} ดวง | กำลังสรุปผลภารกิจทั้งหมด...`
+            : `เหลือหัวใจ ${lives} ดวง | เตรียมไปภารกิจ ${currentIndex + 2}: ${getMissionName(currentIndex + 1)}`;
+        answerModal.classList.remove("hidden");
+        answerModal.classList.add("grid");
+        nextQuestionTimeout = setTimeout(() => {
+          answerModal.classList.add("hidden");
+          answerModal.classList.remove("grid");
+          if (lives <= 0) endGame();
+          else advanceQuestion();
+        }, 1800);
+      }
+    }
+
+    function advanceQuestion() {
+      currentIndex += 1;
+      if (currentIndex >= TOTAL_QUESTIONS) {
+        endGame();
+      } else {
+        startQuestion();
+      }
+    }
+
+    function endGame() {
+      isAcceptingInput = false;
+      finalScore.textContent = String(score);
+      finalCorrect.textContent = `${correctCount}/${TOTAL_QUESTIONS}`;
+      const ratio = correctCount / TOTAL_QUESTIONS;
+      finalRank.textContent = lives <= 0 ? "หมดชีวิต" : ratio >= 0.9 ? "S" : ratio >= 0.75 ? "A" : ratio >= 0.55 ? "B" : "C";
+      gameOverScreen.classList.remove("hidden");
+      gameOverScreen.classList.add("grid");
+    }
+
+    function getTimeLeft() {
+      if (!gameStarted || !isAcceptingInput) return QUESTION_SECONDS;
+      const elapsed = (performance.now() - questionStartMs) / 1000;
+      return QUESTION_SECONDS - elapsed;
+    }
+
+    function spawnStarBurst(x, y) {
+      for (let i = 0; i < 34; i++) {
+        const angle = (Math.PI * 2 * i) / 34 + Math.random() * 0.18;
+        const speed = randomRange(2.8, 8.4);
+        particles.push({
+          type: "star",
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - randomRange(0.4, 2.4),
+          size: randomRange(7, 16),
+          life: randomRange(520, 900),
+          age: 0,
+          spin: randomRange(-0.16, 0.16),
+          rotation: Math.random() * Math.PI
+        });
+      }
+    }
+
+    function spawnCoinCollect(x, y) {
+      const targetX = player.x || cw * 0.5;
+      const targetY = player.y || ch * 0.72;
+      for (let i = 0; i < 12; i++) {
+        const drift = randomRange(-28, 28);
+        particles.push({
+          type: "coin",
+          x: x + drift,
+          y: y + randomRange(-18, 18),
+          vx: (targetX - x) / 44 + randomRange(-1.2, 1.2),
+          vy: (targetY - y) / 44 + randomRange(-1.4, 0.4),
+          size: randomRange(9, 15),
+          life: randomRange(520, 760),
+          age: 0,
+          spin: randomRange(-0.22, 0.22),
+          rotation: Math.random() * Math.PI
+        });
+      }
+    }
+
+    function randomRange(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    function updateParticles(dt) {
+      particles = particles.filter(p => {
+        p.age += dt;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.12;
+        p.rotation += p.spin;
+        return p.age < p.life;
+      });
+    }
+
+    function drawFrame(now) {
+      updateHandTracking(now);
+
+      ctx.save();
+      if (shakeUntil > now) {
+        ctx.translate(randomRange(-8, 8), randomRange(-5, 5));
+      }
+
+      drawCameraBackground();
+      drawWorld(now);
+      drawAnswers(now);
+      drawParticles();
+      drawHandOverlay(now);
+      ctx.restore();
+
+      if (gameStarted) {
+        const timeLeft = getTimeLeft();
+        updateHud(timeLeft);
+        if (isAcceptingInput && timeLeft <= 0) {
+          submitAnswer(null, true);
+        }
+        checkAnswerHover();
+        handText.textContent = handLandmarks || (mousePoint && mouseDown) ? (isPinching ? "ล็อกเป้า" : "ขยับมือ") : "ค้นหามือ";
+      }
+
+      updateParticles(16.67);
+      requestAnimationFrame(drawFrame);
+    }
+
+    function drawCameraBackground() {
+      if (mediaReady && video.videoWidth) {
+        const vw = video.videoWidth;
+        const vh = video.videoHeight;
+        const scale = Math.max(cw / vw, ch / vh);
+        const dw = vw * scale;
+        const dh = vh * scale;
+        const dx = (cw - dw) / 2;
+        const dy = (ch - dh) / 2;
+        ctx.save();
+        ctx.translate(cw, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, dx, dy, dw, dh);
+        ctx.restore();
+        ctx.fillStyle = "rgba(5, 13, 24, 0.36)";
+        ctx.fillRect(0, 0, cw, ch);
+      } else {
+        const sky = ctx.createLinearGradient(0, 0, 0, ch);
+        sky.addColorStop(0, "#41b6ff");
+        sky.addColorStop(0.58, "#a7e8ff");
+        sky.addColorStop(1, "#e8fbff");
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, cw, ch);
+      }
+
+      const vignette = ctx.createRadialGradient(cw / 2, ch / 2, Math.min(cw, ch) * 0.18, cw / 2, ch / 2, Math.max(cw, ch) * 0.72);
+      vignette.addColorStop(0, "rgba(255,255,255,0.04)");
+      vignette.addColorStop(1, "rgba(2,8,18,0.5)");
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, cw, ch);
+    }
+
+    function drawWorld(now) {
+      const t = now / 1000;
+      drawClouds(t);
+      drawHills(t);
+      drawGround();
+      drawCoinTrail(t);
+      drawPlayer(t);
+      drawFinishGate(t);
+    }
+
+    function drawClouds(t) {
+      ctx.save();
+      ctx.globalAlpha = 0.72;
+      for (let i = 0; i < 9; i++) {
+        const x = ((i * 190 - t * 18) % (cw + 180)) - 90;
+        const y = ch * (0.13 + (i % 3) * 0.08);
+        drawTechDrone(x, y, 34 + (i % 2) * 10, t + i);
+      }
+      ctx.restore();
+    }
+
+    function drawTechDrone(x, y, s, t) {
+      ctx.save();
+      ctx.translate(x, y + Math.sin(t * 2) * 5);
+      ctx.strokeStyle = "rgba(101, 241, 255, 0.44)";
+      ctx.fillStyle = "rgba(18, 42, 72, 0.74)";
+      ctx.lineWidth = 2;
+      roundedRect(-s * 0.65, -s * 0.28, s * 1.3, s * 0.56, 8, "rgba(18, 42, 72, 0.74)");
+      ctx.strokeRect(-s * 0.65, -s * 0.28, s * 1.3, s * 0.56);
+      ctx.fillStyle = "#66f3ff";
+      ctx.beginPath();
+      ctx.arc(-s * 0.25, 0, s * 0.1, 0, Math.PI * 2);
+      ctx.arc(s * 0.25, 0, s * 0.1, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawHills(t) {
+      const groundY = ch * 0.76;
+      ctx.save();
+      ctx.globalAlpha = 0.78;
+      for (let i = 0; i < 9; i++) {
+        const x = ((i * 170 - worldProgress * 360 + t * 8) % (cw + 220)) - 110;
+        const h = 90 + (i % 4) * 34;
+        const w = 80 + (i % 3) * 26;
+        const y = groundY - h;
+        const grad = ctx.createLinearGradient(0, y, 0, groundY);
+        grad.addColorStop(0, "rgba(41, 93, 137, 0.78)");
+        grad.addColorStop(1, "rgba(14, 29, 54, 0.86)");
+        roundedRect(x - w * 0.5, y, w, h, 6, grad);
+        ctx.strokeStyle = "rgba(100, 232, 255, 0.22)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x - w * 0.5 + 2, y + 2, w - 4, h - 4);
+        ctx.fillStyle = "rgba(120, 245, 255, 0.34)";
+        for (let yy = y + 18; yy < groundY - 12; yy += 24) {
+          ctx.fillRect(x - w * 0.32, yy, w * 0.18, 5);
+          ctx.fillRect(x + w * 0.08, yy, w * 0.24, 5);
+        }
+      }
+      ctx.restore();
+    }
+
+    function drawCoinTrail(t) {
+      const horizon = ch * 0.42;
+      const roadBottom = ch * 0.9;
+      for (let i = 0; i < 18; i++) {
+        const lane = i % 2 === 0 ? -1 : 1;
+        const depth = ((i * 0.095 + t * 0.08 + worldProgress * 0.65) % 1);
+        const y = horizon + Math.pow(depth, 1.55) * (roadBottom - horizon);
+        const spread = 26 + depth * cw * 0.28;
+        const x = cw * 0.5 + lane * spread * (0.45 + (i % 3) * 0.22);
+        const r = 8 + depth * 17 + Math.sin(t * 5 + i) * 1.3;
+        drawCoin(x, y + Math.sin(t * 2.4 + i) * 5, r);
+      }
+    }
+
+    function drawCoin(x, y, r) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.fillStyle = "#ffd247";
+      ctx.strokeStyle = "#b96d12";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r * 0.72, r, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,0.36)";
+      ctx.beginPath();
+      ctx.ellipse(-r * 0.18, -r * 0.2, r * 0.18, r * 0.42, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawGround() {
+      const horizon = ch * 0.42;
+      const labGrad = ctx.createLinearGradient(0, horizon, 0, ch);
+      labGrad.addColorStop(0, "rgba(22, 58, 86, 0.62)");
+      labGrad.addColorStop(0.55, "rgba(16, 43, 68, 0.78)");
+      labGrad.addColorStop(1, "rgba(10, 23, 40, 0.92)");
+      ctx.fillStyle = labGrad;
+      ctx.fillRect(0, horizon, cw, ch - horizon);
+
+      const roadTopW = cw * 0.12;
+      const roadBottomW = cw * 0.74;
+      const roadBottomY = ch * 0.93;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(cw * 0.5 - roadTopW * 0.5, horizon);
+      ctx.lineTo(cw * 0.5 + roadTopW * 0.5, horizon);
+      ctx.lineTo(cw * 0.5 + roadBottomW * 0.5, roadBottomY);
+      ctx.lineTo(cw * 0.5 - roadBottomW * 0.5, roadBottomY);
+      ctx.closePath();
+      const roadGrad = ctx.createLinearGradient(0, horizon, 0, roadBottomY);
+      roadGrad.addColorStop(0, "#d8fbff");
+      roadGrad.addColorStop(0.45, "#74d8ed");
+      roadGrad.addColorStop(1, "#2a5d84");
+      ctx.fillStyle = roadGrad;
+      ctx.fill();
+      ctx.strokeStyle = "rgba(101, 241, 255, 0.64)";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      ctx.clip();
+      for (let row = 0; row < 11; row++) {
+        const p0 = row / 11;
+        const p1 = (row + 0.72) / 11;
+        const y0 = horizon + Math.pow(p0, 1.45) * (roadBottomY - horizon);
+        const y1 = horizon + Math.pow(p1, 1.45) * (roadBottomY - horizon);
+        const w0 = roadTopW + (roadBottomW - roadTopW) * p0;
+        const w1 = roadTopW + (roadBottomW - roadTopW) * p1;
+        ctx.fillStyle = row % 2 ? "rgba(31, 99, 143, 0.36)" : "rgba(174, 249, 255, 0.22)";
+        ctx.beginPath();
+        ctx.moveTo(cw * 0.5 - w0 * 0.5, y0);
+        ctx.lineTo(cw * 0.5 + w0 * 0.5, y0);
+        ctx.lineTo(cw * 0.5 + w1 * 0.5, y1);
+        ctx.lineTo(cw * 0.5 - w1 * 0.5, y1);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.strokeStyle = "rgba(5, 43, 69, 0.36)";
+      ctx.lineWidth = 2;
+      for (let lane = -1; lane <= 1; lane += 2) {
+        ctx.beginPath();
+        ctx.moveTo(cw * 0.5 + lane * roadTopW * 0.18, horizon);
+        ctx.lineTo(cw * 0.5 + lane * roadBottomW * 0.22, roadBottomY);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      const floorY = ch * 0.9;
+      ctx.fillStyle = "#101d31";
+      ctx.fillRect(0, floorY, cw, ch - floorY);
+      ctx.strokeStyle = "rgba(101, 241, 255, 0.22)";
+      ctx.lineWidth = 2;
+      for (let x = -60; x < cw + 80; x += 86) {
+        ctx.beginPath();
+        ctx.moveTo(x, floorY);
+        ctx.lineTo(x + 58, ch);
+        ctx.stroke();
+      }
+      ctx.fillStyle = "rgba(101, 241, 255, 0.16)";
+      const dotStep = Math.max(28, cw / 34);
+      for (let x = -dotStep; x < cw + dotStep; x += dotStep) {
+        const r = 4 + (Math.abs(x) % 11);
+        ctx.beginPath();
+        ctx.arc(x + ((x / dotStep) % 2) * 10, floorY + 34 + Math.abs(x % 47), r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawPlayer(t) {
+      const groundY = ch * 0.84;
+      const targetX = performance.now() < player.collectUntil ? player.collectX : cw * 0.5;
+      player.x += (targetX - player.x) * 0.12;
+      player.y = groundY - Math.max(70, Math.min(98, cw * 0.07));
+      player.run += 0.24;
+      const size = Math.max(50, Math.min(84, cw * 0.065));
+      const bob = Math.sin(player.run) * 4;
+
+      ctx.save();
+      ctx.translate(player.x || cw * 0.5, player.y + bob);
+      ctx.shadowColor = "rgba(82, 243, 255, 0.48)";
+      ctx.shadowBlur = 18;
+      ctx.shadowOffsetY = 5;
+
+      const bodyGrad = ctx.createLinearGradient(0, -size * 0.55, 0, size * 0.48);
+      bodyGrad.addColorStop(0, "#6df4ff");
+      bodyGrad.addColorStop(0.52, "#2274e6");
+      bodyGrad.addColorStop(1, "#5934d8");
+      roundedRect(-size * 0.42, -size * 0.36, size * 0.84, size * 0.82, 12, bodyGrad);
+      ctx.strokeStyle = "#c9fbff";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(-size * 0.42, -size * 0.36, size * 0.84, size * 0.82);
+
+      roundedRect(-size * 0.5, -size * 0.86, size, size * 0.45, 12, "#18365e");
+      ctx.strokeStyle = "#6df4ff";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(-size * 0.5, -size * 0.86, size, size * 0.45);
+      ctx.fillStyle = player.mood === "sad" ? "#ff6b8b" : "#94fffb";
+      ctx.beginPath();
+      ctx.arc(-size * 0.18, -size * 0.64, size * 0.075, 0, Math.PI * 2);
+      ctx.arc(size * 0.18, -size * 0.64, size * 0.075, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = player.mood === "sad" ? "#ff6b8b" : "#94fffb";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      if (player.mood === "sad") {
+        ctx.moveTo(-size * 0.18, -size * 0.5);
+        ctx.lineTo(size * 0.18, -size * 0.54);
+      } else {
+        ctx.arc(0, -size * 0.55, size * 0.16, 0.15, Math.PI - 0.15);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = "#d9ffff";
+      ctx.lineWidth = 7;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(-size * 0.42, -size * 0.1);
+      ctx.lineTo(-size * 0.7, size * (player.mood === "happy" ? -0.32 : 0.14));
+      ctx.moveTo(size * 0.42, -size * 0.1);
+      ctx.lineTo(size * 0.7, size * (player.mood === "happy" ? -0.32 : 0.14));
+      ctx.stroke();
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#111f38";
+      ctx.beginPath();
+      ctx.ellipse(-size * 0.24, size * 0.6, size * 0.22, size * 0.13, -0.22 + Math.sin(player.run) * 0.08, 0, Math.PI * 2);
+      ctx.ellipse(size * 0.24, size * 0.6, size * 0.22, size * 0.13, 0.22 - Math.sin(player.run) * 0.08, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#6df4ff";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawFinishGate(t) {
+      const x = cw * 0.86;
+      const y = ch * 0.78;
+      ctx.save();
+      ctx.globalAlpha = 0.85;
+      ctx.strokeStyle = "rgba(255,255,255,0.86)";
+      ctx.lineWidth = 10;
+      ctx.beginPath();
+      ctx.moveTo(x - 44, y);
+      ctx.lineTo(x - 44, y - 150);
+      ctx.quadraticCurveTo(x, y - 195, x + 44, y - 150);
+      ctx.lineTo(x + 44, y);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(255, 219, 73, 0.95)";
+      ctx.fillRect(x - 74, y - 150, 148, 48);
+      ctx.strokeStyle = "#805019";
+      ctx.lineWidth = 4;
+      ctx.strokeRect(x - 74, y - 150, 148, 48);
+      ctx.fillStyle = "#613713";
+      ctx.font = "900 18px Tahoma, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("MISSION", x, y - 126);
+      ctx.restore();
+    }
+
+    function drawAnswers(now) {
+      if (!gameStarted || currentIndex >= questions.length) return;
+      const t = now / 1000;
+      for (const option of answers) {
+        option.y = option.baseY + Math.sin(t * 2.1 + option.phase) * 8;
+        const isHover = pinchPoint && isPinching && Math.hypot(pinchPoint.x - option.x, pinchPoint.y - option.y) < option.r;
+        drawAnswerBubble(option, isHover, t);
+      }
+    }
+
+    function drawAnswerBubble(option, isHover, t) {
+      const r = option.r * (isHover ? 1.08 : 1);
+      const blockW = r * 1.54;
+      const blockH = r * 1.22;
+      ctx.save();
+      ctx.translate(option.x, option.y);
+      ctx.shadowColor = isHover ? "rgba(101, 241, 255, 0.9)" : "rgba(0,0,0,0.36)";
+      ctx.shadowBlur = isHover ? 28 : 16;
+      ctx.shadowOffsetY = isHover ? 0 : 10;
+
+      const grad = ctx.createLinearGradient(0, -blockH * 0.55, 0, blockH * 0.55);
+      grad.addColorStop(0, "#dffcff");
+      grad.addColorStop(0.5, "#45d7f4");
+      grad.addColorStop(1, "#2253c8");
+      ctx.fillStyle = grad;
+      roundedRect(-blockW * 0.5, -blockH * 0.5, blockW, blockH, 12, grad);
+      ctx.lineWidth = Math.max(4, r * 0.08);
+      ctx.strokeStyle = isHover ? "#fff07a" : "#7df7ff";
+      ctx.strokeRect(-blockW * 0.5, -blockH * 0.5, blockW, blockH);
+
+      ctx.strokeStyle = "rgba(255,255,255,0.35)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-blockW * 0.38, -blockH * 0.08);
+      ctx.lineTo(blockW * 0.38, -blockH * 0.08);
+      ctx.moveTo(-blockW * 0.28, blockH * 0.22);
+      ctx.lineTo(blockW * 0.28, blockH * 0.22);
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(255,255,255,0.45)";
+      ctx.beginPath();
+      ctx.ellipse(-blockW * 0.22, -blockH * 0.22, blockW * 0.15, blockH * 0.13, -0.55, 0, Math.PI * 2);
+      ctx.fill();
+
+      drawCoin(0, -blockH * 0.75, r * 0.22);
+
+      if (isHover) {
+        ctx.rotate(t * 4);
+        ctx.strokeStyle = "rgba(255,255,255,0.84)";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([12, 10]);
+        ctx.beginPath();
+        ctx.arc(0, 0, r + 18, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      ctx.fillStyle = "#ffffff";
+      ctx.strokeStyle = "rgba(88,44,15,0.95)";
+      ctx.lineWidth = 5;
+      ctx.font = `900 ${Math.max(30, r * 0.62)}px Tahoma, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.strokeText(String(option.value), 0, 3);
+      ctx.fillText(String(option.value), 0, 3);
+      ctx.restore();
+    }
+
+    function drawParticles() {
+      for (const p of particles) {
+        const alpha = 1 - p.age / p.life;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        if (p.type === "coin") {
+          drawCoin(0, 0, p.size);
+        } else {
+          drawStar(0, 0, p.size, "#fff176", "#ff9f1c");
+        }
+        ctx.restore();
+      }
+    }
+
+    function drawStar(x, y, r, fill, stroke) {
+      ctx.beginPath();
+      for (let i = 0; i < 10; i++) {
+        const angle = -Math.PI / 2 + i * Math.PI / 5;
+        const radius = i % 2 === 0 ? r : r * 0.45;
+        const px = x + Math.cos(angle) * radius;
+        const py = y + Math.sin(angle) * radius;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = Math.max(1.5, r * 0.18);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    function drawHandOverlay(now) {
+      if (handLandmarks) {
+        const color = isPinching ? "#ffd84e" : "#35e7ff";
+        const glow = isPinching ? "rgba(255,216,78,0.9)" : "rgba(53,231,255,0.85)";
+        const points = handLandmarks.map(mirroredPoint);
+        ctx.save();
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.shadowColor = glow;
+        ctx.shadowBlur = isPinching ? 18 : 14;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = isPinching ? 5 : 3;
+        for (const [a, b] of HAND_CONNECTIONS) {
+          ctx.beginPath();
+          ctx.moveTo(points[a].x, points[a].y);
+          ctx.lineTo(points[b].x, points[b].y);
+          ctx.stroke();
+        }
+        for (const p of points) {
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, isPinching ? 6 : 4.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "rgba(255,255,255,0.8)";
+          ctx.beginPath();
+          ctx.arc(p.x - 1.2, p.y - 1.2, 1.7, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      if (pinchPoint && isPinching) {
+        drawRadar(pinchPoint.x, pinchPoint.y, now / 1000);
+      } else if (mousePoint && mouseDown) {
+        drawRadar(mousePoint.x, mousePoint.y, now / 1000);
+      }
+    }
+
+    function drawRadar(x, y, t) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(t * 3.4);
+      ctx.strokeStyle = "rgba(255, 224, 74, 0.95)";
+      ctx.shadowColor = "rgba(255, 224, 74, 0.95)";
+      ctx.shadowBlur = 18;
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 3; i++) {
+        ctx.globalAlpha = 0.9 - i * 0.22;
+        ctx.beginPath();
+        ctx.arc(0, 0, 24 + i * 15, i * 0.6, Math.PI * 1.55 + i * 0.6);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      ctx.beginPath();
+      ctx.moveTo(-42, 0);
+      ctx.lineTo(42, 0);
+      ctx.moveTo(0, -42);
+      ctx.lineTo(0, 42);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(x + 18, y - 48);
+      const label = `AI LOCK  X:${Math.round(x)}  Y:${Math.round(y)}`;
+      ctx.font = "800 12px Tahoma, sans-serif";
+      const width = ctx.measureText(label).width + 18;
+      roundedRect(0, -18, width, 24, 7, "rgba(30, 20, 0, 0.72)");
+      ctx.strokeStyle = "rgba(255, 224, 74, 0.82)";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(1, -17, width - 2, 22);
+      ctx.fillStyle = "#ffe86b";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(label, 9, -6);
+      ctx.restore();
+    }
+
+    function roundedRect(x, y, w, h, r, fill) {
+      ctx.fillStyle = fill;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.fill();
+    }
+
+    startBtn.addEventListener("click", async () => {
+      startBtn.disabled = true;
+      startBtn.textContent = "กำลังเตรียมเกม...";
+      initAudio();
+      await setupCameraAndTracking();
+      gameStarted = true;
+      startScreen.classList.add("hidden");
+      resetGame();
+    });
+
+    restartBtn.addEventListener("click", () => {
+      initAudio();
+      gameOverScreen.classList.add("hidden");
+      gameOverScreen.classList.remove("grid");
+      resetGame();
+    });
+
+    window.addEventListener("resize", resizeCanvas);
+
+    window.addEventListener("pointermove", event => {
+      mousePoint = { x: event.clientX, y: event.clientY };
+    });
+
+    window.addEventListener("pointerdown", event => {
+      mouseDown = true;
+      mousePoint = { x: event.clientX, y: event.clientY };
+      initAudio();
+    });
+
+    window.addEventListener("pointerup", () => {
+      mouseDown = false;
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && audioCtx?.state === "running") audioCtx.suspend();
+      if (!document.hidden && audioCtx?.state === "suspended" && gameStarted) audioCtx.resume();
+    });
+
+    resizeCanvas();
+    requestAnimationFrame(drawFrame);
+  </script>
+</body>
+</html>

@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>เกมแต่งตัวชุดนักเรียนให้ถูกขั้นตอน</title>
+  <style>
+    :root {
+      --blue: #2d82f0;
+      --deep-blue: #1456cf;
+      --pink: #ff6fa3;
+      --purple: #a979ff;
+      --yellow: #ffd84d;
+      --green: #52d833;
+      --orange: #ff9f43;
+      --ink: #26324a;
+      --shadow: rgba(48, 58, 88, 0.24);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      color: var(--ink);
+      font-family: "Tahoma", "Noto Sans Thai", system-ui, sans-serif;
+      background: #f8d9ee;
+      user-select: none;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #f9e1f1;
+    }
+
+    .bg {
+      position: absolute;
+      inset: 0;
+      background-image: url("assets/classroom_bg.png");
+      background-size: cover;
+      background-position: center;
+      filter: saturate(1.06);
+    }
+
+    .bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(172, 216, 255, 0.55), transparent 18%, transparent 82%, rgba(255, 190, 219, 0.55)),
+        radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.38), transparent 34%);
+      pointer-events: none;
+    }
+
+    #webcam {
+      position: absolute;
+      left: -20px;
+      top: -20px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .hud {
+      position: absolute;
+      z-index: 8;
+      inset: 16px 16px auto;
+      display: grid;
+      grid-template-columns: minmax(190px, 260px) 1fr minmax(190px, 250px);
+      grid-template-areas:
+        "home title timer"
+        "score title step";
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .hud-card,
+    .home-button {
+      min-height: 78px;
+      border: 4px solid rgba(255, 255, 255, 0.94);
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.74));
+      box-shadow: 0 10px 26px var(--shadow), inset 0 0 0 3px rgba(255,255,255,0.35);
+      backdrop-filter: blur(8px);
+    }
+
+    .home-button {
+      grid-area: home;
+      pointer-events: auto;
+      border-color: #ffb6cf;
+      background: linear-gradient(180deg, #ffeaf4, #ffc6de);
+      color: #c02e69;
+      font-size: clamp(17px, 1.6vw, 24px);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .score-card {
+      grid-area: score;
+      border-color: #84cbff;
+      background: linear-gradient(180deg, #eff9ff, #bbebff);
+      padding: 8px 14px;
+    }
+
+    .timer-card {
+      grid-area: timer;
+      border-color: #ffe58a;
+      background: linear-gradient(180deg, #fff8ce, #ffed8f);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 8px;
+      padding: 6px 14px;
+    }
+
+    .step-card {
+      grid-area: step;
+      border-color: #cfb0ff;
+      background: linear-gradient(180deg, #f0dcff, #b988ff);
+      color: white;
+      padding: 8px 14px;
+      text-align: center;
+    }
+
+    .hud-label {
+      display: block;
+      color: white;
+      font-size: clamp(17px, 1.4vw, 22px);
+      font-weight: 900;
+      line-height: 1;
+      text-shadow: 0 2px 0 rgba(79, 70, 229, 0.24);
+    }
+
+    .timer-card .hud-label {
+      color: #854d0e;
+      text-shadow: none;
+    }
+
+    .hud-value {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      color: #2574da;
+      font-size: clamp(34px, 3.2vw, 54px);
+      font-weight: 900;
+      line-height: 1;
+      text-shadow: 0 3px 0 white;
+    }
+
+    .timer-card .hud-value {
+      color: #2d85e9;
+      min-width: 112px;
+      justify-content: flex-end;
+    }
+
+    .step-card .hud-value {
+      color: white;
+      font-size: clamp(31px, 3vw, 50px);
+      text-shadow: 0 3px 0 rgba(79, 70, 229, 0.28);
+    }
+
+    .step-card .progress-dots {
+      margin-top: 5px;
+      gap: 5px;
+    }
+
+    .step-card .dot {
+      width: clamp(14px, 1.35vw, 22px);
+      height: clamp(14px, 1.35vw, 22px);
+      border-width: 2px;
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.65), 0 2px 0 rgba(76, 64, 112, 0.18);
+    }
+
+    .star-icon,
+    .clock-icon {
+      font-size: clamp(38px, 3.3vw, 58px);
+      filter: drop-shadow(0 5px 0 rgba(255, 164, 0, 0.22));
+    }
+
+    .top-title {
+      position: absolute;
+      z-index: 6;
+      left: 50%;
+      top: 2px;
+      transform: translateX(-50%);
+      width: min(760px, 54vw);
+      padding: 2px 20px 8px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .top-title span {
+      display: block;
+      font-weight: 900;
+      line-height: 0.93;
+      letter-spacing: 0;
+      text-shadow:
+        0 4px 0 #ffffff,
+        0 -4px 0 #ffffff,
+        4px 0 0 #ffffff,
+        -4px 0 0 #ffffff,
+        0 8px 0 #ffb4d2,
+        0 16px 26px rgba(37, 99, 235, 0.2);
+    }
+
+    .top-title .line1 {
+      color: var(--deep-blue);
+      font-size: clamp(28px, 3.55vw, 50px);
+    }
+
+    .top-title .line2 {
+      color: #ff5e9e;
+      font-size: clamp(24px, 2.8vw, 40px);
+    }
+
+    .main-stage {
+      position: absolute;
+      z-index: 3;
+      left: 50%;
+      top: 51.5%;
+      width: min(42vw, 560px);
+      height: min(78vh, 760px);
+      transform: translate(-50%, -45%);
+      pointer-events: none;
+    }
+
+    .character-wrap {
+      position: absolute;
+      left: 50%;
+      bottom: 1%;
+      width: min(82%, 455px);
+      aspect-ratio: 1 / 1;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 20px 22px rgba(75, 55, 90, 0.2));
+    }
+
+    .character-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transform: translateZ(0);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .character-layer.is-visible {
+      opacity: 1;
+    }
+
+    .character-layer.base {
+      opacity: 1;
+    }
+
+    .dress-pop {
+      animation: dressPop 0.36s ease;
+    }
+
+    @keyframes dressPop {
+      0% { transform: scale(0.96); filter: brightness(1.2); }
+      65% { transform: scale(1.025); filter: brightness(1.08); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+
+    .rug-shadow {
+      position: absolute;
+      left: 50%;
+      bottom: 2%;
+      width: min(84%, 530px);
+      height: 16%;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse, rgba(105, 198, 222, 0.4), rgba(105, 198, 222, 0.12) 55%, transparent 72%);
+      pointer-events: none;
+    }
+
+    .cards-layer {
+      position: absolute;
+      z-index: 5;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .item-card {
+      position: absolute;
+      width: min(24vw, 330px);
+      min-width: 220px;
+      height: clamp(136px, 18vh, 190px);
+      padding: 10px 14px 12px;
+      border: 4px solid rgba(255, 255, 255, 0.96);
+      border-radius: 28px;
+      background: linear-gradient(145deg, rgba(255, 253, 195, 0.95), rgba(255, 255, 255, 0.84));
+      box-shadow: 0 12px 26px rgba(69, 53, 112, 0.22), inset 0 0 0 3px rgba(255, 255, 255, 0.3);
+      pointer-events: auto;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+      overflow: hidden;
+    }
+
+    .item-card:nth-child(even) {
+      background: linear-gradient(145deg, rgba(245, 226, 255, 0.96), rgba(255, 255, 255, 0.83));
+    }
+
+    .item-card.is-done {
+      filter: saturate(1.03);
+    }
+
+    .item-card.is-wrong {
+      animation: shake 0.32s ease;
+      box-shadow: 0 0 0 7px rgba(255, 95, 95, 0.65), 0 14px 32px rgba(255, 80, 80, 0.22);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    .item-art {
+      position: relative;
+      width: min(72%, 205px);
+      flex: 1 1 auto;
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .item-art img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 7px 9px rgba(31, 41, 55, 0.16));
+    }
+
+    .item-name {
+      position: relative;
+      width: 100%;
+      flex: 0 0 36px;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 8px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.48);
+      color: #53433c;
+      font-size: clamp(14px, 1.1vw, 18px);
+      font-weight: 900;
+      line-height: 1.1;
+      text-align: center;
+      text-shadow: 0 2px 0 rgba(255,255,255,0.82);
+    }
+
+    .check-mark {
+      position: absolute;
+      right: 12px;
+      bottom: 10px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: none;
+      place-items: center;
+      background: linear-gradient(180deg, #88ee4b, #35bd22);
+      color: white;
+      border: 4px solid white;
+      font-size: 32px;
+      font-weight: 900;
+      box-shadow: 0 6px 0 rgba(22, 163, 74, 0.22);
+    }
+
+    .item-card.is-done .check-mark {
+      display: grid;
+    }
+
+    .progress {
+      position: absolute;
+      z-index: 7;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      min-width: min(520px, 54vw);
+      padding: 10px 22px 16px;
+      border: 4px solid rgba(255,255,255,0.92);
+      border-radius: 28px;
+      background: rgba(215, 239, 255, 0.86);
+      box-shadow: 0 10px 26px var(--shadow), inset 0 0 0 3px rgba(255,255,255,0.35);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .progress-title {
+      display: block;
+      color: #66514d;
+      font-size: clamp(17px, 1.4vw, 24px);
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .progress-dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: clamp(34px, 3vw, 46px);
+      height: clamp(34px, 3vw, 46px);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #ffffff, #b7c1cd);
+      border: 4px solid white;
+      box-shadow: 0 3px 0 rgba(71, 85, 105, 0.16);
+      font-size: 0;
+    }
+
+    .dot.is-done {
+      background: linear-gradient(180deg, #82ed3f, #38bd21);
+    }
+
+    .dot.is-current {
+      background: linear-gradient(180deg, #ffe96c, #ffc31f);
+    }
+
+    .finger {
+      position: absolute;
+      z-index: 30;
+      left: 50%;
+      top: 50%;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #ffd21f;
+      border: 4px solid #fff7b8;
+      box-shadow: 0 0 0 13px rgba(255, 210, 31, 0.27), 0 8px 18px rgba(170, 110, 0, 0.28);
+      transform: translate(-50%, -50%);
+      display: none;
+      pointer-events: none;
+    }
+
+    .finger.is-visible {
+      display: block;
+    }
+
+    .effect {
+      position: absolute;
+      z-index: 28;
+      width: 84px;
+      height: 84px;
+      display: none;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.92);
+      border: 6px solid #fff;
+      box-shadow: 0 12px 28px rgba(51, 65, 85, 0.24);
+      font-size: 52px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      animation: pop 0.72s ease both;
+    }
+
+    .effect.show {
+      display: grid;
+    }
+
+    @keyframes pop {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      25% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+      100% { opacity: 0; transform: translate(-50%, -80%) scale(0.9); }
+    }
+
+    .overlay {
+      position: absolute;
+      z-index: 40;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 22px;
+      background: rgba(255, 226, 244, 0.24);
+      backdrop-filter: blur(5px);
+    }
+
+    .overlay.is-visible {
+      display: grid;
+    }
+
+    .menu-panel,
+    .result-panel {
+      width: min(850px, 94vw);
+      padding: clamp(18px, 3vw, 34px);
+      border-radius: 34px;
+      border: 6px solid rgba(255,255,255,0.96);
+      background:
+        radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.98) 0 70px, transparent 72px),
+        linear-gradient(145deg, rgba(255,255,255,0.96), rgba(238, 247, 255, 0.92));
+      box-shadow: 0 28px 70px rgba(64, 73, 100, 0.25);
+      text-align: center;
+    }
+
+    .menu-title,
+    .result-title {
+      margin: 0 0 12px;
+      color: var(--deep-blue);
+      font-size: clamp(38px, 5.2vw, 74px);
+      font-weight: 900;
+      line-height: 1.06;
+      letter-spacing: 0;
+      text-shadow: 0 4px 0 white, 0 9px 0 #ffbdd6, 0 18px 28px rgba(37, 99, 235, 0.16);
+    }
+
+    .menu-subtitle,
+    .result-subtitle {
+      max-width: 720px;
+      margin: 0 auto 18px;
+      color: #7c3aed;
+      font-size: clamp(18px, 2vw, 28px);
+      font-weight: 900;
+      line-height: 1.25;
+    }
+
+    .gender-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(180px, 1fr));
+      gap: 16px;
+      margin: 18px auto 14px;
+      max-width: 650px;
+    }
+
+    .gender-button,
+    .main-button,
+    .exit-button {
+      min-height: 70px;
+      border: 0;
+      border-radius: 24px;
+      color: white;
+      font: 900 clamp(21px, 2.25vw, 32px) "Tahoma", "Noto Sans Thai", system-ui, sans-serif;
+      cursor: pointer;
+      box-shadow: 0 8px 0 rgba(0,0,0,0.18), 0 16px 30px rgba(54, 72, 120, 0.22);
+      transition: transform 0.14s ease, box-shadow 0.14s ease, filter 0.14s ease;
+    }
+
+    .gender-button:hover,
+    .gender-button:focus-visible,
+    .main-button:hover,
+    .main-button:focus-visible,
+    .exit-button:hover,
+    .exit-button:focus-visible {
+      transform: translateY(-3px);
+      filter: saturate(1.08);
+      outline: 5px solid rgba(255, 216, 77, 0.55);
+    }
+
+    .gender-button:active,
+    .main-button:active,
+    .exit-button:active {
+      transform: translateY(5px);
+      box-shadow: 0 3px 0 rgba(0,0,0,0.18), 0 8px 16px rgba(54, 72, 120, 0.18);
+    }
+
+    .gender-button[data-gender="girl"] {
+      background: linear-gradient(180deg, #ff9ac5, #f0448e);
+    }
+
+    .gender-button[data-gender="boy"] {
+      background: linear-gradient(180deg, #75ceff, #1685e8);
+    }
+
+    .gender-button.is-selected {
+      outline: 7px solid rgba(255, 216, 77, 0.85);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .main-button {
+      min-width: min(300px, 82vw);
+      padding: 12px 26px;
+      background: linear-gradient(180deg, #6ee742, #28b913);
+    }
+
+    .secondary {
+      background: linear-gradient(180deg, #58c8ff, #1685e8);
+    }
+
+    .exit-button {
+      min-width: min(300px, 82vw);
+      padding: 12px 24px;
+      background: linear-gradient(180deg, #ffd6ad, #ff9f43);
+      color: #7c2d12;
+    }
+
+    .menu-note {
+      margin: 14px auto 0;
+      color: #64748b;
+      font-size: clamp(14px, 1.35vw, 18px);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .result-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 18px auto;
+      max-width: 720px;
+    }
+
+    .result-stat {
+      min-height: 106px;
+      border-radius: 24px;
+      border: 4px solid rgba(255,255,255,0.92);
+      background: linear-gradient(180deg, #fff, #eaf7ff);
+      display: grid;
+      place-items: center;
+      padding: 12px;
+      box-shadow: 0 10px 24px rgba(64, 73, 100, 0.16);
+      color: #2563eb;
+      font-size: clamp(22px, 2.2vw, 34px);
+      font-weight: 900;
+      line-height: 1.16;
+    }
+
+    .result-stat span {
+      display: block;
+      color: #7c3aed;
+      font-size: clamp(14px, 1.3vw, 18px);
+    }
+
+    @media (max-width: 980px) {
+      .top-title { width: min(680px, 68vw); }
+      .hud { grid-template-columns: minmax(150px, 220px) 1fr minmax(150px, 210px); }
+      .main-stage { width: min(47vw, 520px); }
+      .item-card { min-width: 190px; width: 27vw; }
+      .item-name { font-size: clamp(14px, 1.7vw, 19px); }
+    }
+
+    @media (max-width: 720px) {
+      .top-title {
+        top: 94px;
+        width: 92vw;
+      }
+
+      .hud {
+        inset: 8px 8px auto;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+          "home timer"
+          "score step";
+        gap: 7px;
+      }
+
+      .hud-card,
+      .home-button {
+        min-height: 58px;
+        border-radius: 18px;
+      }
+
+      .main-stage {
+        top: 35vh;
+        width: min(72vw, 430px);
+        height: 46vh;
+      }
+
+      .cards-layer {
+        overflow: auto;
+        top: 50vh;
+        bottom: 84px;
+        padding: 8px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+        gap: 8px;
+      }
+
+      .item-card {
+        position: relative;
+        width: auto;
+        min-width: 0;
+        height: 136px;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+      }
+
+      .progress {
+        width: calc(100vw - 16px);
+        min-width: 0;
+      }
+
+      .gender-row,
+      .result-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" id="app">
+    <div class="bg" aria-hidden="true"></div>
+    <video id="webcam" playsinline muted></video>
+
+    <section class="hud" aria-label="ข้อมูลเกม">
+      <button class="home-button" id="homeButton" type="button">🏠 กลับหน้าแรก</button>
+      <div class="hud-card score-card">
+        <span class="hud-label">คะแนน</span>
+        <strong class="hud-value"><span class="star-icon">⭐</span><span id="scoreText">0</span></strong>
+      </div>
+      <div class="hud-card timer-card">
+        <span class="clock-icon">🕒</span>
+        <div>
+          <span class="hud-label">เวลา</span>
+          <strong class="hud-value" id="timeText">00:00</strong>
+        </div>
+      </div>
+      <div class="hud-card step-card">
+        <span class="hud-label">ขั้นตอน</span>
+        <strong class="hud-value" id="stepText">1 / 5</strong>
+        <div class="progress-dots" id="progressDots" aria-label="ลำดับขั้นตอน"></div>
+      </div>
+    </section>
+
+    <div class="top-title" aria-hidden="true">
+      <span class="line1">แต่งตัวชุดนักเรียน</span>
+      <span class="line2">ให้ถูกขั้นตอน</span>
+    </div>
+
+    <section class="main-stage" aria-label="ตัวละคร">
+      <div class="rug-shadow" aria-hidden="true"></div>
+      <div class="character-wrap" id="characterWrap"></div>
+    </section>
+
+    <section class="cards-layer" id="cardsLayer" aria-label="การ์ดเครื่องแต่งกาย"></section>
+
+    <div class="finger" id="finger" aria-hidden="true"></div>
+    <div class="effect" id="effect" aria-hidden="true"></div>
+
+    <section class="overlay is-visible" id="menuOverlay">
+      <div class="menu-panel">
+        <h1 class="menu-title">🎒 เกมแต่งตัวชุดนักเรียน</h1>
+        <p class="menu-subtitle">ใช้นิ้วชี้แตะการ์ด หรือใช้เมาส์เลือกเครื่องแต่งกายให้ถูกลำดับ</p>
+        <div class="gender-row">
+          <button class="gender-button is-selected" data-gender="girl" type="button">👧 นักเรียนหญิง</button>
+          <button class="gender-button" data-gender="boy" type="button">👦 นักเรียนชาย</button>
+        </div>
+        <div class="button-row">
+          <button class="main-button" id="startButton" type="button">▶ เริ่มเกม</button>
+          <button class="exit-button" id="exitButton" type="button">🚪 ออกจากเกม</button>
+        </div>
+        <p class="menu-note" id="menuNote">เมื่อ Chrome ถาม ให้กดอนุญาตใช้กล้องเพื่อจับปลายนิ้วชี้ รองรับเมาส์เป็นโหมดสำรอง</p>
+      </div>
+    </section>
+
+    <section class="overlay" id="resultOverlay">
+      <div class="result-panel">
+        <h2 class="result-title">🎉 แต่งตัวเสร็จแล้ว</h2>
+        <p class="result-subtitle" id="rankText">สุดยอด</p>
+        <div class="result-stats">
+          <div class="result-stat"><span>คะแนนรวม</span><strong id="finalScore">0</strong></div>
+          <div class="result-stat"><span>เวลาที่ใช้</span><strong id="finalTime">00:00</strong></div>
+          <div class="result-stat"><span>ระดับผลลัพธ์</span><strong id="finalRank">สุดยอด</strong></div>
+        </div>
+        <div class="button-row">
+          <button class="main-button" id="retryButton" type="button">🔄 เล่นอีกครั้ง</button>
+          <button class="main-button secondary" id="menuButton" type="button">🏠 กลับหน้าแรก</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script>
+    const characterWrap = document.getElementById("characterWrap");
+    const videoElement = document.getElementById("webcam");
+    const cardsLayer = document.getElementById("cardsLayer");
+    const progressDots = document.getElementById("progressDots");
+    const finger = document.getElementById("finger");
+    const effect = document.getElementById("effect");
+    const menuOverlay = document.getElementById("menuOverlay");
+    const resultOverlay = document.getElementById("resultOverlay");
+    const scoreText = document.getElementById("scoreText");
+    const timeText = document.getElementById("timeText");
+    const stepText = document.getElementById("stepText");
+    const finalScore = document.getElementById("finalScore");
+    const finalTime = document.getElementById("finalTime");
+    const finalRank = document.getElementById("finalRank");
+    const rankText = document.getElementById("rankText");
+    const menuNote = document.getElementById("menuNote");
+    const startButton = document.getElementById("startButton");
+    const retryButton = document.getElementById("retryButton");
+    const menuButton = document.getElementById("menuButton");
+    const homeButton = document.getElementById("homeButton");
+    const exitButton = document.getElementById("exitButton");
+
+    const ASSET_DIR = "assets/";
+    const game = {
+      gender: "girl",
+      mode: "menu",
+      score: 0,
+      step: 0,
+      elapsed: 0,
+      lastTime: performance.now(),
+      handReady: false,
+      hitCooldown: 0,
+      hoverCard: null,
+      hoverStart: 0,
+      waitForFingerRelease: false,
+      cardOrder: [],
+      cardRects: [],
+      visibleLayers: new Set()
+    };
+
+    let hands = null;
+    let cameraFeed = null;
+    let audioContext = null;
+
+    const layerDepth = {
+      undershirt: 2,
+      socks: 3,
+      shoes: 4,
+      skirt: 5,
+      shorts: 5,
+      shirt: 6,
+      belt: 7
+    };
+
+    const clothesData = {
+      girl: [
+        { id: "undershirt", name: "เสื้อกล้าม", layer: "girl_undershirt.png", thumb: "girl_undershirt_thumb.png" },
+        { id: "shirt", name: "เสื้อนักเรียนคอบัวสีขาว", layer: "girl_shirt.png", thumb: "girl_shirt_thumb.png" },
+        { id: "skirt", name: "กระโปรงนักเรียนสีน้ำเงิน", layer: "girl_skirt.png", thumb: "girl_skirt_thumb.png" },
+        { id: "socks", name: "ถุงเท้า", layer: "girl_socks.png", thumb: "girl_socks_thumb.png" },
+        { id: "shoes", name: "รองเท้า", layer: "girl_shoes.png", thumb: "girl_shoes_thumb.png" }
+      ],
+      boy: [
+        { id: "undershirt", name: "เสื้อกล้าม", layer: "boy_undershirt.png", thumb: "boy_undershirt_thumb.png" },
+        { id: "shirt", name: "เสื้อนักเรียนสีขาว", layer: "boy_shirt.png", thumb: "boy_shirt_thumb.png" },
+        { id: "shorts", name: "กางเกงนักเรียนขาสั้นสีดำ", layer: "boy_shorts.png", thumb: "boy_shorts_thumb.png" },
+        { id: "belt", name: "เข็มขัด", layer: "boy_belt.png", thumb: "boy_belt_thumb.png" },
+        { id: "socks", name: "ถุงเท้า", layer: "boy_socks.png", thumb: "boy_socks_thumb.png" },
+        { id: "shoes", name: "รองเท้า", layer: "boy_shoes.png", thumb: "boy_shoes_thumb.png" }
+      ]
+    };
+
+    function currentItems() {
+      return clothesData[game.gender];
+    }
+
+    function getAudioContext() {
+      const AudioClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioClass) return null;
+      if (!audioContext) audioContext = new AudioClass();
+      if (audioContext.state === "suspended") audioContext.resume();
+      return audioContext;
+    }
+
+    function playTone(frequency, delay, duration, type = "sine", volume = 0.08) {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const start = ctx.currentTime + delay;
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, start);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(volume, start + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+      oscillator.start(start);
+      oscillator.stop(start + duration + 0.03);
+    }
+
+    function playSound(name) {
+      if (name === "start") {
+        playTone(523, 0, 0.08, "triangle", 0.07);
+        playTone(659, 0.08, 0.1, "triangle", 0.07);
+        return;
+      }
+      if (name === "correct") {
+        playTone(660, 0, 0.08, "sine", 0.09);
+        playTone(880, 0.08, 0.13, "sine", 0.09);
+        return;
+      }
+      if (name === "wrong") {
+        playTone(220, 0, 0.12, "square", 0.04);
+        playTone(165, 0.1, 0.13, "square", 0.035);
+        return;
+      }
+      if (name === "finish") {
+        [523, 659, 784, 1046].forEach((freq, index) => {
+          playTone(freq, index * 0.09, 0.16, "triangle", 0.08);
+        });
+      }
+    }
+
+    function shuffledIndices(length) {
+      const order = Array.from({ length }, (_, index) => index);
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+      }
+      if (order.every((value, index) => value === index) && order.length > 1) {
+        [order[0], order[1]] = [order[1], order[0]];
+      }
+      return order;
+    }
+
+    function layoutFor(index, total) {
+      const leftPositions = total === 5
+        ? [[3.5, 32], [3.5, 55], [3.5, 78]]
+        : [[3.5, 31], [3.5, 52], [3.5, 73]];
+      const rightPositions = total === 5
+        ? [[73.2, 39], [73.2, 64]]
+        : [[73.2, 39], [73.2, 57.75], [73.2, 76.5]];
+      const split = Math.ceil(total / 2);
+      const positions = index < split ? leftPositions[index] : rightPositions[index - split];
+      return { left: `${positions[0]}vw`, top: `${positions[1]}vh` };
+    }
+
+    function renderCharacter() {
+      characterWrap.innerHTML = "";
+      const base = document.createElement("img");
+      base.className = "character-layer base";
+      base.alt = "";
+      base.src = `${ASSET_DIR}${game.gender}_base.png`;
+      base.style.zIndex = "1";
+      characterWrap.appendChild(base);
+
+      currentItems().forEach((item) => {
+        const img = document.createElement("img");
+        img.className = "character-layer";
+        img.dataset.layer = item.id;
+        img.alt = "";
+        img.src = `${ASSET_DIR}${item.layer}`;
+        img.style.zIndex = String(layerDepth[item.id] || 3);
+        if (game.visibleLayers.has(item.id)) img.classList.add("is-visible");
+        characterWrap.appendChild(img);
+      });
+    }
+
+    function renderCards() {
+      cardsLayer.innerHTML = "";
+      const items = currentItems();
+      if (game.cardOrder.length !== items.length) game.cardOrder = shuffledIndices(items.length);
+
+      game.cardOrder.forEach((itemIndex, displayIndex) => {
+        const item = items[itemIndex];
+        const card = document.createElement("button");
+        card.className = "item-card";
+        card.type = "button";
+        card.dataset.index = String(itemIndex);
+        const pos = layoutFor(displayIndex, items.length);
+        card.style.left = pos.left;
+        card.style.top = pos.top;
+        card.innerHTML = `
+          <span class="item-art"><img src="${ASSET_DIR}${item.thumb}" alt=""></span>
+          <span class="item-name">${item.name}</span>
+          <span class="check-mark">✓</span>
+        `;
+        card.addEventListener("click", () => chooseItem(itemIndex, card));
+        cardsLayer.appendChild(card);
+      });
+      renderProgress();
+      refreshCards();
+      requestAnimationFrame(updateCardRects);
+    }
+
+    function renderProgress() {
+      progressDots.innerHTML = "";
+      currentItems().forEach(() => {
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        progressDots.appendChild(dot);
+      });
+    }
+
+    function refreshCards() {
+      const cards = [...cardsLayer.querySelectorAll(".item-card")];
+      cards.forEach((card) => {
+        const itemIndex = Number(card.dataset.index);
+        card.classList.toggle("is-done", itemIndex < game.step);
+      });
+      [...progressDots.children].forEach((dot, index) => {
+        dot.classList.toggle("is-done", index < game.step);
+        dot.classList.toggle("is-current", index === game.step);
+      });
+      stepText.textContent = `${Math.min(game.step + 1, currentItems().length)} / ${currentItems().length}`;
+    }
+
+    function revealLayer(id) {
+      game.visibleLayers.add(id);
+      const layer = characterWrap.querySelector(`[data-layer="${id}"]`);
+      if (!layer) return;
+      layer.classList.add("is-visible");
+      layer.classList.remove("dress-pop");
+      void layer.offsetWidth;
+      layer.classList.add("dress-pop");
+    }
+
+    function chooseItem(index, card) {
+      if (game.mode !== "playing" || game.hitCooldown > 0) return;
+      if (index < game.step) return;
+      game.hitCooldown = 0.55;
+      const expected = game.step;
+      const rect = card.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+
+      if (index === expected) {
+        game.score += 1;
+        revealLayer(currentItems()[index].id);
+        game.step += 1;
+        playSound("correct");
+        showEffect("✅", cx, cy);
+        refreshCards();
+        if (game.step >= currentItems().length) finishGame();
+      } else {
+        game.score -= 1;
+        playSound("wrong");
+        card.classList.add("is-wrong");
+        showEffect("❌", cx, cy);
+        setTimeout(() => card.classList.remove("is-wrong"), 360);
+      }
+      updateHud();
+    }
+
+    function showEffect(icon, x, y) {
+      effect.textContent = icon;
+      effect.style.left = `${x}px`;
+      effect.style.top = `${y}px`;
+      effect.classList.remove("show");
+      void effect.offsetWidth;
+      effect.classList.add("show");
+      setTimeout(() => effect.classList.remove("show"), 720);
+    }
+
+    async function ensureHands() {
+      if (game.handReady) return true;
+      if (!window.Hands || !window.Camera) {
+        menuNote.textContent = "โหลด MediaPipe Hands ไม่สำเร็จ ใช้เมาส์เลือกการ์ดได้";
+        return false;
+      }
+      try {
+        hands = new Hands({
+          locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+        });
+        hands.setOptions({
+          maxNumHands: 1,
+          modelComplexity: 0,
+          minDetectionConfidence: 0.62,
+          minTrackingConfidence: 0.62
+        });
+        hands.onResults(onHandResults);
+        cameraFeed = new Camera(videoElement, {
+          onFrame: async () => {
+            if (hands) await hands.send({ image: videoElement });
+          },
+          width: 640,
+          height: 480
+        });
+        await cameraFeed.start();
+        game.handReady = true;
+        menuNote.textContent = "กล้องพร้อม ใช้ปลายนิ้วชี้แตะการ์ดได้เลย";
+        return true;
+      } catch (error) {
+        console.error(error);
+        menuNote.textContent = "เปิดกล้องไม่ได้ ใช้เมาส์เลือกการ์ดได้";
+        return false;
+      }
+    }
+
+    function onHandResults(results) {
+      if (!results.multiHandLandmarks || !results.multiHandLandmarks.length) {
+        finger.classList.remove("is-visible");
+        game.hoverCard = null;
+        game.waitForFingerRelease = false;
+        return;
+      }
+      const tip = results.multiHandLandmarks[0][8];
+      const x = (1 - tip.x) * window.innerWidth;
+      const y = tip.y * window.innerHeight;
+      finger.style.left = `${x}px`;
+      finger.style.top = `${y}px`;
+      finger.classList.add("is-visible");
+      checkFingerHit(x, y);
+    }
+
+    function updateCardRects() {
+      game.cardRects = [...cardsLayer.querySelectorAll(".item-card")].map((card) => ({
+        card,
+        index: Number(card.dataset.index),
+        rect: card.getBoundingClientRect()
+      }));
+    }
+
+    function checkFingerHit(x, y) {
+      if (game.mode !== "playing") return;
+      const now = performance.now();
+      const hit = game.cardRects.find(({ rect }) => (
+        x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+      ));
+      if (!hit) {
+        game.hoverCard = null;
+        game.waitForFingerRelease = false;
+        return;
+      }
+      if (game.waitForFingerRelease || game.hitCooldown > 0) return;
+      if (hit.index < game.step) return;
+      if (game.hoverCard !== hit.card) {
+        game.hoverCard = hit.card;
+        game.hoverStart = now;
+        return;
+      }
+      if (now - game.hoverStart > 280) {
+        chooseItem(hit.index, hit.card);
+        game.waitForFingerRelease = true;
+        game.hoverStart = now + 900;
+      }
+    }
+
+    function updateHud() {
+      scoreText.textContent = String(game.score);
+      timeText.textContent = formatTime(game.elapsed);
+      stepText.textContent = `${Math.min(game.step + 1, currentItems().length)} / ${currentItems().length}`;
+    }
+
+    function formatTime(seconds) {
+      const total = Math.floor(seconds);
+      const m = String(Math.floor(total / 60)).padStart(2, "0");
+      const s = String(total % 60).padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    function resultRank() {
+      if (game.score >= currentItems().length && game.elapsed <= 45) return "สุดยอด";
+      if (game.score >= currentItems().length - 1) return "ยอดเยี่ยม";
+      return "เก่งมาก";
+    }
+
+    function startGame() {
+      game.mode = "playing";
+      game.score = 0;
+      game.step = 0;
+      game.elapsed = 0;
+      game.hitCooldown = 0;
+      game.waitForFingerRelease = false;
+      game.hoverCard = null;
+      game.visibleLayers.clear();
+      game.cardOrder = shuffledIndices(currentItems().length);
+      menuOverlay.classList.remove("is-visible");
+      resultOverlay.classList.remove("is-visible");
+      finger.classList.toggle("is-visible", game.handReady);
+      playSound("start");
+      renderCharacter();
+      renderCards();
+      updateHud();
+    }
+
+    function finishGame() {
+      game.mode = "finished";
+      playSound("finish");
+      const rank = resultRank();
+      finalScore.textContent = String(game.score);
+      finalTime.textContent = formatTime(game.elapsed);
+      finalRank.textContent = rank;
+      rankText.textContent = `🏆 ${rank}`;
+      resultOverlay.classList.add("is-visible");
+    }
+
+    function goHome() {
+      game.mode = "menu";
+      game.cardOrder = shuffledIndices(currentItems().length);
+      menuOverlay.classList.add("is-visible");
+      resultOverlay.classList.remove("is-visible");
+      finger.classList.remove("is-visible");
+      renderCards();
+      updateHud();
+    }
+
+    function exitGame() {
+      game.mode = "menu";
+      finger.classList.remove("is-visible");
+      resultOverlay.classList.remove("is-visible");
+      menuOverlay.classList.add("is-visible");
+      menuNote.textContent = "ออกจากเกมแล้ว เลือกนักเรียนแล้วกดเริ่มเกมเมื่อต้องการเล่นใหม่";
+      try { window.close(); } catch (error) { console.info("Browser did not allow window.close()."); }
+    }
+
+    document.querySelectorAll(".gender-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        game.gender = button.dataset.gender;
+        document.querySelectorAll(".gender-button").forEach((item) => item.classList.remove("is-selected"));
+        button.classList.add("is-selected");
+        game.visibleLayers.clear();
+        game.cardOrder = shuffledIndices(currentItems().length);
+        renderCharacter();
+        renderCards();
+        updateHud();
+      });
+    });
+
+    startButton.addEventListener("click", async () => {
+      startButton.disabled = true;
+      await ensureHands();
+      startButton.disabled = false;
+      startGame();
+    });
+    retryButton.addEventListener("click", startGame);
+    menuButton.addEventListener("click", goHome);
+    homeButton.addEventListener("click", goHome);
+    exitButton.addEventListener("click", exitGame);
+
+    function loop(now) {
+      const dt = Math.min(0.05, (now - game.lastTime) / 1000 || 0);
+      game.lastTime = now;
+      if (game.mode === "playing") {
+        game.elapsed += dt;
+        game.hitCooldown = Math.max(0, game.hitCooldown - dt);
+        updateHud();
+      }
+      requestAnimationFrame(loop);
+    }
+
+    window.addEventListener("resize", updateCardRects);
+    renderCharacter();
+    renderCards();
+    updateHud();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>

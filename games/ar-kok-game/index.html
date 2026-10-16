@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>เกม AR แม่ กก</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <video id="camera" class="camera" autoplay muted playsinline></video>
+      <div class="camera-fallback" aria-hidden="true">
+        <span class="bubble b1"></span>
+        <span class="bubble b2"></span>
+        <span class="bubble b3"></span>
+        <span class="bubble b4"></span>
+        <div class="pastel-hills"></div>
+      </div>
+
+      <section class="topbar" aria-label="ข้อมูลเกม">
+        <div class="stat">
+          <span class="stat-icon">⏱</span>
+          <span class="stat-label">เวลา</span>
+          <strong id="timeLeft">60</strong>
+          <span class="stat-unit">วินาที</span>
+        </div>
+        <div class="title-sign" aria-label="เกม AR มาตราแม่ กก">
+          <h1>เกมตีคำ</h1>
+          <p>แม่ กก</p>
+        </div>
+        <div class="stat">
+          <span class="stat-icon">⭐</span>
+          <span class="stat-label">คะแนน</span>
+          <strong id="score">0</strong>
+          <span class="stat-unit">คะแนน</span>
+        </div>
+      </section>
+
+      <section class="play-stage" aria-label="สนามเกม">
+        <div class="candy-board">
+          <div class="sparkles" aria-hidden="true"></div>
+          <div id="targets" class="targets" aria-label="คำศัพท์ที่ต้องเลือก"></div>
+        </div>
+      </section>
+
+      <section id="startScreen" class="start-screen" aria-live="polite">
+        <div class="start-card">
+          <h2 id="startTitle">เกมตีคำ แม่ กก</h2>
+          <p id="startCopy">กติกาการเล่น</p>
+          <ul class="rules-list">
+            <li>แต่ละรอบมีคำขึ้นมา 2 คำ</li>
+            <li>เลือกตีคำที่อยู่ในมาตราแม่ กก</li>
+            <li>แม่ กก คือคำที่สะกดด้วยเสียง ก เช่น ก ข ค ฆ</li>
+            <li>ตีถูกได้ 1 คะแนน ตีผิดได้ 0 คะแนน</li>
+          </ul>
+          <div class="rules">
+            <span class="good">ถูก +1</span>
+            <span class="bad">ผิด 0</span>
+          </div>
+          <button id="startButton" class="primary-button" type="button">เริ่มแบบเปิดกล้อง AR</button>
+          <button id="noCameraButton" class="ghost-button no-camera-button" type="button">เริ่มแบบไม่เปิดกล้อง</button>
+          <button id="exitButton" class="secondary-button exit-button" type="button">ออกจากเกม</button>
+        </div>
+      </section>
+
+      <div id="message" class="message" aria-live="assertive"></div>
+      <div id="wand" class="wand" aria-hidden="true"></div>
+      <div id="confetti" class="confetti" aria-hidden="true"></div>
+    </main>
+
+    <script src="./game.js"></script>
+  </body>
+</html>

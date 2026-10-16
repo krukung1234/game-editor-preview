@@ -1,0 +1,2473 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>หนูน้อยผจญภัย เก็บชีสแสนอร่อย</title>
+  <style>
+    :root {
+      --ink: #16372d;
+      --muted: #5f7169;
+      --panel: rgba(255, 253, 247, 0.92);
+      --line: rgba(52, 72, 61, 0.14);
+      --green: #71c94a;
+      --green-dark: #239443;
+      --lime: #bfe256;
+      --sky: #9edcf6;
+      --sun: #ffc83d;
+      --orange: #ff8b22;
+      --pink: #ffccd1;
+      --rose: #d93445;
+      --blue: #56b7df;
+      --purple: #b85cff;
+      --shadow: 0 10px 24px rgba(52, 68, 55, 0.16);
+      --soft-shadow: 0 4px 12px rgba(52, 68, 55, 0.12);
+      font-family: "Trebuchet MS", "Noto Sans Thai", "Tahoma", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 14% 18%, rgba(255,255,255,0.95) 0 13%, transparent 27%),
+        linear-gradient(180deg, #c9efff 0%, #e9f9ff 42%, #bee984 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: auto 0 0;
+      height: 34vh;
+      background:
+        linear-gradient(168deg, transparent 0 45%, rgba(88, 177, 81, 0.34) 46% 58%, transparent 59%),
+        linear-gradient(12deg, rgba(135, 209, 82, 0.46), rgba(191, 226, 86, 0.56));
+      z-index: -1;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      width: min(1580px, calc(100% - 24px));
+      margin: 10px auto 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.68);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar {
+      min-height: 112px;
+      display: grid;
+      grid-template-columns: auto 1fr auto auto auto auto;
+      gap: clamp(12px, 2vw, 28px);
+      align-items: center;
+      padding: 14px 26px;
+    }
+
+    .brand {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand > div:last-child {
+      min-width: 0;
+    }
+
+    .mouse-badge {
+      width: 82px;
+      height: 82px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(#fff, #f8f5ec);
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,0.65), var(--soft-shadow);
+      position: relative;
+    }
+
+    .mouse-art {
+      width: 74px;
+      height: 66px;
+      position: relative;
+    }
+
+    .ear {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #c6c8c7;
+      border: 3px solid #5f6864;
+      position: absolute;
+      top: 1px;
+    }
+    .ear::after {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      background: #ff9fb1;
+    }
+    .ear.left { left: 2px; transform: rotate(-24deg); }
+    .ear.right { right: 2px; transform: rotate(24deg); }
+    .face {
+      position: absolute;
+      left: 9px;
+      right: 9px;
+      top: 16px;
+      height: 46px;
+      border-radius: 48% 48% 44% 44%;
+      background: linear-gradient(145deg, #d9dcda, #b9bebc);
+      border: 2px solid #5f6864;
+    }
+    .eye {
+      width: 7px;
+      height: 9px;
+      border-radius: 50%;
+      background: #1e2522;
+      position: absolute;
+      top: 19px;
+    }
+    .eye.left { left: 16px; }
+    .eye.right { right: 16px; }
+    .nose {
+      position: absolute;
+      left: 50%;
+      top: 28px;
+      width: 9px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ef6f7f;
+      transform: translateX(-50%);
+    }
+    .whisker {
+      position: absolute;
+      top: 30px;
+      width: 18px;
+      height: 1px;
+      background: rgba(35,45,40,0.62);
+    }
+    .whisker.l1 { left: -4px; transform: rotate(9deg); }
+    .whisker.l2 { left: -4px; top: 35px; transform: rotate(-7deg); }
+    .whisker.r1 { right: -4px; transform: rotate(-9deg); }
+    .whisker.r2 { right: -4px; top: 35px; transform: rotate(7deg); }
+
+    .eyebrow {
+      color: #df4f13;
+      font-size: clamp(14px, 1.4vw, 19px);
+      font-weight: 900;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    h1 {
+      margin: 4px 0 3px;
+      color: #315d3e;
+      font-size: clamp(24px, 2.5vw, 38px);
+      line-height: 1.05;
+      letter-spacing: 0;
+      text-shadow: 0 2px 0 rgba(255,255,255,0.85);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: #2b9b52;
+      font-size: clamp(14px, 1.45vw, 20px);
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .level-pill, .icon-button, .reset-button {
+      border: 0;
+      min-height: 54px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 0 28px;
+      font-weight: 900;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .level-pill {
+      background: linear-gradient(#fffef8, #f3f0e8);
+      border: 1px solid var(--line);
+      min-width: 194px;
+      font-size: 24px;
+    }
+
+    .icon-button {
+      background: linear-gradient(#fff, #f6f2ec);
+      color: #5a4437;
+      font-size: 18px;
+    }
+
+    .reset-button {
+      background: linear-gradient(#ffd7db, #f6bfc5);
+      color: #b7162d;
+      font-size: 18px;
+    }
+
+    .help-button {
+      background: linear-gradient(#fff1c9, #ffe0a1);
+      color: #7a4c12;
+      font-size: 18px;
+    }
+
+    .info-strip {
+      display: grid;
+      grid-template-columns: 1.45fr 0.7fr 1.25fr 0.78fr;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 38px;
+    }
+
+    .info-block {
+      min-height: 76px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid var(--line);
+      padding-right: 16px;
+    }
+
+    .info-block:last-child { border-right: 0; padding-right: 0; }
+
+    .label {
+      font-size: 18px;
+      font-weight: 900;
+      margin: 0 0 7px;
+    }
+
+    .stage-name {
+      margin: 0;
+      color: #df4f13;
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .desc, .goal-list {
+      margin: 4px 0 0;
+      color: #213e34;
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .goal-line {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 2px 0;
+      font-weight: 700;
+    }
+
+    .check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      color: #fff;
+      background: #50ae5c;
+      font-weight: 900;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.12);
+      flex: 0 0 auto;
+    }
+
+    .stars {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .score-panel {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .score-total {
+      color: #24573b;
+      font-size: clamp(24px, 2.4vw, 36px);
+      font-weight: 900;
+      line-height: 1;
+      text-shadow: 0 2px 0 rgba(255,255,255,0.8);
+    }
+
+    .score-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      color: #52665b;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .score-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 24px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(80, 92, 76, 0.12);
+    }
+
+    .star {
+      width: clamp(44px, 5vw, 64px);
+      height: clamp(44px, 5vw, 64px);
+      filter: drop-shadow(0 4px 0 #d88405);
+      color: #ffc51e;
+    }
+
+    .rules {
+      background: linear-gradient(135deg, #ffd9dd, #fff4f0);
+      border-radius: 8px;
+      padding: 8px 18px;
+      color: #6e3b31;
+      font-weight: 800;
+      display: grid;
+      gap: 4px;
+      font-size: 15px;
+    }
+
+    .rule-line {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.7);
+      padding-bottom: 2px;
+    }
+    .rule-line:last-child { border-bottom: 0; padding-bottom: 0; }
+
+    .main {
+      display: grid;
+      grid-template-columns: minmax(520px, 1fr) minmax(520px, 1.1fr);
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .board-card {
+      padding: 16px 36px 12px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 610px;
+    }
+
+    .grid-shell {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      grid-template-rows: 32px 1fr;
+      align-items: stretch;
+      min-height: 0;
+    }
+
+    .col-heads {
+      grid-column: 2;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      align-items: end;
+      text-align: center;
+      font-weight: 900;
+      font-size: 17px;
+    }
+
+    .row-heads {
+      grid-row: 2;
+      display: grid;
+      grid-template-rows: repeat(6, 1fr);
+      align-items: center;
+      text-align: left;
+      font-weight: 900;
+      font-size: 17px;
+    }
+
+    .grid {
+      grid-column: 2;
+      grid-row: 2;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(6, 1fr);
+      gap: 4px;
+      min-height: 0;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      align-self: center;
+      justify-self: center;
+      max-height: 520px;
+    }
+
+    .cell {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      background:
+        radial-gradient(circle at 28% 20%, rgba(255,255,255,0.24), transparent 36%),
+        linear-gradient(145deg, #c9e85c, #a5d543);
+      border-radius: 5px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.42);
+      overflow: hidden;
+    }
+
+    .cell.block {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.16), transparent),
+        repeating-linear-gradient(45deg, #8fb06f 0 12px, #7da260 12px 24px);
+    }
+
+    .cell.portal {
+      outline: 3px dashed #ff6f80;
+      outline-offset: -9px;
+    }
+
+    .cell.hint {
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,0.68), 0 0 0 3px rgba(255,215,64,0.78);
+    }
+
+    .piece {
+      position: absolute;
+      inset: 7%;
+      display: grid;
+      place-items: center;
+      font-size: clamp(30px, 5.2vw, 58px);
+      line-height: 1;
+      z-index: 1;
+      user-select: none;
+      transition: transform 180ms ease, opacity 180ms ease;
+    }
+
+    .player-mouse {
+      inset: 10%;
+      z-index: 3;
+      display: block;
+      filter: drop-shadow(0 5px 0 rgba(27,78,39,0.22));
+      transform-origin: 50% 50%;
+    }
+
+    .player-mouse.right { transform: rotate(0deg); }
+    .player-mouse.down { transform: rotate(90deg); }
+    .player-mouse.left { transform: rotate(180deg); }
+    .player-mouse.up { transform: rotate(-90deg); }
+
+    .pm-tail, .pm-body, .pm-head, .pm-ear, .pm-eye, .pm-nose, .pm-whisker {
+      position: absolute;
+      display: block;
+    }
+
+    .pm-tail {
+      left: 1%;
+      top: 51%;
+      width: 24%;
+      height: 5px;
+      border-radius: 99px;
+      background: #8e9893;
+      transform: rotate(10deg);
+      transform-origin: right center;
+    }
+
+    .pm-body {
+      left: 12%;
+      top: 29%;
+      width: 54%;
+      height: 43%;
+      border-radius: 52% 44% 44% 52%;
+      background: linear-gradient(135deg, #d8dcda, #aeb8b3);
+      border: 2px solid #5e6a65;
+    }
+
+    .pm-head {
+      right: 7%;
+      top: 24%;
+      width: 41%;
+      height: 52%;
+      border-radius: 50% 57% 57% 50%;
+      background: linear-gradient(135deg, #dfe2e0, #b9c0bd);
+      border: 2px solid #5e6a65;
+    }
+
+    .pm-ear {
+      right: 30%;
+      width: 24%;
+      height: 24%;
+      border-radius: 50%;
+      background: #bdc4c0;
+      border: 2px solid #5e6a65;
+    }
+
+    .pm-ear::after {
+      content: "";
+      position: absolute;
+      inset: 20%;
+      border-radius: 50%;
+      background: #ff9fb1;
+    }
+
+    .pm-ear.top { top: 8%; }
+    .pm-ear.bottom { bottom: 8%; }
+
+    .pm-eye {
+      right: 20%;
+      top: 38%;
+      width: 8%;
+      height: 8%;
+      border-radius: 50%;
+      background: #1e2522;
+      box-shadow: 0 14px 0 #1e2522;
+    }
+
+    .pm-nose {
+      right: 2%;
+      top: 46%;
+      width: 10%;
+      height: 11%;
+      border-radius: 50%;
+      background: #ef6f7f;
+      border: 1px solid rgba(80, 70, 70, 0.32);
+    }
+
+    .pm-whisker {
+      right: -1%;
+      top: 43%;
+      width: 24%;
+      height: 1px;
+      background: rgba(35,45,40,0.68);
+      box-shadow: 0 9px 0 rgba(35,45,40,0.68);
+      transform: rotate(-10deg);
+      transform-origin: left center;
+    }
+
+    .glow {
+      position: absolute;
+      inset: 7px;
+      border: 4px solid rgba(255,252,75,0.95);
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(255,252,75,0.86);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .legend {
+      margin-top: 10px;
+      min-height: 48px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: center;
+      gap: 10px;
+      padding: 7px 16px;
+      background: rgba(255,255,255,0.52);
+      border: 1px solid rgba(80, 92, 76, 0.1);
+      border-radius: 8px;
+      font-weight: 800;
+      color: #273f35;
+    }
+
+    .legend span {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      font-size: 14px;
+    }
+
+    .right {
+      display: grid;
+      grid-template-rows: auto auto;
+      align-content: start;
+      gap: 10px;
+    }
+
+    .queue-card {
+      order: 2;
+      padding: 17px 24px 12px;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .queue {
+      min-height: 96px;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 18px;
+      padding: 12px;
+      background: rgba(255,251,244,0.72);
+      border: 1px solid rgba(156, 129, 90, 0.22);
+      border-radius: 8px;
+      align-items: center;
+    }
+
+    .slot-wrap {
+      display: grid;
+      gap: 7px;
+      justify-items: center;
+      min-width: 0;
+    }
+
+    .slot-num {
+      font-weight: 900;
+      color: #24495a;
+      font-size: 15px;
+    }
+
+    .cmd-slot, .cmd-button {
+      width: 78px;
+      height: 76px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      border: 2px dashed #dfc39d;
+      background: rgba(255,255,255,0.55);
+    }
+
+    .cmd-slot.filled {
+      border-style: solid;
+      border-color: rgba(85,169,79,0.52);
+      background: linear-gradient(#fff, #f9f8f3);
+      box-shadow: var(--soft-shadow);
+    }
+
+    .cmd-icon {
+      width: 48px;
+      height: 48px;
+      display: block;
+    }
+
+    .queue-foot {
+      margin-top: 9px;
+      text-align: right;
+      font-weight: 800;
+      color: #3c596a;
+      font-size: 14px;
+    }
+
+    .tools {
+      order: 1;
+      display: grid;
+      grid-template-columns: 1fr 1.05fr;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    .palette-card, .run-card {
+      padding: 16px 20px;
+    }
+
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .cmd-button.collect {
+      grid-column: 1 / -1;
+      height: 78px;
+    }
+
+    .cmd-button {
+      width: 100%;
+      height: 92px;
+      border-style: solid;
+      border-color: rgba(72,72,54,0.14);
+      background: linear-gradient(#fff, #f6f3eb);
+      box-shadow: 0 5px 0 rgba(60, 53, 35, 0.18), var(--soft-shadow);
+      color: var(--ink);
+      font-weight: 900;
+      gap: 9px;
+      transition: transform 130ms ease, box-shadow 130ms ease;
+    }
+
+    .cmd-button:hover, .icon-button:hover, .reset-button:hover, .run-main:hover, .small-action:hover, .level-dot:hover {
+      transform: translateY(-1px);
+    }
+
+    .cmd-button:active, .run-main:active, .small-action:active, .level-dot:active {
+      transform: translateY(2px);
+      box-shadow: var(--soft-shadow);
+    }
+
+    .cmd-button:disabled, .run-main:disabled, .small-action:disabled {
+      cursor: not-allowed;
+      opacity: 0.58;
+      transform: none;
+    }
+
+    .cmd-button span {
+      font-size: 16px;
+      line-height: 1.1;
+    }
+
+    .run-card {
+      display: grid;
+      grid-template-rows: auto auto auto;
+      gap: 12px;
+    }
+
+    .run-box, .speed-box {
+      padding: 17px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.42);
+      border: 1px solid rgba(80, 92, 76, 0.1);
+      box-shadow: inset 0 1px 10px rgba(255,255,255,0.45);
+    }
+
+    .run-main {
+      width: 100%;
+      min-height: 86px;
+      border: 0;
+      border-radius: 8px;
+      color: white;
+      background: linear-gradient(#65d35a, #24b94d);
+      box-shadow: 0 5px 0 #138b35, var(--soft-shadow);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 900;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.18);
+    }
+
+    .play-icon {
+      width: 0;
+      height: 0;
+      border-top: 28px solid transparent;
+      border-bottom: 28px solid transparent;
+      border-left: 44px solid #fff;
+      filter: drop-shadow(0 2px 0 rgba(0,0,0,0.22));
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .small-action {
+      min-height: 52px;
+      border: 0;
+      border-radius: 8px;
+      font-weight: 900;
+      box-shadow: 0 4px 0 rgba(60, 53, 35, 0.16), var(--soft-shadow);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #9e2a32;
+      background: linear-gradient(#ffd6da, #ffc0c7);
+      font-size: 16px;
+    }
+
+    .small-action.clear {
+      color: #8a4a12;
+      background: linear-gradient(#ffe9b8, #ffd990);
+    }
+
+    .speed-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .speed-row input {
+      width: 100%;
+      accent-color: var(--green);
+    }
+
+    .status {
+      margin: 2px 0 0;
+      min-height: 28px;
+      font-weight: 900;
+      color: #28503d;
+      line-height: 1.25;
+    }
+
+    .levels-card {
+      padding: 16px 24px 13px;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(20, minmax(45px, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+
+    .level-item {
+      display: grid;
+      justify-items: center;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .level-dot {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.14);
+      background: linear-gradient(#fff, #f6f2eb);
+      box-shadow: var(--soft-shadow);
+      font-weight: 900;
+      font-size: 19px;
+      color: #54483c;
+      transition: transform 130ms ease;
+    }
+
+    .level-dot.active {
+      color: #fff;
+      border-color: #4caf43;
+      background: linear-gradient(#82df55, #41bd31);
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.85), var(--soft-shadow);
+    }
+
+    .level-dot.locked {
+      opacity: 0.48;
+      color: #64736a;
+    }
+
+    .mini-stars {
+      height: 18px;
+      display: flex;
+      gap: 1px;
+      color: #ffc51e;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .mini-score {
+      color: #24573b;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .lock {
+      font-size: 18px;
+      line-height: 1;
+      color: #52665b;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(120px);
+      padding: 14px 18px;
+      border-radius: 8px;
+      background: rgba(24, 54, 42, 0.94);
+      color: white;
+      font-weight: 900;
+      box-shadow: var(--shadow);
+      transition: transform 180ms ease;
+      z-index: 20;
+      max-width: min(520px, calc(100% - 24px));
+      text-align: center;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(42, 73, 55, 0.28);
+      z-index: 30;
+      padding: 18px;
+    }
+
+    .overlay.show { display: grid; }
+
+    .start-screen, .guide-screen {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.92) 0 7%, transparent 17%),
+        radial-gradient(circle at 55% 14%, rgba(255,255,255,0.8) 0 9%, transparent 20%),
+        linear-gradient(180deg, #6fd0ff 0%, #bfeeff 42%, #8fd765 43%, #73bd47 100%);
+      z-index: 60;
+      overflow: hidden;
+    }
+
+    .start-screen {
+      grid-template-columns: minmax(260px, 390px) minmax(500px, 820px) minmax(78px, 110px);
+      justify-content: center;
+      align-items: center;
+      column-gap: clamp(14px, 2.4vw, 34px);
+    }
+
+    .start-screen::before, .guide-screen::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 8% 4%, #2f8b35 0 8%, transparent 9%),
+        radial-gradient(circle at 16% 0%, #52a743 0 9%, transparent 10%),
+        radial-gradient(circle at 91% 5%, #2f8b35 0 9%, transparent 10%),
+        radial-gradient(circle at 82% 0%, #52a743 0 10%, transparent 11%),
+        linear-gradient(160deg, transparent 0 57%, rgba(87, 152, 62, 0.42) 58% 66%, transparent 67%),
+        linear-gradient(20deg, transparent 0 60%, rgba(255, 242, 166, 0.48) 61% 69%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .start-screen::after, .guide-screen::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -9vh;
+      width: min(960px, 92vw);
+      height: 30vh;
+      border-radius: 50% 50% 0 0;
+      background: linear-gradient(#e0ba72, #c9914a);
+      transform: translateX(-50%);
+      box-shadow: inset 0 8px 0 rgba(255,255,255,0.18);
+      pointer-events: none;
+    }
+
+    .start-screen.show, .guide-screen.show {
+      display: grid;
+    }
+
+    .start-card, .guide-card {
+      position: relative;
+      z-index: 1;
+      width: min(980px, 100%);
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      border-radius: 8px;
+      background: rgba(255, 250, 231, 0.92);
+      border: 4px solid #a96627;
+      box-shadow: 0 22px 48px rgba(35, 63, 45, 0.24), inset 0 0 0 5px rgba(255,255,255,0.35);
+      padding: clamp(22px, 4vw, 42px);
+      text-align: center;
+    }
+
+    .start-card {
+      grid-column: 2;
+      width: min(820px, 100%);
+      background:
+        linear-gradient(rgba(255,250,231,0.78), rgba(255,250,231,0.88)),
+        repeating-linear-gradient(90deg, #b97431 0 20px, #c9853c 20px 40px);
+      border-color: #7d471f;
+    }
+
+    .wood-sign {
+      display: inline-grid;
+      gap: 4px;
+      min-width: min(610px, 90%);
+      margin: 0 auto 8px;
+      padding: 14px 22px;
+      border-radius: 8px;
+      color: #fff8dc;
+      background:
+        linear-gradient(rgba(255,255,255,0.18), transparent),
+        repeating-linear-gradient(90deg, #93511f 0 22px, #aa6529 22px 44px);
+      border: 4px solid #6e3b19;
+      box-shadow: 0 8px 0 rgba(92, 48, 17, 0.28);
+      text-shadow: 0 3px 0 rgba(98, 49, 13, 0.75);
+    }
+
+    .wood-sign small {
+      color: #ffe5ad;
+      font-weight: 900;
+      font-size: clamp(18px, 2vw, 26px);
+    }
+
+    .wood-sign strong {
+      color: #ffd34a;
+      font-size: clamp(34px, 6vw, 72px);
+      line-height: 0.98;
+    }
+
+    .start-visual {
+      width: min(360px, 78vw);
+      height: 140px;
+      margin: 0 auto 14px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 18px;
+      color: #24573b;
+      font-size: 54px;
+    }
+
+    .start-mouse {
+      width: 190px;
+      height: 150px;
+      margin: 0 auto -4px;
+      position: relative;
+      filter: drop-shadow(0 10px 0 rgba(57, 88, 45, 0.18));
+    }
+
+    .start-mouse .pm-body { left: 22%; top: 45%; width: 42%; height: 30%; }
+    .start-mouse .pm-head { right: 16%; top: 34%; width: 36%; height: 42%; }
+    .start-mouse .pm-ear { right: 36%; width: 25%; height: 25%; }
+    .start-mouse .pm-ear.top { top: 18%; }
+    .start-mouse .pm-ear.bottom { bottom: 16%; }
+    .start-mouse .pm-tail { left: 8%; top: 62%; width: 28%; }
+    .start-mouse .pm-eye { right: 26%; top: 45%; width: 6%; height: 6%; box-shadow: 0 16px 0 #1e2522; }
+    .start-mouse .pm-nose { right: 13%; top: 51%; width: 8%; height: 9%; }
+    .start-mouse .pm-whisker { right: 12%; top: 49%; width: 17%; }
+
+    .start-path {
+      height: 8px;
+      border-radius: 99px;
+      background: repeating-linear-gradient(90deg, #b7dc58 0 18px, #e9f7a7 18px 30px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.65);
+    }
+
+    .start-card h2, .guide-card h2 {
+      margin: 0 0 8px;
+      color: #24573b;
+      font-size: clamp(30px, 5vw, 52px);
+      line-height: 1.05;
+    }
+
+    .guide-card h2 {
+      display: inline-block;
+      padding: 10px 28px;
+      color: #fff4c2;
+      background:
+        linear-gradient(rgba(255,255,255,0.16), transparent),
+        repeating-linear-gradient(90deg, #93511f 0 22px, #aa6529 22px 44px);
+      border: 4px solid #6e3b19;
+      border-radius: 8px;
+      text-shadow: 0 3px 0 rgba(98, 49, 13, 0.75);
+      box-shadow: 0 7px 0 rgba(92, 48, 17, 0.22);
+    }
+
+    .start-card p, .guide-card p {
+      margin: 8px auto 18px;
+      max-width: 620px;
+      color: #4d6258;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .start-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 20px auto 0;
+      max-width: 520px;
+    }
+
+    .start-actions button, .guide-actions button {
+      min-height: 56px;
+      border: 0;
+      border-radius: 8px;
+      font-weight: 900;
+      box-shadow: var(--soft-shadow);
+      font-size: 18px;
+    }
+
+    .start-actions button {
+      min-height: 70px;
+      font-size: 28px;
+      border: 4px solid rgba(255,255,255,0.75);
+      text-shadow: 0 2px 0 rgba(0,0,0,0.16);
+    }
+
+    .start-play, .guide-close {
+      color: white;
+      background: linear-gradient(#ffc64b, #ff930f);
+      box-shadow: 0 7px 0 #b35d06, var(--soft-shadow);
+    }
+
+    .start-guide {
+      color: white;
+      background: linear-gradient(#4fd6f2, #1595ca);
+      box-shadow: 0 7px 0 #0c6c94, var(--soft-shadow);
+    }
+
+    .guide-list {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .guide-step {
+      min-height: 128px;
+      padding: 16px;
+      border-radius: 8px;
+      background: rgba(255, 255, 246, 0.86);
+      border: 3px solid rgba(166, 102, 39, 0.38);
+      color: #33493f;
+      font-weight: 900;
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,0.5);
+    }
+
+    .guide-step b {
+      display: block;
+      margin-bottom: 6px;
+      color: #24573b;
+      font-size: 18px;
+    }
+
+    .demo-strip {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin: 16px 0 6px;
+      color: #24495a;
+      font-weight: 900;
+    }
+
+    .demo-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 38px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(80,92,76,0.12);
+    }
+
+    .side-menu {
+      position: absolute;
+      right: clamp(12px, 3vw, 28px);
+      top: clamp(12px, 3vw, 28px);
+      display: grid;
+      gap: 12px;
+      z-index: 2;
+    }
+
+    .side-pill {
+      width: 88px;
+      min-height: 80px;
+      display: grid;
+      place-items: center;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.92);
+      color: #24573b;
+      font-size: 15px;
+      font-weight: 900;
+      border: 3px solid rgba(255,255,255,0.8);
+      box-shadow: 0 8px 20px rgba(32,67,48,0.18);
+    }
+
+    .side-pill span {
+      display: block;
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .feature-planks {
+      position: relative;
+      left: auto;
+      bottom: auto;
+      display: grid;
+      gap: 10px;
+      z-index: 2;
+      text-align: left;
+      justify-self: end;
+      align-self: end;
+      margin-bottom: clamp(24px, 9vh, 110px);
+    }
+
+    .feature-plank {
+      width: min(360px, 100%);
+      min-width: 0;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: #fff8dc;
+      font-weight: 900;
+      font-size: clamp(15px, 1.7vw, 24px);
+      background:
+        linear-gradient(rgba(255,255,255,0.14), transparent),
+        repeating-linear-gradient(90deg, #8e4e20 0 22px, #a7652c 22px 44px);
+      border: 3px solid #6e3b19;
+      box-shadow: 0 5px 0 rgba(92, 48, 17, 0.23);
+      text-shadow: 0 2px 0 rgba(68, 37, 14, 0.6);
+    }
+
+    .guide-actions {
+      display: grid;
+      margin: 16px auto 0;
+      max-width: 260px;
+    }
+
+    .modal {
+      width: min(460px, 100%);
+      padding: 24px;
+      text-align: center;
+      background: #fffdf8;
+      border-radius: 8px;
+      box-shadow: 0 18px 40px rgba(26, 46, 35, 0.24);
+      border: 1px solid rgba(255,255,255,0.8);
+    }
+
+    .modal h2 {
+      margin: 0 0 7px;
+      font-size: 30px;
+      color: #24573b;
+    }
+
+    .modal p {
+      margin: 8px 0 18px;
+      color: #4d6258;
+      font-weight: 800;
+    }
+
+    .modal-stars {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 12px 0 18px;
+    }
+
+    .score-breakdown {
+      display: grid;
+      gap: 7px;
+      margin: 12px 0 18px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f7f4ec;
+      border: 1px solid rgba(80, 92, 76, 0.12);
+      text-align: left;
+    }
+
+    .score-breakdown.hidden {
+      display: none;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      color: #43574f;
+      font-weight: 900;
+      font-size: 15px;
+    }
+
+    .score-row.total {
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(80, 92, 76, 0.16);
+      color: #24573b;
+      font-size: 20px;
+    }
+
+    .score-rule-note {
+      padding: 9px 10px;
+      border-radius: 8px;
+      color: #6e3b31;
+      background: #fff1c9;
+      border: 1px solid rgba(216, 136, 5, 0.22);
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .modal-actions button {
+      min-height: 48px;
+      border: 0;
+      border-radius: 8px;
+      font-weight: 900;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .modal-actions .next {
+      color: white;
+      background: linear-gradient(#65d35a, #24b94d);
+    }
+
+    .modal-actions .stay {
+      color: #6e3b31;
+      background: linear-gradient(#fff1c9, #ffe0a1);
+    }
+
+    .modal.error h2 {
+      color: #b7162d;
+    }
+
+    .modal.error .modal-stars {
+      display: none;
+    }
+
+    .modal.error .score-breakdown {
+      display: none;
+    }
+
+    .modal.error .modal-actions {
+      grid-template-columns: 1fr;
+    }
+
+    .modal.error .next {
+      display: none;
+    }
+
+    .confetti-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 45;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      top: -18px;
+      width: 10px;
+      height: 16px;
+      border-radius: 2px;
+      opacity: 0.96;
+      animation: confetti-fall var(--fall-time) linear forwards;
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        transform: translate3d(0, -20px, 0) rotate(0deg);
+      }
+      100% {
+        transform: translate3d(var(--drift), 105vh, 0) rotate(var(--spin));
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .topbar {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .brand {
+        grid-column: 1 / -1;
+      }
+      .info-strip {
+        grid-template-columns: 1fr 1fr;
+      }
+      .info-block:nth-child(2) {
+        border-right: 0;
+      }
+      .main {
+        grid-template-columns: 1fr;
+      }
+      .right {
+        grid-template-rows: auto auto;
+      }
+      .level-grid {
+        grid-template-columns: repeat(10, 1fr);
+      }
+      .start-screen {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .start-card {
+        grid-column: 1;
+      }
+      .feature-planks {
+        display: none;
+      }
+      .guide-list {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        width: min(100% - 14px, 700px);
+        margin-top: 7px;
+      }
+      .topbar {
+        grid-template-columns: 1fr 1fr;
+        padding: 12px;
+      }
+      .brand {
+        grid-template-columns: 70px minmax(0, 1fr);
+        gap: 9px;
+      }
+      .mouse-badge {
+        width: 64px;
+        height: 64px;
+      }
+      .mouse-art {
+        transform: scale(0.78);
+      }
+      .level-pill, .icon-button, .reset-button {
+        min-width: 0;
+        min-height: 46px;
+        padding: 0 12px;
+        font-size: 15px;
+      }
+      h1 { font-size: 24px; }
+      .eyebrow { white-space: normal; }
+      .subtitle { font-size: 14px; }
+      .info-strip {
+        grid-template-columns: 1fr;
+        padding: 14px;
+      }
+      .info-block {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        padding-right: 0;
+        padding-bottom: 10px;
+      }
+      .info-block:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
+      .stars {
+        justify-content: center;
+      }
+      .main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .board-card {
+        min-height: auto;
+        padding: 12px 12px 10px;
+      }
+      .grid-shell {
+        grid-template-columns: 24px 1fr;
+        grid-template-rows: 24px 1fr;
+      }
+      .col-heads, .row-heads {
+        font-size: 13px;
+      }
+      .grid {
+        gap: 3px;
+      }
+      .piece {
+        font-size: clamp(22px, 9.5vw, 42px);
+      }
+      .legend {
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+      .queue-card {
+        padding: 13px;
+      }
+      .queue {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 9px;
+      }
+      .cmd-slot {
+        width: min(66px, 100%);
+        height: 62px;
+      }
+      .cmd-icon {
+        width: 38px;
+        height: 38px;
+      }
+      .tools {
+        grid-template-columns: 1fr;
+      }
+      .palette-card, .run-card {
+        padding: 14px;
+      }
+      .cmd-button {
+        height: 98px;
+      }
+      .run-main {
+        min-height: 88px;
+        font-size: 38px;
+      }
+      .play-icon {
+        border-top-width: 22px;
+        border-bottom-width: 22px;
+        border-left-width: 34px;
+      }
+      .level-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+      }
+      .level-dot {
+        width: 46px;
+        height: 46px;
+      }
+      .start-actions, .guide-list {
+        grid-template-columns: 1fr;
+      }
+      .side-menu, .feature-planks {
+        display: none;
+      }
+      .start-card, .guide-card {
+        padding: 20px;
+      }
+      .start-visual {
+        height: 110px;
+        font-size: 42px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="start-screen show" id="startScreen" aria-label="หน้าเริ่มเกม">
+    <div class="side-menu" aria-hidden="true">
+      <div class="side-pill"><span>🔊</span>เสียง</div>
+      <div class="side-pill"><span>🏆</span>ความสำเร็จ</div>
+      <div class="side-pill"><span>⚙️</span>ตั้งค่า</div>
+    </div>
+    <div class="feature-planks" aria-hidden="true">
+      <div class="feature-plank">💡 ฝึกตรรกะและการคิดเชิงคำนวณ</div>
+      <div class="feature-plank">🎯 เรียนรู้ผ่านการเล่นอย่างสนุกสนาน</div>
+      <div class="feature-plank">⭐ พัฒนาสมองไปพร้อมความเพลิดเพลิน</div>
+    </div>
+    <div class="start-card">
+      <div class="wood-sign">
+        <small>Unplugged Coding</small>
+        <strong>หนูน้อยผจญภัย<br>เก็บชีสแสนอร่อย</strong>
+      </div>
+      <div class="start-mouse" aria-hidden="true">
+        <span class="pm-tail"></span><span class="pm-body"></span><span class="pm-ear top"></span><span class="pm-ear bottom"></span><span class="pm-head"></span><span class="pm-eye"></span><span class="pm-nose"></span><span class="pm-whisker"></span>
+      </div>
+      <p>พาหนูน้อยวางแผนคำสั่ง เก็บชีสให้ครบ แล้วเข้าเส้นชัย ใช้คำสั่งให้น้อยเพื่อทำคะแนนสูงสุด</p>
+      <div class="demo-strip" aria-label="ตัวอย่างคำสั่ง">
+        <span class="demo-chip">⬆ เดินหน้า</span>
+        <span class="demo-chip">🧀 เก็บชีส</span>
+        <span class="demo-chip">⬆ เดินหน้า</span>
+        <span class="demo-chip">▶ รัน</span>
+      </div>
+      <div class="start-actions">
+        <button class="start-play" type="button" id="startGameBtn">▶ เริ่มเล่น</button>
+        <button class="start-guide" type="button" id="startGuideBtn">📖 วิธีเล่น</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="guide-screen" id="guideScreen" aria-label="วิธีเล่น">
+    <div class="guide-card">
+      <h2>วิธีเล่น</h2>
+      <p>เกมนี้ฝึกคิดเป็นลำดับคำสั่งแบบ Coding เด็ก ๆ ต้องเลือกคำสั่งให้หนูเดินไปเก็บชีสและเข้าเส้นชัย</p>
+      <div class="guide-list">
+        <div class="guide-step"><b>1. วางคำสั่ง</b>กดปุ่มเดินหน้า ถอยหลัง เลี้ยวซ้าย เลี้ยวขวา หรือเก็บชีส เพื่อใส่ลงคิวคำสั่ง</div>
+        <div class="guide-step"><b>2. เก็บชีส</b>หนูต้องยืนบนช่องชีส แล้วใช้คำสั่งเก็บชีส ชีสจึงจะหายและได้คะแนน</div>
+        <div class="guide-step"><b>3. ทำคะแนน</b>เข้าเส้นชัยให้สำเร็จ ใช้คำสั่งน้อยลงจะได้โบนัสเพิ่ม</div>
+        <div class="guide-step"><b>4. ดูดาว</b>ดาวดูจากจำนวนคำสั่งที่ใช้ ถ้าใช้ไม่เกินเป้าหมายของด่านจะได้ 3 ดาว</div>
+      </div>
+      <div class="demo-strip">
+        <span class="demo-chip">ตัวอย่างด่านแรก</span>
+        <span class="demo-chip">เดินหน้า</span>
+        <span class="demo-chip">เก็บชีส</span>
+        <span class="demo-chip">เดินหน้า</span>
+        <span class="demo-chip">รัน</span>
+      </div>
+      <div class="guide-actions">
+        <button class="guide-close" type="button" id="closeGuideBtn">เข้าใจแล้ว</button>
+      </div>
+    </div>
+  </section>
+
+  <main class="app" aria-label="เกมหนูน้อยเก็บชีส">
+    <section class="topbar panel">
+      <div class="brand">
+        <div class="mouse-badge" aria-hidden="true">
+          <div class="mouse-art">
+            <div class="ear left"></div>
+            <div class="ear right"></div>
+            <div class="face">
+              <span class="eye left"></span>
+              <span class="eye right"></span>
+              <span class="nose"></span>
+              <span class="whisker l1"></span>
+              <span class="whisker l2"></span>
+              <span class="whisker r1"></span>
+              <span class="whisker r2"></span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="eyebrow">Unplugged Coding • Mouse Cheese Adventure</div>
+          <h1>หนูน้อยผจญภัย เก็บชีสแสนอร่อย</h1>
+          <p class="subtitle">ฝึกคิดเป็นขั้นตอน วางแผนคำสั่ง แก้ปัญหาแบบ Coding</p>
+        </div>
+      </div>
+      <div class="level-pill" id="levelTitle">ด่าน 1 / 20</div>
+      <button class="icon-button" id="soundBtn" type="button" aria-pressed="true">
+        <span aria-hidden="true">🔊</span><span>เสียง</span>
+      </button>
+      <button class="icon-button help-button" id="helpBtn" type="button">วิธีเล่น</button>
+      <button class="reset-button" id="resetScoreBtn" type="button">รีเซ็ตคะแนน</button>
+    </section>
+
+    <section class="info-strip panel">
+      <div class="info-block">
+        <p class="label">ข้อมูลด่าน</p>
+        <p class="stage-name" id="stageName">ด่าน 1: ชีสชิ้นแรก</p>
+        <p class="desc" id="stageDesc">หนูน้อยเห็นชีสอยู่ใกล้ ๆ ช่วยเดินไปเก็บชีสให้สำเร็จ</p>
+      </div>
+      <div class="info-block">
+        <p class="label">เป้าหมาย</p>
+        <div class="goal-list" id="goalList"></div>
+      </div>
+      <div class="info-block">
+        <p class="label">คะแนนสูงสุด</p>
+        <div class="score-panel" id="scorePanel" aria-label="คะแนนสูงสุดของด่านนี้"></div>
+      </div>
+      <div class="rules">
+        <div class="rule-line"><span>ชีส</span><span>=</span><span><b id="threeRule">+10</b> คะแนน</span></div>
+        <div class="rule-line"><span>เข้าเส้นชัย</span><span>=</span><span><b id="twoRule">+20</b> คะแนน</span></div>
+        <div class="rule-line"><span>คำสั่งน้อย</span><span>=</span><span><b id="oneRule">โบนัส</b></span></div>
+      </div>
+    </section>
+
+    <section class="main">
+      <section class="board-card panel" aria-label="กระดานเกม">
+        <div class="grid-shell">
+          <div></div>
+          <div class="col-heads" id="colHeads"></div>
+          <div class="row-heads" id="rowHeads"></div>
+          <div class="grid" id="board"></div>
+        </div>
+        <div class="legend">
+          <span><b>🐭</b> จุดเริ่มต้น</span>
+          <span><b>🧀</b> ชีส</span>
+          <span><b>🏁</b> เส้นชัย</span>
+        </div>
+      </section>
+
+      <section class="right">
+        <section class="queue-card panel">
+          <h2 class="section-title">คิวคำสั่ง</h2>
+          <div class="queue" id="queue"></div>
+          <div class="queue-foot" id="queueFoot">คำสั่งที่ใช้: 0 / ช่องคิว: 8 / 3 ดาว: ≤ 3</div>
+        </section>
+
+        <section class="tools">
+          <section class="palette-card panel">
+            <h2 class="section-title">แผงสั่งงาน</h2>
+            <div class="palette">
+              <button class="cmd-button" type="button" data-command="forward">
+                <span class="cmd-svg" data-icon="forward"></span>
+                <span>เดินหน้า</span>
+              </button>
+              <button class="cmd-button" type="button" data-command="back">
+                <span class="cmd-svg" data-icon="back"></span>
+                <span>ถอยหลัง</span>
+              </button>
+              <button class="cmd-button" type="button" data-command="left">
+                <span class="cmd-svg" data-icon="left"></span>
+                <span>เลี้ยวซ้าย</span>
+              </button>
+              <button class="cmd-button" type="button" data-command="right">
+                <span class="cmd-svg" data-icon="right"></span>
+                <span>เลี้ยวขวา</span>
+              </button>
+              <button class="cmd-button collect" type="button" data-command="collect">
+                <span class="cmd-svg" data-icon="collect"></span>
+                <span>เก็บชีส</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="run-card panel">
+            <div class="run-box">
+              <h2 class="section-title">เริ่มทำงาน</h2>
+              <button class="run-main" type="button" id="runBtn">
+                <span class="play-icon" aria-hidden="true"></span>
+                <span>รัน</span>
+              </button>
+            </div>
+            <div class="actions">
+              <button class="small-action" type="button" id="undoBtn">↔ ลบ</button>
+              <button class="small-action clear" type="button" id="clearBtn">🗑 ล้างโค้ด</button>
+            </div>
+            <div class="speed-box">
+              <p class="label">ความเร็ว</p>
+              <div class="speed-row">
+                <span aria-hidden="true">🐢</span>
+                <input id="speed" type="range" min="180" max="850" value="430" step="10" aria-label="ความเร็ว">
+                <span aria-hidden="true">🐇</span>
+              </div>
+              <p class="status" id="status">พร้อมวางแผนแล้ว</p>
+            </div>
+          </section>
+        </section>
+      </section>
+    </section>
+
+    <section class="levels-card panel">
+      <h2 class="section-title">เลือกด่าน</h2>
+      <div class="level-grid" id="levelGrid"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="modal" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">ผ่านด่านแล้ว!</h2>
+      <div class="modal-stars" id="modalStars"></div>
+      <p id="modalText">หนูน้อยเก็บชีสครบและถึงเส้นชัยเรียบร้อย</p>
+      <div class="score-breakdown hidden" id="scoreBreakdown"></div>
+      <div class="modal-actions">
+        <button class="stay" type="button" id="stayBtn">เล่นซ้ำ</button>
+        <button class="next" type="button" id="nextBtn">ด่านถัดไป</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DIRS = ["up", "right", "down", "left"];
+    const DELTA = {
+      up: { r: -1, c: 0 },
+      right: { r: 0, c: 1 },
+      down: { r: 1, c: 0 },
+      left: { r: 0, c: -1 }
+    };
+
+    const COMMANDS = {
+      forward: { label: "เดินหน้า", color: "#62ca28" },
+      back: { label: "ถอยหลัง", color: "#52b5df" },
+      left: { label: "เลี้ยวซ้าย", color: "#ff8b22" },
+      right: { label: "เลี้ยวขวา", color: "#b85cff" },
+      collect: { label: "เก็บชีส", color: "#ffc51e" }
+    };
+
+    const levels = [
+      {
+        title: "ชีสชิ้นแรก",
+        desc: "หนูน้อยเห็นชีสอยู่ใกล้ ๆ ช่วยเดินไปเก็บชีสให้สำเร็จ",
+        start: [0,0], dir: "right", cheeses: [[0,1]], goal: [0,2], optimal: 3,
+        limit: 8, blocks: [], portals: [[0,2]]
+      },
+      {
+        title: "เลี้ยวหาเส้นชัย",
+        desc: "เก็บชีสก่อนแล้วเลี้ยวลงไปที่ธงให้พอดี",
+        start: [0,0], dir: "right", cheeses: [[0,2]], goal: [2,2], optimal: 6,
+        limit: 8, blocks: [], portals: [[2,2]]
+      },
+      {
+        title: "ชีสกลางสวน",
+        desc: "เดินให้ตรงจังหวะ แล้วหันเข้าหาเส้นชัย",
+        start: [2,0], dir: "right", cheeses: [[2,3]], goal: [4,3], optimal: 7,
+        limit: 8, blocks: [], portals: [[4,3]]
+      },
+      {
+        title: "ทางมุมฉาก",
+        desc: "เส้นทางสั้น ๆ ที่ต้องเลี้ยวถูกด้าน",
+        start: [5,0], dir: "up", cheeses: [[3,0]], goal: [3,2], optimal: 6,
+        limit: 8, blocks: [], portals: [[3,2]]
+      },
+      {
+        title: "เก็บสองชิ้น",
+        desc: "ชีสมีสองชิ้น เก็บให้ครบก่อนแตะธง",
+        start: [1,1], dir: "right", cheeses: [[1,3],[3,3]], goal: [3,4], optimal: 9,
+        limit: 8, blocks: [], portals: [[3,4]]
+      },
+      {
+        title: "ถอยหลังช่วยได้",
+        desc: "บางครั้งถอยหลังหนึ่งก้าวช่วยประหยัดคำสั่ง",
+        start: [1,4], dir: "left", cheeses: [[1,2]], goal: [1,5], optimal: 6,
+        limit: 8, blocks: [], portals: [[1,5]]
+      },
+      {
+        title: "กำแพงใบไม้",
+        desc: "หลบช่องที่เป็นกำแพง แล้ววนไปเก็บชีส",
+        start: [0,0], dir: "right", cheeses: [[0,4]], goal: [2,4], optimal: 14,
+        limit: 10, blocks: [[0,2],[1,2]], portals: [[2,4]]
+      },
+      {
+        title: "ทางแคบ",
+        desc: "เดินตามทางเปิดทีละช่องจนถึงเส้นชัย",
+        start: [5,0], dir: "up", cheeses: [[3,0],[3,2]], goal: [1,2], optimal: 10,
+        limit: 10, blocks: [[4,1],[4,2],[2,1]], portals: [[1,2]]
+      },
+      {
+        title: "วนเก็บชีส",
+        desc: "จัดลำดับชีสให้ถูกเพื่อไม่เดินย้อนมากเกินไป",
+        start: [5,5], dir: "left", cheeses: [[5,3],[3,3]], goal: [3,1], optimal: 10,
+        limit: 10, blocks: [[4,4],[4,2]], portals: [[3,1]]
+      },
+      {
+        title: "แผนรูปตัวแอล",
+        desc: "เก็บชีสที่ปลายทางแล้วหันไปธงอีกด้าน",
+        start: [0,5], dir: "down", cheeses: [[3,5]], goal: [3,2], optimal: 8,
+        limit: 10, blocks: [[1,4],[2,4]], portals: [[3,2]]
+      },
+      {
+        title: "ข้ามแนวหิน",
+        desc: "เลือกทางอ้อมให้พอดีกับจำนวนคำสั่ง",
+        start: [0,0], dir: "right", cheeses: [[1,3],[4,3]], goal: [5,3], optimal: 13,
+        limit: 12, blocks: [[0,2],[2,2],[3,2],[4,2]], portals: [[5,3]]
+      },
+      {
+        title: "ชีสสามมุม",
+        desc: "เก็บชีสสามชิ้นโดยไม่ชนขอบกระดาน",
+        start: [2,2], dir: "up", cheeses: [[0,2],[0,4],[3,4]], goal: [5,4], optimal: 14,
+        limit: 12, blocks: [[1,3],[2,3]], portals: [[5,4]]
+      },
+      {
+        title: "ประตูสวน",
+        desc: "เลี้ยวในช่องแคบและเก็บชีสก่อนถึงธง",
+        start: [5,1], dir: "right", cheeses: [[5,4],[2,4]], goal: [2,1], optimal: 13,
+        limit: 14, blocks: [[4,2],[3,2],[3,3],[1,3]], portals: [[2,1]]
+      },
+      {
+        title: "ซิกแซก",
+        desc: "วางคำสั่งแบบสลับเลี้ยวเพื่อเดินตามทาง",
+        start: [0,0], dir: "right", cheeses: [[0,3],[2,3],[2,5]], goal: [5,5], optimal: 16,
+        limit: 14, blocks: [[1,1],[1,2],[3,4],[4,4]], portals: [[5,5]]
+      },
+      {
+        title: "ทางย้อนกลับ",
+        desc: "ใช้การถอยหลังให้เป็นประโยชน์ในเส้นทางสั้น",
+        start: [2,5], dir: "left", cheeses: [[2,3],[0,3]], goal: [2,5], optimal: 12,
+        limit: 14, blocks: [[1,4],[3,4],[1,2]], portals: [[2,5]]
+      },
+      {
+        title: "สวนสองชั้น",
+        desc: "เก็บชีสบนและล่างก่อนเข้าธงกลางสวน",
+        start: [5,0], dir: "up", cheeses: [[1,0],[1,4],[4,4]], goal: [5,4], optimal: 17,
+        limit: 16, blocks: [[2,1],[2,2],[3,2],[3,3]], portals: [[5,4]]
+      },
+      {
+        title: "เส้นชัยซ่อนอยู่",
+        desc: "ธงอยู่ไกลกว่าที่เห็น ต้องวางแผนยาวขึ้น",
+        start: [0,1], dir: "down", cheeses: [[3,1],[3,4]], goal: [0,4], optimal: 13,
+        limit: 16, blocks: [[1,2],[2,2],[4,3],[5,3]], portals: [[0,4]]
+      },
+      {
+        title: "เส้นทางตัวเอส",
+        desc: "เดินโค้งหลายจังหวะและรักษาทิศทางให้ถูก",
+        start: [0,0], dir: "right", cheeses: [[0,5],[3,5],[3,1]], goal: [5,1], optimal: 20,
+        limit: 18, blocks: [[1,1],[1,2],[1,3],[2,3],[4,2],[4,3]], portals: [[5,1]]
+      },
+      {
+        title: "ชีสเต็มสวน",
+        desc: "เก็บชีสหลายจุดโดยใช้คำสั่งให้น้อยที่สุด",
+        start: [5,5], dir: "up", cheeses: [[2,5],[2,2],[4,2],[4,0]], goal: [1,0], optimal: 21,
+        limit: 18, blocks: [[3,4],[3,3],[1,3],[0,3]], portals: [[1,0]]
+      },
+      {
+        title: "ภารกิจสุดท้าย",
+        desc: "ทบทวนทุกคำสั่ง แล้วพาหนูผ่านด่านสุดท้าย",
+        start: [5,0], dir: "right", cheeses: [[5,3],[2,3],[2,1],[0,1]], goal: [0,5], optimal: 22,
+        limit: 20, blocks: [[4,2],[3,2],[1,2],[1,4],[3,4]], portals: [[0,5]]
+      }
+    ];
+
+    const el = {
+      levelTitle: document.getElementById("levelTitle"),
+      stageName: document.getElementById("stageName"),
+      stageDesc: document.getElementById("stageDesc"),
+      goalList: document.getElementById("goalList"),
+      scorePanel: document.getElementById("scorePanel"),
+      threeRule: document.getElementById("threeRule"),
+      twoRule: document.getElementById("twoRule"),
+      oneRule: document.getElementById("oneRule"),
+      colHeads: document.getElementById("colHeads"),
+      rowHeads: document.getElementById("rowHeads"),
+      board: document.getElementById("board"),
+      queue: document.getElementById("queue"),
+      queueFoot: document.getElementById("queueFoot"),
+      levelGrid: document.getElementById("levelGrid"),
+      runBtn: document.getElementById("runBtn"),
+      undoBtn: document.getElementById("undoBtn"),
+      clearBtn: document.getElementById("clearBtn"),
+      soundBtn: document.getElementById("soundBtn"),
+      helpBtn: document.getElementById("helpBtn"),
+      resetScoreBtn: document.getElementById("resetScoreBtn"),
+      speed: document.getElementById("speed"),
+      status: document.getElementById("status"),
+      toast: document.getElementById("toast"),
+      overlay: document.getElementById("overlay"),
+      resultModal: document.getElementById("resultModal"),
+      modalTitle: document.getElementById("modalTitle"),
+      modalStars: document.getElementById("modalStars"),
+      modalText: document.getElementById("modalText"),
+      scoreBreakdown: document.getElementById("scoreBreakdown"),
+      stayBtn: document.getElementById("stayBtn"),
+      nextBtn: document.getElementById("nextBtn")
+    };
+
+    const ui = {
+      startScreen: document.getElementById("startScreen"),
+      guideScreen: document.getElementById("guideScreen"),
+      startGameBtn: document.getElementById("startGameBtn"),
+      startGuideBtn: document.getElementById("startGuideBtn"),
+      closeGuideBtn: document.getElementById("closeGuideBtn")
+    };
+
+    let state = {
+      level: 0,
+      player: { r: 0, c: 0, dir: "right" },
+      collected: new Set(),
+      queue: [],
+      running: false,
+      sound: true,
+      progress: loadProgress()
+    };
+
+    function loadProgress() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("mouseCheeseProgress") || "{}");
+        if (saved.scoreVersion !== 2) return { unlocked: 1, stars: [], scores: [], scoreVersion: 2 };
+        return {
+          unlocked: Math.max(1, Number(saved.unlocked) || 1),
+          stars: Array.isArray(saved.stars) ? saved.stars : [],
+          scores: Array.isArray(saved.scores) ? saved.scores : [],
+          scoreVersion: 2
+        };
+      } catch {
+        return { unlocked: 1, stars: [], scores: [], scoreVersion: 2 };
+      }
+    }
+
+    function saveProgress() {
+      localStorage.setItem("mouseCheeseProgress", JSON.stringify(state.progress));
+    }
+
+    function iconSvg(name, sizeClass = "cmd-icon") {
+      const c = COMMANDS[name]?.color || "#333";
+      const common = `class="${sizeClass}" viewBox="0 0 64 64" aria-hidden="true"`;
+      if (name === "forward") {
+        return `<svg ${common}><path d="M32 6 54 28H42v26H22V28H10L32 6Z" fill="${c}" stroke="#2f9d20" stroke-width="3" stroke-linejoin="round"/></svg>`;
+      }
+      if (name === "back") {
+        return `<svg ${common}><path d="M32 58 10 36h12V10h20v26h12L32 58Z" fill="${c}" stroke="#2b89a9" stroke-width="3" stroke-linejoin="round"/></svg>`;
+      }
+      if (name === "left") {
+        return `<svg ${common}><path d="M18 34c0-13 9-22 22-22h7v14h-7c-5 0-8 3-8 8v6h11L25 58 7 40h11v-6Z" fill="${c}" stroke="#df650d" stroke-width="3" stroke-linejoin="round"/></svg>`;
+      }
+      if (name === "collect") {
+        return `<svg ${common}><path d="M11 28 38 12l15 9v28L24 55 11 43V28Z" fill="${c}" stroke="#d88b08" stroke-width="3" stroke-linejoin="round"/><circle cx="31" cy="31" r="4" fill="#d88b08"/><circle cx="44" cy="40" r="3.5" fill="#d88b08"/><path d="M13 29h15M12 42h12" stroke="#fff1a8" stroke-width="3" stroke-linecap="round"/></svg>`;
+      }
+      return `<svg ${common}><path d="M46 34c0-13-9-22-22-22h-7v14h7c5 0 8 3 8 8v6H21l18 18 18-18H46v-6Z" fill="${c}" stroke="#9542d1" stroke-width="3" stroke-linejoin="round"/></svg>`;
+    }
+
+    function starSvg(filled = true) {
+      const fill = filled ? "#ffc51e" : "#e5e1d4";
+      const stroke = filled ? "#d88405" : "#b9b4a7";
+      return `<svg class="star" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 5 39.9 22.7 59 24.8 44.7 37.7 48.7 56.6 32 47 15.3 56.6 19.3 37.7 5 24.8 24.1 22.7 32 5Z" fill="${fill}" stroke="${stroke}" stroke-width="3" stroke-linejoin="round"/></svg>`;
+    }
+
+    function pointKey(point) {
+      return `${point[0]},${point[1]}`;
+    }
+
+    function cellKey(r, c) {
+      return `${r},${c}`;
+    }
+
+    function dirThai(dir) {
+      return { up: "ขึ้น", right: "ขวา", down: "ลง", left: "ซ้าย" }[dir] || "ขวา";
+    }
+
+    function currentLevel() {
+      return levels[state.level];
+    }
+
+    function commandCapacity(level = currentLevel()) {
+      return Math.min(30, Math.max(level.limit, level.optimal + 5, level.cheeses.length * 3 + 6));
+    }
+
+    function bonusLimit(level = currentLevel()) {
+      return level.bonusLimit || level.optimal + 5;
+    }
+
+    function starRuleText(level = currentLevel()) {
+      return `ดาวดูจากจำนวนคำสั่ง: ไม่เกิน ${level.optimal} คำสั่ง = 3 ดาว, ${level.optimal + 1}-${level.optimal + 3} คำสั่ง = 2 ดาว, มากกว่านั้น = 1 ดาว`;
+    }
+
+    function starReason(used, level = currentLevel()) {
+      if (used <= level.optimal) return `ใช้ไม่เกินเป้าหมาย ${level.optimal} คำสั่ง จึงได้ 3 ดาว`;
+      if (used <= level.optimal + 3) return `ใช้เกินเป้าหมาย ${used - level.optimal} คำสั่ง จึงได้ 2 ดาว`;
+      return `ใช้เกินเป้าหมายมากกว่า 3 คำสั่ง จึงได้ 1 ดาว`;
+    }
+
+    function resetLevel(keepQueue = false) {
+      const level = currentLevel();
+      state.player = { r: level.start[0], c: level.start[1], dir: level.dir };
+      state.collected = new Set();
+      state.running = false;
+      if (!keepQueue) state.queue = [];
+      render();
+    }
+
+    function render() {
+      const level = currentLevel();
+      el.levelTitle.textContent = `ด่าน ${state.level + 1} / ${levels.length}`;
+      el.stageName.textContent = `ด่าน ${state.level + 1}: ${level.title}`;
+      el.stageDesc.textContent = level.desc;
+      el.goalList.innerHTML = `
+        <div class="goal-line"><span class="check">✓</span><span>เก็บชีสให้ครบ: ${level.cheeses.length} ชิ้น</span></div>
+        <div class="goal-line"><span class="check">✓</span><span>ไปถึงเส้นชัย</span></div>
+      `;
+      el.threeRule.textContent = `+${level.cheeseScore || 10}`;
+      el.twoRule.textContent = `+${level.finishScore || 20}`;
+      el.oneRule.textContent = `เหลือ 1 คำสั่ง +${level.bonusPerCommand || 1}`;
+      el.queueFoot.textContent = `คำสั่งที่ใช้: ${state.queue.length} / ช่องคิว: ${commandCapacity(level)} / 3 ดาว: ≤ ${level.optimal}`;
+      renderScorePanel();
+      renderBoard();
+      renderQueue();
+      renderLevels();
+      setRunningUi(state.running);
+      el.status.textContent = state.running ? "กำลังทำงาน..." : statusText();
+    }
+
+    function statusText() {
+      const level = currentLevel();
+      const left = level.cheeses.length - state.collected.size;
+      if (left === 0 && state.player.r === level.goal[0] && state.player.c === level.goal[1]) {
+        return "ถึงเส้นชัยแล้ว";
+      }
+      return state.queue.length ? "พร้อมรันคำสั่ง" : "พร้อมวางแผนแล้ว";
+    }
+
+    function renderBoard() {
+      const level = currentLevel();
+      const cheeseSet = new Set(level.cheeses.map(pointKey));
+      const blockSet = new Set((level.blocks || []).map(pointKey));
+      const portalSet = new Set((level.portals || [level.goal]).map(pointKey));
+      el.colHeads.innerHTML = "";
+      el.rowHeads.innerHTML = "";
+      for (let i = 0; i < 6; i++) {
+        el.colHeads.insertAdjacentHTML("beforeend", `<span>${i}</span>`);
+        el.rowHeads.insertAdjacentHTML("beforeend", `<span>${i}</span>`);
+      }
+      el.board.innerHTML = "";
+      for (let r = 0; r < 6; r++) {
+        for (let c = 0; c < 6; c++) {
+          const key = cellKey(r, c);
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          if (blockSet.has(key)) cell.classList.add("block");
+          if (portalSet.has(key)) cell.classList.add("portal");
+          if (level.start[0] === r && level.start[1] === c) cell.classList.add("hint");
+          if (cheeseSet.has(key) && !state.collected.has(key)) {
+            cell.insertAdjacentHTML("beforeend", `<span class="piece" aria-label="ชีส">🧀</span>`);
+          }
+          if (level.goal[0] === r && level.goal[1] === c) {
+            cell.insertAdjacentHTML("beforeend", `<span class="piece" aria-label="เส้นชัย">🏁</span>`);
+          }
+          if (state.player.r === r && state.player.c === c) {
+            cell.insertAdjacentHTML("beforeend", `<span class="glow"></span><span class="piece player-mouse ${state.player.dir}" aria-label="หนู"><span class="pm-tail"></span><span class="pm-body"></span><span class="pm-ear top"></span><span class="pm-ear bottom"></span><span class="pm-head"></span><span class="pm-eye"></span><span class="pm-nose"></span><span class="pm-whisker"></span></span>`);
+          }
+          el.board.appendChild(cell);
+        }
+      }
+    }
+
+    function renderQueue() {
+      const level = currentLevel();
+      const capacity = commandCapacity(level);
+      el.queue.innerHTML = "";
+      for (let i = 0; i < capacity; i++) {
+        const cmd = state.queue[i];
+        const wrap = document.createElement("div");
+        wrap.className = "slot-wrap";
+        wrap.innerHTML = `<span class="slot-num">${i + 1}</span><div class="cmd-slot ${cmd ? "filled" : ""}">${cmd ? iconSvg(cmd) : ""}</div>`;
+        el.queue.appendChild(wrap);
+      }
+      el.queue.style.gridTemplateColumns = `repeat(${Math.min(capacity, 10)}, 1fr)`;
+    }
+
+    function renderLevels() {
+      el.levelGrid.innerHTML = "";
+      levels.forEach((_, index) => {
+        const locked = index + 1 > state.progress.unlocked;
+        const stars = state.progress.stars[index] || 0;
+        const score = state.progress.scores[index] || 0;
+        const item = document.createElement("div");
+        item.className = "level-item";
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `level-dot ${index === state.level ? "active" : ""} ${locked ? "locked" : ""}`;
+        button.textContent = index + 1;
+        button.disabled = locked || state.running;
+        button.addEventListener("click", () => chooseLevel(index));
+        item.appendChild(button);
+        if (locked) {
+          item.insertAdjacentHTML("beforeend", `<div class="lock">🔒</div>`);
+        } else {
+          item.insertAdjacentHTML("beforeend", `<div class="mini-stars">${"★".repeat(stars)}${"☆".repeat(3 - stars)}</div>`);
+          item.insertAdjacentHTML("beforeend", `<div class="mini-score">${score.toLocaleString("th-TH")}</div>`);
+        }
+        el.levelGrid.appendChild(item);
+      });
+    }
+
+    function renderStars(target, count) {
+      target.innerHTML = "";
+      for (let i = 0; i < 3; i++) {
+        target.insertAdjacentHTML("beforeend", starSvg(i < count));
+      }
+    }
+
+    function renderScorePanel() {
+      const level = currentLevel();
+      const bestScore = state.progress.scores[state.level] || 0;
+      const bestStars = bestScore > 0 ? (state.progress.stars[state.level] || 0) : 0;
+      el.scorePanel.innerHTML = `
+        <div class="score-total">${bestScore.toLocaleString("th-TH")} คะแนน</div>
+        <div class="score-meta">
+          <span class="score-chip">🧀 ชีส +${level.cheeseScore || 10}</span>
+          <span class="score-chip">🏁 เส้นชัย +${level.finishScore || 20}</span>
+          <span class="score-chip">⭐ ${bestStars || 0}/3 ดาว</span>
+        </div>
+      `;
+    }
+
+    function calculateScore(usedCommands) {
+      const level = currentLevel();
+      const cheeseScore = level.cheeseScore || 10;
+      const finishScore = level.finishScore || 20;
+      const bonusPerCommand = level.bonusPerCommand || 1;
+      const cheesePoints = state.collected.size * cheeseScore;
+      const finishPoints = finishScore;
+      const savedCommands = Math.max(0, bonusLimit(level) - usedCommands);
+      const efficiencyPoints = savedCommands * bonusPerCommand;
+      const total = cheesePoints + finishPoints + efficiencyPoints;
+      return { cheesePoints, finishPoints, efficiencyPoints, savedCommands, total };
+    }
+
+    function chooseLevel(index) {
+      if (index + 1 > state.progress.unlocked || state.running) return;
+      state.level = index;
+      resetLevel(false);
+      ping(380, 0.05);
+    }
+
+    function addCommand(cmd) {
+      const level = currentLevel();
+      const capacity = commandCapacity(level);
+      if (state.running || state.queue.length >= capacity) {
+        showToast("คิวคำสั่งเต็มแล้ว");
+        return;
+      }
+      state.queue.push(cmd);
+      ping(540, 0.04);
+      render();
+    }
+
+    function undoCommand() {
+      if (state.running || !state.queue.length) return;
+      state.queue.pop();
+      ping(330, 0.04);
+      render();
+    }
+
+    function clearCommands() {
+      if (state.running) return;
+      state.queue = [];
+      resetLevel(true);
+      ping(280, 0.04);
+    }
+
+    function rotate(dir, turn) {
+      const i = DIRS.indexOf(dir);
+      if (turn === "left") return DIRS[(i + 3) % 4];
+      return DIRS[(i + 1) % 4];
+    }
+
+    function move(forward = true) {
+      const d = DELTA[state.player.dir];
+      const nr = state.player.r + (forward ? d.r : -d.r);
+      const nc = state.player.c + (forward ? d.c : -d.c);
+      const blockSet = new Set((currentLevel().blocks || []).map(pointKey));
+      if (nr < 0 || nr > 5 || nc < 0 || nc > 5) return false;
+      if (blockSet.has(cellKey(nr, nc))) return false;
+      state.player.r = nr;
+      state.player.c = nc;
+      return true;
+    }
+
+    function collectIfHere() {
+      const level = currentLevel();
+      const key = cellKey(state.player.r, state.player.c);
+      const hasCheese = level.cheeses.some(([r, c]) => r === state.player.r && c === state.player.c);
+      if (!hasCheese) return false;
+      if (!state.collected.has(key)) {
+        state.collected.add(key);
+        ping(780, 0.08);
+      }
+      return true;
+    }
+
+    async function runProgram() {
+      if (state.running) return;
+      if (!state.queue.length) {
+        openErrorModal("ยังไม่มีคำสั่ง", "ใส่คำสั่งก่อนกดรัน แล้วลองให้หนูน้อยเดินอีกครั้ง");
+        return;
+      }
+      resetLevel(true);
+      state.running = true;
+      setRunningUi(true);
+      el.status.textContent = "กำลังทำงาน...";
+      await sleep(220);
+      for (let i = 0; i < state.queue.length; i++) {
+        const cmd = state.queue[i];
+        if (cmd === "collect") {
+          const ok = collectIfHere();
+          if (!ok) {
+            state.running = false;
+            render();
+            openErrorModal("ยังไม่มีชีสตรงนี้", "พาหนูน้อยไปยืนบนช่องชีสก่อน แล้วค่อยใช้คำสั่งเก็บชีสค่ะ");
+            ping(170, 0.1);
+            return;
+          }
+        } else if (cmd === "left" || cmd === "right") {
+          state.player.dir = rotate(state.player.dir, cmd);
+          ping(cmd === "left" ? 420 : 500, 0.04);
+        } else {
+          const ok = move(cmd === "forward");
+          if (!ok) {
+            state.running = false;
+            render();
+            openErrorModal("คิวคำสั่งยังไม่ถูกต้อง", collisionMessage(i, cmd));
+            ping(170, 0.1);
+            return;
+          }
+        }
+        renderBoard();
+        el.status.textContent = `ทำคำสั่งที่ ${i + 1}: ${COMMANDS[cmd].label}`;
+        await sleep(Number(el.speed.max) + Number(el.speed.min) - Number(el.speed.value));
+      }
+      state.running = false;
+      finishRun();
+    }
+
+    function finishRun() {
+      const level = currentLevel();
+      const allCheese = state.collected.size === level.cheeses.length;
+      const atGoal = state.player.r === level.goal[0] && state.player.c === level.goal[1];
+      if (allCheese && atGoal) {
+        const stars = scoreStars(state.queue.length, level.optimal);
+        const score = calculateScore(state.queue.length);
+        state.progress.stars[state.level] = Math.max(state.progress.stars[state.level] || 0, stars);
+        state.progress.scores[state.level] = Math.max(state.progress.scores[state.level] || 0, score.total);
+        state.progress.unlocked = Math.max(state.progress.unlocked, Math.min(levels.length, state.level + 2));
+        saveProgress();
+        render();
+        openWinModal(stars, score);
+        playWinSound();
+        launchConfetti();
+      } else {
+        render();
+        const title = allCheese ? "ยังไม่ถึงเส้นชัย" : "ยังเก็บชีสไม่ครบ";
+        const text = allCheese ? "เก็บชีสครบแล้ว เหลือพาหนูน้อยไปที่ธง" : "ยังมีชีสเหลืออยู่บนกระดาน ลองวางแผนใหม่ค่ะ";
+        openErrorModal(title, text);
+        ping(220, 0.08);
+      }
+    }
+
+    function scoreStars(used, optimal) {
+      if (used <= optimal) return 3;
+      if (used <= optimal + 3) return 2;
+      return 1;
+    }
+
+    function collisionMessage(index, cmd) {
+      const level = currentLevel();
+      const action = COMMANDS[cmd]?.label || "คำสั่งนี้";
+      const base = `คำสั่งที่ ${index + 1}: ${action} ทำให้หนูน้อยที่หันไปทาง${dirThai(state.player.dir)}เดินออกนอกกระดานหรือชนกำแพง`;
+      return `${base}. ลองดูว่าหนูหันหน้าไปทางไหน แล้วปรับลำดับคำสั่งใหม่ค่ะ`;
+    }
+
+    function setRunningUi(running) {
+      document.querySelectorAll("button").forEach(button => {
+        if (["soundBtn", "resetScoreBtn", "helpBtn", "startGameBtn", "startGuideBtn", "closeGuideBtn"].includes(button.id)) return;
+        if (button.closest(".modal")) return;
+        if (button.closest(".start-screen") || button.closest(".guide-screen")) return;
+        button.disabled = running || button.classList.contains("locked");
+      });
+      el.runBtn.disabled = running;
+    }
+
+    function openWinModal(stars, score) {
+      el.resultModal.classList.remove("error");
+      el.modalTitle.textContent = "ผ่านด่านแล้ว!";
+      renderStars(el.modalStars, stars);
+      el.modalText.textContent = `ใช้ ${state.queue.length} คำสั่ง ได้ ${score.total.toLocaleString("th-TH")} คะแนน / ${stars} ดาว`;
+      el.scoreBreakdown.classList.remove("hidden");
+      el.scoreBreakdown.innerHTML = `
+        <div class="score-row"><span>🧀 เก็บชีส</span><strong>+${score.cheesePoints.toLocaleString("th-TH")}</strong></div>
+        <div class="score-row"><span>🏁 เข้าเส้นชัย</span><strong>+${score.finishPoints.toLocaleString("th-TH")}</strong></div>
+        <div class="score-row"><span>⚡ โบนัสคำสั่งน้อย (${score.savedCommands} ช่องคำสั่งเหลือ)</span><strong>+${score.efficiencyPoints.toLocaleString("th-TH")}</strong></div>
+        <div class="score-rule-note">⭐ ${starReason(state.queue.length)}<br>${starRuleText()}</div>
+        <div class="score-row total"><span>คะแนนรวม</span><strong>${score.total.toLocaleString("th-TH")}</strong></div>
+      `;
+      el.stayBtn.textContent = "เล่นซ้ำ";
+      el.nextBtn.textContent = state.level === levels.length - 1 ? "กลับด่าน 1" : "ด่านถัดไป";
+      el.overlay.classList.add("show");
+      el.overlay.setAttribute("aria-hidden", "false");
+    }
+
+    function openErrorModal(title, message) {
+      el.resultModal.classList.add("error");
+      el.modalTitle.textContent = title;
+      el.modalStars.innerHTML = "";
+      el.scoreBreakdown.classList.add("hidden");
+      el.scoreBreakdown.innerHTML = "";
+      el.modalText.textContent = message;
+      el.stayBtn.textContent = "ลองใหม่";
+      el.nextBtn.textContent = "ด่านถัดไป";
+      el.overlay.classList.add("show");
+      el.overlay.setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal() {
+      el.overlay.classList.remove("show");
+      el.overlay.setAttribute("aria-hidden", "true");
+    }
+
+    function nextLevel() {
+      closeModal();
+      state.level = state.level === levels.length - 1 ? 0 : state.level + 1;
+      resetLevel(false);
+    }
+
+    function showToast(message) {
+      el.toast.textContent = message;
+      el.toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => el.toast.classList.remove("show"), 1800);
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    let audioContext;
+    function ping(freq, gain) {
+      if (!state.sound) return;
+      try {
+        audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+        if (audioContext.state === "suspended") audioContext.resume();
+        const osc = audioContext.createOscillator();
+        const vol = audioContext.createGain();
+        osc.frequency.value = freq;
+        osc.type = "sine";
+        vol.gain.value = gain;
+        osc.connect(vol);
+        vol.connect(audioContext.destination);
+        osc.start();
+        vol.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.13);
+        osc.stop(audioContext.currentTime + 0.14);
+      } catch {}
+    }
+
+    function playWinSound() {
+      [660, 880, 990, 1320].forEach((freq, index) => {
+        setTimeout(() => ping(freq, 0.09), index * 115);
+      });
+    }
+
+    function launchConfetti() {
+      const layer = document.createElement("div");
+      const colors = ["#ffc51e", "#62ca28", "#56b7df", "#ff8b22", "#ff6f80", "#b85cff", "#ffffff"];
+      layer.className = "confetti-layer";
+      document.body.appendChild(layer);
+      for (let i = 0; i < 120; i++) {
+        const piece = document.createElement("span");
+        const size = 7 + Math.random() * 9;
+        piece.className = "confetti-piece";
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.width = `${size}px`;
+        piece.style.height = `${size * (0.8 + Math.random())}px`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.setProperty("--drift", `${-160 + Math.random() * 320}px`);
+        piece.style.setProperty("--spin", `${360 + Math.random() * 900}deg`);
+        piece.style.setProperty("--fall-time", `${2.7 + Math.random() * 1.8}s`);
+        piece.style.animationDelay = `${Math.random() * 0.55}s`;
+        layer.appendChild(piece);
+      }
+      setTimeout(() => layer.remove(), 6800);
+    }
+
+    function resetScores() {
+      if (state.running) return;
+      state.progress = { unlocked: 1, stars: [], scores: [], scoreVersion: 2 };
+      state.level = 0;
+      saveProgress();
+      resetLevel(false);
+      showToast("รีเซ็ตคะแนนแล้ว");
+    }
+
+    document.querySelectorAll(".cmd-svg").forEach(node => {
+      node.innerHTML = iconSvg(node.dataset.icon);
+    });
+
+    document.querySelectorAll("[data-command]").forEach(button => {
+      button.addEventListener("click", () => addCommand(button.dataset.command));
+    });
+
+    el.undoBtn.addEventListener("click", undoCommand);
+    el.clearBtn.addEventListener("click", clearCommands);
+    el.runBtn.addEventListener("click", runProgram);
+    el.stayBtn.addEventListener("click", () => {
+      closeModal();
+      resetLevel(true);
+    });
+    el.nextBtn.addEventListener("click", nextLevel);
+    ui.startGameBtn.addEventListener("click", () => {
+      ui.startScreen.classList.remove("show");
+      ping(620, 0.05);
+    });
+    ui.startGuideBtn.addEventListener("click", () => {
+      ui.guideScreen.classList.add("show");
+    });
+    ui.closeGuideBtn.addEventListener("click", () => {
+      ui.guideScreen.classList.remove("show");
+      ui.startScreen.classList.remove("show");
+    });
+    el.helpBtn.addEventListener("click", () => {
+      ui.guideScreen.classList.add("show");
+    });
+    el.soundBtn.addEventListener("click", () => {
+      state.sound = !state.sound;
+      el.soundBtn.setAttribute("aria-pressed", String(state.sound));
+      el.soundBtn.innerHTML = state.sound ? "<span>🔊</span><span>เสียง</span>" : "<span>🔇</span><span>ปิดเสียง</span>";
+    });
+    el.resetScoreBtn.addEventListener("click", resetScores);
+    el.overlay.addEventListener("click", event => {
+      if (event.target === el.overlay) closeModal();
+    });
+
+    window.addEventListener("keydown", event => {
+      if (state.running) return;
+      const keyMap = {
+        ArrowUp: "forward",
+        ArrowDown: "back",
+        ArrowLeft: "left",
+        ArrowRight: "right"
+      };
+      if (keyMap[event.key]) {
+        event.preventDefault();
+        addCommand(keyMap[event.key]);
+      }
+      if (event.key === "Backspace") undoCommand();
+      if (event.key === "Enter") runProgram();
+    });
+
+    resetLevel(false);
+  </script>
+</body>
+</html>

@@ -1,0 +1,823 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Cyber Quest ป.1</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MediaPipe Hands & Camera -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Mali', cursive;
+            margin: 0;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 15% 12%, rgba(255, 214, 102, .45), transparent 26%),
+                radial-gradient(circle at 84% 14%, rgba(34, 211, 238, .35), transparent 28%),
+                linear-gradient(135deg, #fff1f2 0%, #e0fbff 52%, #f4ffd8 100%);
+        }
+
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-5px, 0, 0); }
+            20%, 80% { transform: translate3d(5px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-10px, 0, 0); }
+            40%, 60% { transform: translate3d(10px, 0, 0); }
+        }
+
+        .bounce { animation: bounce 2s infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(14px);
+            border: 3px solid rgba(255, 255, 255, 0.96);
+            box-shadow: 0 12px 34px rgba(30, 64, 104, 0.22);
+            color: #102033;
+        }
+
+        .btn-magic {
+            background: linear-gradient(45deg, #ff6b6b, #ffb703, #18c4b8);
+            background-size: 200% 200%;
+            animation: gradientMove 3s ease infinite;
+            box-shadow: 0 8px 0 rgba(16, 32, 51, .14), 0 18px 32px rgba(16, 32, 51, .18);
+            transition: all 0.2s;
+        }
+        .btn-magic:hover { transform: scale(1.04); box-shadow: 0 10px 0 rgba(16, 32, 51, .12), 0 22px 38px rgba(16, 32, 51, .22); }
+        .btn-magic:active { transform: scale(0.95); }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .progress-bar { transition: width 0.3s ease; }
+
+        .start-scene {
+            position: relative;
+            min-height: 210px;
+            margin-bottom: 1rem;
+            border-radius: 30px;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 22% 24%, rgba(255, 214, 102, .75), transparent 18%),
+                radial-gradient(circle at 82% 28%, rgba(24, 196, 184, .34), transparent 22%),
+                linear-gradient(180deg, #e0fbff 0%, #fff7d6 58%, #ffdfe7 100%);
+            border: 3px solid rgba(255,255,255,.96);
+        }
+
+        .start-scene::before {
+            content: "";
+            position: absolute;
+            left: 8%;
+            right: 8%;
+            bottom: 22px;
+            height: 44px;
+            border-radius: 24px;
+            background: rgba(255,255,255,.7);
+            box-shadow: 0 14px 30px rgba(16,32,51,.12);
+        }
+
+        .start-hero {
+            position: absolute;
+            left: 50%;
+            top: 48%;
+            transform: translate(-50%, -50%);
+            font-size: 88px;
+            filter: drop-shadow(0 12px 16px rgba(16,32,51,.18));
+        }
+
+        .start-device {
+            position: absolute;
+            display: grid;
+            place-items: center;
+            width: 78px;
+            height: 78px;
+            border-radius: 24px;
+            background: rgba(255,255,255,.88);
+            border: 3px solid rgba(24,196,184,.5);
+            font-size: 44px;
+            box-shadow: 0 10px 20px rgba(16,32,51,.14);
+        }
+
+        .start-device.one { left: 12%; top: 18%; transform: rotate(-8deg); }
+        .start-device.two { right: 13%; top: 20%; transform: rotate(7deg); }
+        .start-device.three { left: 23%; bottom: 20%; transform: rotate(6deg); }
+        .start-device.four { right: 24%; bottom: 19%; transform: rotate(-6deg); }
+        .start-sparkle { position: absolute; font-size: 28px; opacity: .8; }
+        .start-sparkle.a { left: 34%; top: 18%; }
+        .start-sparkle.b { right: 34%; top: 15%; }
+        .start-sparkle.c { left: 47%; bottom: 16%; }
+    </style>
+</head>
+<body class="text-slate-900 select-none">
+
+    <video id="input_video" class="hidden" autoplay playsinline></video>
+    <canvas id="output_canvas" class="absolute inset-0 w-full h-full z-10"></canvas>
+
+    <div id="hud-layer" class="absolute inset-0 z-20 pointer-events-none flex flex-col justify-start p-4 hidden">
+        
+        <!-- Top Bar: Level & Progress -->
+        <div class="flex justify-between items-start w-full px-4 mb-6">
+            <div class="glass-panel px-6 py-3 rounded-full flex items-center gap-3">
+                <span id="level-icon" class="text-4xl bounce">🤖</span>
+                <div>
+                    <div id="level-name" class="text-teal-600 font-bold text-lg">ด่าน 1: จีบแล้วจับ</div>
+                    <div class="text-xs text-slate-500">วิธีเล่น: <span id="level-mechanic-text" class="text-slate-900">จีบนิ้วเพื่อเลือกคำตอบ</span></div>
+                </div>
+            </div>
+            <div class="glass-panel px-6 py-3 rounded-full flex flex-col items-center">
+                <div class="text-rose-500 font-bold text-xl">คะแนน <span id="score-display" class="text-3xl text-slate-900">0</span></div>
+                <div class="flex gap-1 mt-1" id="progress-dots">
+                    <!-- Dots injected by JS -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Question Box (Top Center) -->
+        <div class="flex justify-center w-full" id="question-container">
+            <div class="glass-panel px-10 py-5 rounded-3xl text-center max-w-3xl border-teal-300/70" id="question-box">
+                <div class="hidden" id="question-hint">❓</div>
+                <h2 class="text-3xl font-bold text-slate-900 drop-shadow-sm" id="question-text">คำถามจะแสดงที่นี่</h2>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="modal-layer" class="absolute inset-0 z-30 pointer-events-auto flex items-center justify-center">
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="glass-panel p-10 rounded-3xl text-center max-w-2xl w-full mx-4 shadow-2xl">
+            <div class="start-scene">
+                <div class="start-device one">🖱️</div>
+                <div class="start-device two">⌨️</div>
+                <div class="start-device three">🎧</div>
+                <div class="start-device four">🖥️</div>
+                <div class="start-hero">🤖</div>
+                <div class="start-sparkle a">⭐</div>
+                <div class="start-sparkle b">✨</div>
+                <div class="start-sparkle c">💻</div>
+            </div>
+            <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-amber-500 to-teal-500 mb-4 drop-shadow-lg">
+                AR Cyber Quest ป.1
+            </h1>
+            <p class="text-xl text-slate-700 mb-8">ใช้มือวิเศษเรียนรู้อุปกรณ์คอมพิวเตอร์ 8 ด่าน รวม 40 ข้อ</p>
+            <button id="start-btn" class="btn-magic text-white font-bold text-3xl py-5 px-12 rounded-full w-full pointer-events-auto">
+                🚀 เริ่มการผจญภัย!
+            </button>
+            <p id="loading-text" class="text-amber-500 mt-4 hidden animate-pulse text-xl">กำลังเปิดกล้อง AR...</p>
+        </div>
+
+        <!-- Level Intro Modal -->
+        <div id="level-intro-modal" class="hidden glass-panel p-10 rounded-3xl text-center max-w-xl w-full mx-4 transform transition-all duration-500 scale-90 opacity-0">
+            <div id="intro-icon" class="text-9xl mb-6 bounce">🤖</div>
+            <h2 id="intro-title" class="text-4xl font-bold text-amber-500 mb-2">ด่านที่ 1</h2>
+            <h3 id="intro-subtitle" class="text-2xl text-slate-900 mb-6">จีบแล้วจับ!</h3>
+            <p id="intro-desc" class="text-xl text-slate-700 mb-8 bg-teal-50 p-4 rounded-xl">ขยับนิ้วชี้ไปทับรูป แล้วทำท่า "จีบนิ้ว" เพื่อเลือกนะ</p>
+            <div class="text-5xl animate-pulse">⏳ <span id="intro-countdown">3</span></div>
+        </div>
+
+        <!-- Feedback Modal -->
+        <div id="feedback-modal" class="hidden glass-panel p-8 rounded-3xl text-center max-w-md w-full mx-4 transform scale-90 transition-transform duration-300 border-4 border-green-400">
+            <div id="feedback-icon" class="text-8xl mb-4">✅</div>
+            <h2 id="feedback-title" class="text-4xl font-bold mb-2 text-green-400">เก่งมาก!</h2>
+            <p id="feedback-desc" class="text-2xl text-slate-900 mb-6 font-bold bg-white/80 p-3 rounded-lg">เมาส์</p>
+            
+            <div class="w-full bg-slate-200 rounded-full h-4 mb-2 overflow-hidden border border-white">
+                <div id="countdown-bar" class="bg-gradient-to-r from-green-400 to-sky-400 h-full rounded-full w-full transition-all duration-1000 linear"></div>
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameover-screen" class="hidden glass-panel p-10 rounded-3xl text-center max-w-2xl w-full mx-4 border-4 border-yellow-400 shadow-yellow-500/50 shadow-2xl">
+            <div class="text-8xl mb-4">🏆🎉</div>
+            <h2 class="text-5xl font-bold text-amber-500 mb-2">สุดยอดนักสำรวจ!</h2>
+            <p class="text-2xl text-slate-700 mb-6">หนูผ่านทุกด่านแล้ว ได้คะแนนไปเลย</p>
+            <div class="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-rose-500 mb-8 drop-shadow-lg">
+                <span id="final-score">0</span><span class="text-4xl text-slate-900">/40</span>
+            </div>
+            <button id="restart-btn" class="btn-magic text-white font-bold text-2xl py-4 px-10 rounded-full w-full">
+                🔄 เล่นอีกครั้ง
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const gameData = [
+            {
+                level: 1, name: "จีบแล้วจับ", character: "🤖", mechanic: "pinch",
+                themeColor: "rgba(255, 107, 107, 0.20)",
+                instruction: 'ขยับนิ้วชี้ไปทับรูป แล้วทำท่า "จีบนิ้ว" เพื่อตอบ',
+                questions: [
+                    { hint: '👆', text: 'ตัวไหน เอาไว้ ชี้และคลิก ?', choices: ['🖱️', '📱', '🎮'], correct: 0, ansText: 'เมาส์ (Mouse)' },
+                    { hint: '🅰️', text: 'ตัวไหน เอาไว้ พิมพ์ตัวอักษร ?', choices: ['📺', '⌨️', '🔦'], correct: 1, ansText: 'คีย์บอร์ด (Keyboard)' },
+                    { hint: '👁️', text: 'ตัวไหน เป็นจอของคอมพิวเตอร์ ?', choices: ['🖥️', '📱', '📺'], correct: 0, ansText: 'หน้าจอ (Monitor)' },
+                    { hint: '📄', text: 'ตัวไหน พิมพ์งานลงกระดาษได้ ?', choices: ['📠', '🔌', '🖨️'], correct: 2, ansText: 'เครื่องพิมพ์ (Printer)' },
+                    { hint: '🧠', text: 'ตัวไหน คือเครื่องคอมพิวเตอร์ ?', choices: ['💻', '📺', '📻'], correct: 0, ansText: 'คอมพิวเตอร์ (Computer)' }
+                ]
+            },
+            {
+                level: 2, name: "แตะไวได้แต้ม", character: "🐱", mechanic: "touch_moving",
+                themeColor: "rgba(255, 183, 3, 0.22)",
+                instruction: 'รูปจะขยับหนี! ให้เอา "ปลายนิ้วชี้" ไปแตะให้โดน (ไม่ต้องจีบ)',
+                questions: [
+                    { hint: '🔊', text: 'ตัวไหน มีเสียงเพลงดังออกมา ?', choices: ['📻', '🔊', '📱'], correct: 1, ansText: 'ลำโพง (Speaker)' },
+                    { hint: '👆', text: 'อุปกรณ์ไหน ใช้คู่กับคอมพิวเตอร์เพื่อคลิก ?', choices: ['🖱️', '🎮', '📱'], correct: 0, ansText: 'เมาส์ (Mouse)' },
+                    { hint: '⌨️', text: 'อันไหน มีปุ่มกดเยอะสำหรับพิมพ์ ?', choices: ['📺', '🔌', '⌨️'], correct: 2, ansText: 'คีย์บอร์ด (Keyboard)' },
+                    { hint: '🎧', text: 'ตัวไหน เอาไว้ครอบหูฟังเสียงจากคอมพิวเตอร์ ?', choices: ['🎧', '📻', '🔊'], correct: 0, ansText: 'หูฟัง (Headphone)' },
+                    { hint: '🖥️', text: 'จอภาพอันไหน ใช้แสดงภาพจากคอมพิวเตอร์ตั้งโต๊ะ ?', choices: ['📺', '🖥️', '📱'], correct: 1, ansText: 'หน้าจอคอมพิวเตอร์ (Monitor)' }
+                ]
+            },
+            {
+                level: 3, name: "ชาร์จพลังเวทย์", character: "🐰", mechanic: "hold",
+                themeColor: "rgba(34, 197, 94, 0.20)",
+                instruction: 'เอานิ้วชี้ไป "แช่ทิ้งไว้" ที่คำตอบ 2 วินาที เพื่อชาร์จพลัง',
+                questions: [
+                    { hint: '🖨️', text: 'เครื่องไหน ทำงานกับกระดาษและหมึก ?', choices: ['📠', '🖨️', '📻'], correct: 1, ansText: 'เครื่องพิมพ์ (Printer)' },
+                    { hint: '🖱️', text: 'อุปกรณ์ไหน ใช้เลื่อนลูกศรบนหน้าจอ ?', choices: ['🎮', '📱', '🖱️'], correct: 2, ansText: 'เมาส์ (Mouse)' },
+                    { hint: '🧠', text: 'เครื่องไหน ใช้เรียนและทำงานคอมพิวเตอร์ ?', choices: ['📺', '💻', '📻'], correct: 1, ansText: 'เครื่องคอมพิวเตอร์' },
+                    { hint: '🅰️', text: 'แป้นไหน เอาไว้พิมพ์ ก.ไก่ ข.ไข่ ?', choices: ['⌨️', '📱', '🔦'], correct: 0, ansText: 'คีย์บอร์ด (Keyboard)' },
+                    { hint: '👁️', text: 'อันไหน แสดงภาพจากเครื่องคอมพิวเตอร์ ?', choices: ['📺', '🖥️', '📱'], correct: 1, ansText: 'หน้าจอ (Monitor)' }
+                ]
+            },
+            {
+                level: 4, name: "ลากใส่กล่อง", character: "🐶", mechanic: "drag_drop",
+                themeColor: "rgba(249, 115, 22, 0.20)",
+                instruction: 'ทำท่า "จีบค้างไว้" เพื่อหยิบรูป แล้วลากลงไปใส่กล่องด้านล่าง',
+                questions: [
+                    { hint: '🎧', text: 'หยิบ "หูฟัง" ใส่กล่องให้หน่อย!', choices: ['📻', '🔊', '🎧'], correct: 2, ansText: 'หูฟัง (Headphone)' },
+                    { hint: '🔊', text: 'กล่องนี้ต้องการ "ลำโพง" ลากมาที!', choices: ['🔊', '📻', '🎧'], correct: 0, ansText: 'ลำโพง (Speaker)' },
+                    { hint: '🖱️', text: 'ช่วยหยิบ "เมาส์" ใส่กล่องทีนะ!', choices: ['🎮', '🖱️', '📱'], correct: 1, ansText: 'เมาส์ (Mouse)' },
+                    { hint: '⌨️', text: 'ลาก "แป้นพิมพ์" ลงกล่องด่วนเลย!', choices: ['📺', '📱', '⌨️'], correct: 2, ansText: 'คีย์บอร์ด (Keyboard)' },
+                    { hint: '🖨️', text: 'กล่องกระดาษ อยากได้ "เครื่องปริ้น" !', choices: ['🖨️', '📠', '🔌'], correct: 0, ansText: 'เครื่องพิมพ์ (Printer)' }
+                ]
+            },
+            {
+                level: 5, name: "รับฝนตก", character: "🐙", mechanic: "catch_falling",
+                themeColor: "rgba(14, 165, 233, 0.22)",
+                instruction: 'รูปจะหล่นลงมา! ให้ใช้มือไป "รองรับ" รูปที่ถูกต้องเอาไว้',
+                questions: [
+                    { hint: '💻', text: 'รับ "คอมพิวเตอร์" ให้ได้นะ!', choices: ['📺', '💻', '📻'], correct: 1, ansText: 'เครื่องคอมพิวเตอร์' },
+                    { hint: '🖥️', text: 'ระวัง! รับ "หน้าจอ" ไว้ให้ดี!', choices: ['🖥️', '📺', '📱'], correct: 0, ansText: 'หน้าจอ (Monitor)' },
+                    { hint: '👆', text: 'รับ "เมาส์" ที่กำลังหล่นมา!', choices: ['🎮', '📱', '🖱️'], correct: 2, ansText: 'เมาส์ (Mouse)' },
+                    { hint: '🅰️', text: 'รับ "แป้นพิมพ์" อย่าให้ตกพื้น!', choices: ['📺', '⌨️', '🔌'], correct: 1, ansText: 'คีย์บอร์ด (Keyboard)' },
+                    { hint: '📄', text: 'ชิ้นสุดท้าย! รับ "เครื่องปริ้น" !', choices: ['🖨️', '📠', '📻'], correct: 0, ansText: 'เครื่องพิมพ์ (Printer)' }
+                ]
+            },
+            {
+                level: 6, name: "จีบคู่หูไซเบอร์", character: "🦊", mechanic: "pinch",
+                themeColor: "rgba(236, 72, 153, 0.20)",
+                instruction: 'ดูคำถามให้ดี แล้วจีบนิ้วบนคำตอบที่ถูกต้อง',
+                questions: [
+                    { hint: '📷', text: 'ตัวไหน ใช้ถ่ายภาพตอนเรียนออนไลน์ ?', choices: ['📷', '📱', '📺'], correct: 0, ansText: 'กล้องเว็บแคม (Webcam)' },
+                    { hint: '🎤', text: 'ตัวไหน ใช้พูดให้เพื่อนได้ยิน ?', choices: ['🔊', '🎤', '📻'], correct: 1, ansText: 'ไมโครโฟน (Microphone)' },
+                    { hint: '💾', text: 'ตัวไหน ใช้เก็บข้อมูลเก่าๆ ?', choices: ['📠', '🔌', '💾'], correct: 2, ansText: 'แผ่นบันทึกข้อมูล (Disk)' },
+                    { hint: '🖱️', text: 'ตัวไหน คลิกเปิดโปรแกรมได้ ?', choices: ['🖱️', '🎮', '📱'], correct: 0, ansText: 'เมาส์ (Mouse)' },
+                    { hint: '🔊', text: 'ตัวไหน เป็นลำโพงคอมพิวเตอร์ สำหรับเปิดเสียงดังออกมา ?', choices: ['🔌', '🔊', '🔦'], correct: 1, ansText: 'ลำโพง (Speaker)' }
+                ]
+            },
+            {
+                level: 7, name: "แตะดาวข้อมูล", character: "🐸", mechanic: "touch_moving",
+                themeColor: "rgba(20, 184, 166, 0.22)",
+                instruction: 'คำตอบจะลอยไปมา ใช้ปลายนิ้วชี้แตะให้โดน',
+                questions: [
+                    { hint: '⌨️', text: 'ตัวไหน เป็นแป้นพิมพ์คอมพิวเตอร์ ใช้พิมพ์ตัวอักษร ?', choices: ['🎮', '⌨️', '🔦'], correct: 1, ansText: 'คีย์บอร์ด (Keyboard)' },
+                    { hint: '🖥️', text: 'ตัวไหน แสดงภาพจากคอมพิวเตอร์ ?', choices: ['🖥️', '📺', '📱'], correct: 0, ansText: 'หน้าจอ (Monitor)' },
+                    { hint: '🎧', text: 'ตัวไหน ใส่ที่หูเพื่อฟังเสียง ?', choices: ['📻', '🔊', '🎧'], correct: 2, ansText: 'หูฟัง (Headphone)' },
+                    { hint: '🖨️', text: 'ตัวไหน พิมพ์รูปและตัวหนังสือออกมา ?', choices: ['🖨️', '📠', '🔌'], correct: 0, ansText: 'เครื่องพิมพ์ (Printer)' },
+                    { hint: '🎤', text: 'ตัวไหน รับเสียงพูดของเรา ?', choices: ['🔊', '🎤', '📻'], correct: 1, ansText: 'ไมโครโฟน (Microphone)' }
+                ]
+            },
+            {
+                level: 8, name: "ภารกิจรับอุปกรณ์", character: "🦁", mechanic: "catch_falling",
+                themeColor: "rgba(147, 51, 234, 0.18)",
+                instruction: 'ด่านสุดท้าย! รับเฉพาะอุปกรณ์คอมพิวเตอร์ที่ถูกต้อง',
+                questions: [
+                    { hint: '📷', text: 'รับ "กล้องเว็บแคม" ให้ได้!', choices: ['📱', '📷', '📺'], correct: 1, ansText: 'กล้องเว็บแคม (Webcam)' },
+                    { hint: '💾', text: 'รับ "แผ่นบันทึกข้อมูล" อย่าให้หล่น!', choices: ['💾', '📠', '🔌'], correct: 0, ansText: 'แผ่นบันทึกข้อมูล (Disk)' },
+                    { hint: '🎧', text: 'รับ "หูฟัง" ที่กำลังตกลงมา!', choices: ['📻', '🔊', '🎧'], correct: 2, ansText: 'หูฟัง (Headphone)' },
+                    { hint: '🔊', text: 'รับ "ลำโพง" ให้ถูกชิ้นนะ!', choices: ['📻', '🔊', '🎧'], correct: 1, ansText: 'ลำโพง (Speaker)' },
+                    { hint: '💻', text: 'รับ "คอมพิวเตอร์" ปิดท้ายภารกิจ!', choices: ['💻', '📺', '📻'], correct: 0, ansText: 'เครื่องคอมพิวเตอร์' }
+                ]
+            }
+        ];
+
+        let gameState = 'start'; // start, level_intro, playing, feedback, gameover
+        let currentLevelIndex = 0;
+        let currentQuestionIndex = 0;
+        let globalScore = 0;
+        let isAcceptingInput = false;
+        
+        const videoEl = document.getElementById('input_video');
+        const canvasEl = document.getElementById('output_canvas');
+        const ctx = canvasEl.getContext('2d');
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+
+        let handLandmarks = null;
+        let isPinching = false;
+        let indexFinger = {x: 0, y: 0};
+        const PINCH_THRESHOLD = 0.05;
+
+        let objects = [];
+        let particles = [];
+        let draggedObject = null; // For Level 4
+
+        const uiModalLayer = document.getElementById('modal-layer');
+        const uiStartScreen = document.getElementById('start-screen');
+        const uiLevelIntro = document.getElementById('level-intro-modal');
+        const uiFeedback = document.getElementById('feedback-modal');
+        const uiGameOver = document.getElementById('gameover-screen');
+        const uiHudLayer = document.getElementById('hud-layer');
+        const btnStart = document.getElementById('start-btn');
+        const textLoading = document.getElementById('loading-text');
+
+        window.addEventListener('resize', () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvasEl.width = width;
+            canvasEl.height = height;
+        });
+        window.dispatchEvent(new Event('resize'));
+
+        const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+        hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
+
+        hands.onResults((results) => {
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                handLandmarks = results.multiHandLandmarks[0].map(lm => ({ x: 1 - lm.x, y: lm.y, z: lm.z }));
+                const thumb = handLandmarks[4];
+                const index = handLandmarks[8];
+                const dist = Math.hypot(thumb.x - index.x, thumb.y - index.y);
+                
+                isPinching = dist < PINCH_THRESHOLD;
+                indexFinger = { x: index.x * width, y: index.y * height };
+            } else {
+                handLandmarks = null;
+                isPinching = false;
+            }
+        });
+
+        const camera = new Camera(videoEl, {
+            onFrame: async () => { await hands.send({image: videoEl}); },
+            width: 1280, height: 720
+        });
+
+        function startGame() {
+            btnStart.classList.add('hidden');
+            textLoading.classList.remove('hidden');
+            
+            camera.start().then(() => {
+                uiStartScreen.classList.add('hidden');
+                globalScore = 0;
+                currentLevelIndex = 0;
+                currentQuestionIndex = 0;
+                startLevelIntro();
+                requestAnimationFrame(gameLoop);
+            }).catch(err => {
+                alert("กรุณาอนุญาตกล้องเพื่อเล่นเกมครับ!");
+                btnStart.classList.remove('hidden');
+                textLoading.classList.add('hidden');
+            });
+        }
+
+        function startLevelIntro() {
+            gameState = 'level_intro';
+            const levelData = gameData[currentLevelIndex];
+            
+            uiHudLayer.classList.add('hidden');
+            uiModalLayer.classList.remove('pointer-events-none');
+            
+            document.getElementById('intro-icon').innerText = levelData.character;
+            document.getElementById('intro-title').innerText = `ด่านที่ ${levelData.level}`;
+            document.getElementById('intro-subtitle').innerText = levelData.name;
+            document.getElementById('intro-desc').innerText = levelData.instruction;
+            
+            uiLevelIntro.classList.remove('hidden');
+            setTimeout(() => {
+                uiLevelIntro.classList.remove('scale-90', 'opacity-0');
+                uiLevelIntro.classList.add('scale-100', 'opacity-100');
+            }, 50);
+
+            let count = 3;
+            document.getElementById('intro-countdown').innerText = count;
+            
+            const countInt = setInterval(() => {
+                count--;
+                if(count > 0) {
+                    document.getElementById('intro-countdown').innerText = count;
+                } else {
+                    clearInterval(countInt);
+                    uiLevelIntro.classList.remove('scale-100', 'opacity-100');
+                    uiLevelIntro.classList.add('scale-90', 'opacity-0');
+                    setTimeout(() => {
+                        uiLevelIntro.classList.add('hidden');
+                        uiModalLayer.classList.add('pointer-events-none');
+                        startQuestion();
+                    }, 500);
+                }
+            }, 1000);
+        }
+
+        function startQuestion() {
+            const levelData = gameData[currentLevelIndex];
+            const qData = levelData.questions[currentQuestionIndex];
+            
+            gameState = 'playing';
+            isAcceptingInput = true;
+            draggedObject = null;
+
+            uiHudLayer.classList.remove('hidden');
+            document.getElementById('level-icon').innerText = levelData.character;
+            document.getElementById('level-name').innerText = `ด่าน ${levelData.level}: ${levelData.name}`;
+            document.getElementById('level-mechanic-text').innerText = levelData.instruction;
+            document.getElementById('score-display').innerText = globalScore;
+            
+            document.getElementById('question-hint').innerText = qData.hint;
+            document.getElementById('question-text').innerText = qData.text;
+            document.getElementById('question-box').classList.remove('shake');
+
+            const dotsContainer = document.getElementById('progress-dots');
+            dotsContainer.innerHTML = '';
+            for(let i=0; i<5; i++) {
+                const dot = document.createElement('div');
+                dot.className = `w-3 h-3 rounded-full ${i < currentQuestionIndex ? 'bg-green-400' : (i === currentQuestionIndex ? 'bg-yellow-400 animate-pulse' : 'bg-gray-600')}`;
+                dotsContainer.appendChild(dot);
+            }
+
+            createGameObjects(levelData.mechanic, qData);
+        }
+
+        function createGameObjects(mechanic, qData) {
+            objects = [];
+            const radius = Math.min(width, height) * 0.12;
+            
+            if (mechanic === 'pinch' || mechanic === 'hold' || mechanic === 'drag_drop') {
+                const objectY = mechanic === 'drag_drop' ? height * 0.54 : height * 0.7;
+                const positions = [ {x: width*0.2, y: objectY}, {x: width*0.5, y: objectY}, {x: width*0.8, y: objectY} ];
+                qData.choices.forEach((emoji, i) => {
+                    objects.push({
+                        id: i, emoji: emoji, x: positions[i].x, y: positions[i].y, baseY: positions[i].y,
+                        radius: mechanic === 'drag_drop' ? radius * 0.88 : radius, hovered: false, offsetY: Math.random() * 10, charge: 0
+                    });
+                });
+            } else if (mechanic === 'touch_moving') {
+                const yPositions = [height*0.5, height*0.65, height*0.8];
+                qData.choices.forEach((emoji, i) => {
+                    objects.push({
+                        id: i, emoji: emoji, x: width * Math.random(), y: yPositions[i], baseY: yPositions[i],
+                        radius: radius, hovered: false, offsetY: Math.random() * 10,
+                        vx: (Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 2)
+                    });
+                });
+            } else if (mechanic === 'catch_falling') {
+                const xPositions = [width*0.2, width*0.5, width*0.8];
+                qData.choices.forEach((emoji, i) => {
+                    objects.push({
+                        id: i, emoji: emoji, x: xPositions[i], y: -height * 0.2 - (Math.random() * height * 0.3),
+                        radius: radius, hovered: false, offsetY: 0, vy: 2 + Math.random() * 2
+                    });
+                });
+            }
+        }
+
+        function processMechanics(deltaTime) {
+            if (!isAcceptingInput) return;
+            const levelData = gameData[currentLevelIndex];
+            const mechanic = levelData.mechanic;
+
+            objects.forEach(obj => {
+                if (mechanic === 'touch_moving') {
+                    obj.x += obj.vx;
+                    if (obj.x > width + obj.radius) obj.x = -obj.radius;
+                    if (obj.x < -obj.radius) obj.x = width + obj.radius;
+                    obj.y = obj.baseY + Math.sin(Date.now()/300 + obj.offsetY) * 30;
+                } else if (mechanic === 'catch_falling') {
+                    obj.y += obj.vy;
+                    if (obj.y > height + obj.radius) {
+                        obj.y = -obj.radius;
+                        obj.x = width * 0.2 + (Math.random() * width * 0.6);
+                    }
+                } else if (mechanic !== 'drag_drop' || draggedObject !== obj) {
+                    obj.y = obj.baseY + Math.sin(Date.now()/500 + obj.offsetY) * 15;
+                }
+            });
+
+            if (!handLandmarks) {
+                objects.forEach(o => { o.hovered = false; o.charge = 0; });
+                return;
+            }
+
+            let anyHovered = false;
+            objects.forEach(obj => {
+                const dist = Math.hypot(indexFinger.x - obj.x, indexFinger.y - obj.y);
+                if (dist < obj.radius * 1.2) {
+                    obj.hovered = true;
+                    anyHovered = obj;
+                } else {
+                    obj.hovered = false;
+                    if (mechanic === 'hold') obj.charge = Math.max(0, obj.charge - 2);
+                }
+            });
+
+            if (mechanic === 'pinch') {
+                if (anyHovered && isPinching) triggerAnswer(anyHovered);
+            } 
+            else if (mechanic === 'touch_moving' || mechanic === 'catch_falling') {
+                if (anyHovered) triggerAnswer(anyHovered);
+            }
+            else if (mechanic === 'hold') {
+                if (anyHovered) {
+                    anyHovered.charge += 1.5;
+                    if (anyHovered.charge >= 100) triggerAnswer(anyHovered);
+                }
+            }
+            else if (mechanic === 'drag_drop') {
+                if (anyHovered && isPinching && !draggedObject) draggedObject = anyHovered;
+                if (isPinching && draggedObject) {
+                    draggedObject.x += (indexFinger.x - draggedObject.x) * 0.3;
+                    draggedObject.y += (indexFinger.y - draggedObject.y) * 0.3;
+                }
+                if (!isPinching && draggedObject) {
+                    const boxX = width / 2;
+                    const boxY = height - 110;
+                    const boxW = Math.min(430, width * 0.42);
+                    const boxH = 132;
+                    const isInsideBox =
+                        draggedObject.x > boxX - boxW / 2 &&
+                        draggedObject.x < boxX + boxW / 2 &&
+                        draggedObject.y > boxY - boxH / 2 &&
+                        draggedObject.y < boxY + boxH / 2;
+                    
+                    if (isInsideBox) {
+                        triggerAnswer(draggedObject);
+                    } else {
+                        draggedObject.x = width * 0.2 + (draggedObject.id * width * 0.3);
+                        draggedObject.y = draggedObject.baseY;
+                    }
+                    draggedObject = null;
+                }
+            }
+        }
+
+        function triggerAnswer(selectedObj) {
+            isAcceptingInput = false;
+            draggedObject = null;
+            const qData = gameData[currentLevelIndex].questions[currentQuestionIndex];
+            const isCorrect = selectedObj.id === qData.correct;
+
+            gameState = 'feedback';
+            uiHudLayer.classList.add('hidden');
+
+            if (isCorrect) {
+                globalScore++;
+                createParticles(selectedObj.x, selectedObj.y, '⭐️', 25);
+                showFeedback(true, qData.ansText);
+            } else {
+                createParticles(selectedObj.x, selectedObj.y, '❌', 15);
+                document.getElementById('question-box').classList.add('shake');
+                showFeedback(false, qData.ansText);
+            }
+        }
+
+        function showFeedback(isCorrect, ansText) {
+            uiModalLayer.classList.remove('pointer-events-none');
+            uiFeedback.classList.remove('hidden');
+            setTimeout(() => uiFeedback.classList.replace('scale-90', 'scale-100'), 10);
+
+            const icon = document.getElementById('feedback-icon');
+            const title = document.getElementById('feedback-title');
+            const desc = document.getElementById('feedback-desc');
+            const bar = document.getElementById('countdown-bar');
+
+            uiFeedback.className = `glass-panel p-8 rounded-3xl text-center max-w-md w-full mx-4 transform scale-90 transition-transform duration-300 border-4 ${isCorrect ? 'border-green-400 shadow-green-500/50' : 'border-red-400 shadow-red-500/50'} shadow-2xl`;
+
+            if (isCorrect) {
+                icon.innerText = '✅🤩';
+                title.innerText = 'เก่งมากจ้า!';
+                title.className = 'text-5xl font-bold mb-2 text-green-400';
+            } else {
+                icon.innerText = '❌🥺';
+                title.innerText = 'ผิดนิดเดียวนะ!';
+                title.className = 'text-5xl font-bold mb-2 text-red-400';
+            }
+            desc.innerText = `คำตอบคือ: ${ansText}`;
+
+            bar.style.width = '100%';
+            bar.style.transition = 'none';
+            void bar.offsetWidth; 
+            bar.style.transition = 'width 2.5s linear';
+            bar.style.width = '0%';
+
+            setTimeout(() => {
+                uiFeedback.classList.add('hidden');
+                uiFeedback.classList.replace('scale-100', 'scale-90');
+                uiModalLayer.classList.add('pointer-events-none');
+                
+                nextQuestion();
+            }, 2500);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= 5) {
+                currentQuestionIndex = 0;
+                currentLevelIndex++;
+                if (currentLevelIndex >= gameData.length) {
+                    showGameOver();
+                } else {
+                    startLevelIntro();
+                }
+            } else {
+                startQuestion();
+            }
+        }
+
+        function showGameOver() {
+            gameState = 'gameover';
+            uiHudLayer.classList.add('hidden');
+            uiModalLayer.classList.remove('pointer-events-none');
+            uiGameOver.classList.remove('hidden');
+            document.getElementById('final-score').innerText = globalScore;
+        }
+
+        function drawGame() {
+            const levelData = gameData[currentLevelIndex] || gameData[0];
+            const mechanic = levelData.mechanic;
+
+            ctx.save();
+            ctx.clearRect(0, 0, width, height);
+            ctx.translate(width, 0);
+            ctx.scale(-1, 1);
+            if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
+                ctx.drawImage(videoEl, 0, 0, width, height);
+            }
+            ctx.restore();
+
+            ctx.fillStyle = levelData.themeColor || 'rgba(255, 255, 255, 0.25)';
+            ctx.fillRect(0, 0, width, height);
+
+            if (gameState === 'playing') {
+                if (mechanic === 'drag_drop') {
+                    const boxX = width / 2;
+                    const boxY = height - 110;
+                    const boxW = Math.min(430, width * 0.42);
+                    const boxH = 132;
+                    ctx.save();
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.82)';
+                    ctx.strokeStyle = draggedObject ? '#ff6b6b' : '#18c4b8';
+                    ctx.lineWidth = 5;
+                    ctx.setLineDash([15, 15]);
+                    ctx.lineDashOffset = -Date.now() / 20;
+                    ctx.beginPath();
+                    ctx.roundRect(boxX - boxW / 2, boxY - boxH / 2, boxW, boxH, 24);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.fillStyle = '#102033';
+                    ctx.font = '30px Mali';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('📥 ใส่กล่องที่นี่', boxX, boxY + 10);
+                    ctx.restore();
+                }
+
+                objects.forEach(obj => {
+                    ctx.save();
+                    const cardSize = obj.radius * 2.05;
+                    ctx.beginPath();
+                    
+                    if (obj.hovered) {
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.98)';
+                        ctx.strokeStyle = '#ff6b6b';
+                        ctx.lineWidth = 6;
+                        ctx.shadowColor = '#ffd166';
+                        ctx.shadowBlur = 26;
+                    } else {
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+                        ctx.strokeStyle = '#18c4b8';
+                        ctx.lineWidth = 4;
+                        ctx.shadowColor = 'rgba(16, 32, 51, 0.24)';
+                        ctx.shadowBlur = 14;
+                    }
+                    ctx.roundRect(obj.x - cardSize / 2, obj.y - cardSize / 2, cardSize, cardSize, 28);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.shadowBlur = 0;
+                    ctx.font = `${obj.radius * 1.15}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(obj.emoji, obj.x, obj.y + 4);
+
+                    if (mechanic === 'hold' && obj.charge > 0) {
+                        ctx.beginPath();
+                        ctx.arc(obj.x, obj.y, obj.radius + 15, -Math.PI/2, (-Math.PI/2) + (Math.PI*2 * (obj.charge/100)));
+                        ctx.strokeStyle = '#4ade80';
+                        ctx.lineWidth = 10;
+                        ctx.lineCap = 'round';
+                        ctx.stroke();
+                    }
+                    ctx.restore();
+                });
+            }
+
+            if (handLandmarks) {
+                const lineColor = isPinching ? '#fef08a' : '#c084fc';
+                const pointColor = isPinching ? '#facc15' : '#e9d5ff';
+
+                ctx.save();
+                ctx.shadowColor = lineColor;
+                ctx.shadowBlur = 15;
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = lineColor;
+                ctx.fillStyle = pointColor;
+
+                ctx.beginPath();
+                for (const conn of HAND_CONNECTIONS) {
+                    ctx.moveTo(handLandmarks[conn[0]].x * width, handLandmarks[conn[0]].y * height);
+                    ctx.lineTo(handLandmarks[conn[1]].x * width, handLandmarks[conn[1]].y * height);
+                }
+                ctx.stroke();
+
+                for (const lm of handLandmarks) {
+                    ctx.beginPath();
+                    ctx.arc(lm.x * width, lm.y * height, 6, 0, Math.PI*2);
+                    ctx.fill();
+                }
+
+                ctx.beginPath();
+                ctx.arc(indexFinger.x, indexFinger.y, 25, 0, Math.PI*2);
+                ctx.strokeStyle = isPinching ? 'rgba(250, 204, 21, 0.9)' : 'rgba(192, 132, 252, 0.5)';
+                ctx.lineWidth = 8;
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.life -= p.decay;
+                
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, p.life);
+                ctx.font = `${p.size}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(p.emoji, p.x, p.y);
+                ctx.restore();
+                
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+        }
+
+        function createParticles(x, y, emoji, count) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x, y: y, emoji: emoji,
+                    vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 0.8) * 20,
+                    life: 1.0, decay: 0.02 + Math.random() * 0.03, size: 30 + Math.random() * 30
+                });
+            }
+        }
+
+        let lastTime = 0;
+        function gameLoop(timestamp) {
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+
+            if (gameState === 'playing' || gameState === 'feedback') {
+                if (gameState === 'playing') processMechanics(deltaTime);
+                drawGame();
+            }
+
+            if (gameState !== 'start' && gameState !== 'gameover') {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        btnStart.addEventListener('click', startGame);
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            uiGameOver.classList.add('hidden');
+            globalScore = 0;
+            currentLevelIndex = 0;
+            currentQuestionIndex = 0;
+            startLevelIntro();
+            requestAnimationFrame(gameLoop);
+        });
+
+    </script>
+
+</body>
+</html>

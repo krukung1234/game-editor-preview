@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>เกมเก็บอาหารดี 3 ด่าน</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  overflow:hidden;
+  font-family:"Prompt","Noto Sans Thai","Tahoma",sans-serif;
+  background:linear-gradient(135deg,#dff7ff,#fff0f8);
+  color:#24313a;
+}
+.screen{
+  width:100vw;height:100vh;
+  display:flex;justify-content:center;align-items:center;
+  text-align:center;padding:28px;
+}
+.card{
+  width:min(1040px,94vw);
+  background:rgba(255,255,255,.96);
+  border-radius:36px;
+  padding:40px;
+  box-shadow:0 24px 55px rgba(0,0,0,.18);
+  border:8px solid rgba(255,255,255,.8);
+}
+h1{
+  font-size:clamp(42px,6vw,76px);
+  margin:10px 0 18px;
+  color:#ff5fa2;
+  text-shadow:3px 3px 0 #fff3a6;
+  line-height:1.15;
+}
+p{
+  font-size:clamp(22px,3vw,34px);
+  line-height:1.5;
+  margin:10px 0;
+}
+button{
+  border:none;
+  border-radius:999px;
+  padding:18px 48px;
+  font-size:clamp(24px,3vw,38px);
+  font-weight:1000;
+  color:white;
+  cursor:pointer;
+  background:linear-gradient(135deg,#4ba3ff,#7c5cff);
+  box-shadow:0 12px 24px rgba(75,163,255,.32);
+  margin:10px;
+}
+button.green{background:linear-gradient(135deg,#4fd26f,#2caf4f)}
+#gameScreen,#endScreen,#levelScreen{display:none}
+#gameScreen{
+  width:100vw;height:100vh;
+  position:relative;
+  background:#eafcff;
+}
+video{
+  position:absolute;inset:0;
+  width:100vw;height:100vh;
+  object-fit:cover;
+  transform:scaleX(-1);
+  opacity:.34;
+  filter:saturate(1.15) brightness(1.1);
+}
+.game-frame{
+  position:absolute;
+  inset:10px;
+  border:8px solid rgba(166,100,255,.65);
+  border-radius:32px;
+  z-index:1;
+  pointer-events:none;
+}
+.topbar{
+  position:absolute;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+  display:flex;
+  gap:14px;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.pill{
+  background:white;
+  border-radius:999px;
+  padding:12px 24px;
+  font-size:clamp(20px,2.1vw,30px);
+  font-weight:1000;
+  box-shadow:0 10px 20px rgba(0,0,0,.14);
+}
+.level-pill{
+  background:linear-gradient(135deg,#8e44d8,#b456f0);
+  color:white;
+}
+.time-pill{
+  border:5px solid #ffbb4a;
+  color:#2c7be5;
+}
+.pause-btn{
+  position:absolute;
+  top:24px;
+  right:28px;
+  z-index:10;
+  width:78px;
+  height:78px;
+  border-radius:22px;
+  font-size:40px;
+  padding:0;
+  background:linear-gradient(135deg,#ff6677,#ff304e);
+  border:5px solid white;
+}
+.good-left{
+  position:absolute;
+  top:105px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+  background:rgba(255,255,255,.92);
+  color:#333;
+  border-radius:999px;
+  padding:12px 28px;
+  font-size:clamp(21px,2.3vw,32px);
+  font-weight:1000;
+  box-shadow:0 12px 22px rgba(0,0,0,.13);
+}
+.food{
+  position:absolute;
+  z-index:5;
+  border-radius:28px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:rgba(255,255,255,.9);
+  box-shadow:0 13px 22px rgba(0,0,0,.18);
+  user-select:none;
+  cursor:pointer;
+}
+.food.good{outline:4px solid rgba(86,205,105,.75)}
+.food.bad{outline:4px solid rgba(255,112,112,.65)}
+.food.target{
+  box-shadow:0 0 0 8px rgba(255,235,59,.55),0 13px 22px rgba(0,0,0,.18);
+}
+.food.hit{
+  transform:scale(1.2);
+  opacity:0;
+  transition:.18s;
+}
+.cursor{
+  position:absolute;
+  z-index:12;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#fff56b;
+  border:6px solid #ff9b22;
+  box-shadow:0 0 0 7px rgba(255,245,107,.2);
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  display:none;
+}
+.collect-ring{
+  position:absolute;
+  z-index:11;
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  border:5px dashed #3b8cff;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  display:none;
+}
+.ready{
+  position:absolute;
+  top:190px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:18;
+  background:#fff45c;
+  color:#24313a;
+  border-radius:999px;
+  padding:18px 44px;
+  font-size:clamp(46px,7vw,96px);
+  font-weight:1000;
+  box-shadow:0 12px 24px rgba(0,0,0,.18);
+  display:none;
+}
+.feedback{
+  position:absolute;
+  left:50%;
+  top:52%;
+  transform:translate(-50%,-50%);
+  z-index:30;
+  display:none;
+  background:white;
+  border-radius:34px;
+  padding:26px 50px;
+  font-size:clamp(54px,7vw,100px);
+  font-weight:1000;
+  box-shadow:0 25px 50px rgba(0,0,0,.24);
+}
+.tip{
+  position:absolute;
+  bottom:25px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:9;
+  background:rgba(40,40,40,.68);
+  color:white;
+  border-radius:999px;
+  padding:12px 30px;
+  font-size:clamp(18px,2vw,28px);
+  font-weight:900;
+}
+.basket{
+  position:absolute;
+  bottom:22px;
+  z-index:8;
+  width:220px;
+  height:118px;
+  border-radius:26px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  font-weight:1000;
+  box-shadow:0 14px 28px rgba(0,0,0,.2);
+  border:5px solid rgba(255,255,255,.85);
+}
+.basket .emoji{font-size:42px;line-height:1}
+.basket .text{font-size:clamp(22px,2.3vw,30px);line-height:1.1}
+#goodBasket{left:28px;background:linear-gradient(135deg,#67c944,#2f9e44)}
+#badBasket{right:28px;background:linear-gradient(135deg,#ff6b6b,#d93434)}
+.level-list{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  margin:28px auto;
+}
+.level-card{
+  background:white;
+  border-radius:28px;
+  padding:24px;
+  box-shadow:0 12px 24px rgba(0,0,0,.12);
+  font-size:clamp(20px,2vw,30px);
+  font-weight:900;
+}
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  margin:28px auto;
+  max-width:900px;
+}
+.result-box{
+  background:white;
+  border-radius:28px;
+  padding:24px;
+  box-shadow:0 12px 24px rgba(0,0,0,.12);
+}
+.result-label{
+  font-size:clamp(22px,2.5vw,34px);
+  font-weight:1000;
+}
+.result-value{
+  font-size:clamp(44px,5.5vw,78px);
+  font-weight:1000;
+  color:#2c7be5;
+}
+@media(max-width:900px){
+  .level-list,.result-grid{grid-template-columns:1fr}
+  .pause-btn{width:66px;height:66px;font-size:34px}
+  .basket{width:170px;height:100px}
+  .tip{font-size:16px;bottom:10px}
+}
+</style>
+</head>
+
+<body>
+
+<div id="startScreen" class="screen">
+  <div class="card">
+    <h1>🍎 เกมเก็บอาหารดี 3 ด่าน</h1>
+    <p>ใช้ <b>ปลายนิ้วชี้</b> แตะอาหารดีให้ครบในเวลาที่กำหนด</p>
+    <p><b>ถ้าเก็บอาหารไม่ดี หรือหมดเวลา = จบเกมทันที</b></p>
+    <div class="level-list">
+      <div class="level-card">ด่าน 1 ง่าย<br>อาหารดี 4 ชิ้น<br>เวลา 25 วิ</div>
+      <div class="level-card">ด่าน 2 ปานกลาง<br>อาหารดี 6 ชิ้น<br>เวลา 22 วิ</div>
+      <div class="level-card">ด่าน 3 ยาก<br>อาหารดี 8 ชิ้น<br>เวลา 18 วิ</div>
+    </div>
+    <button onclick="startGame()">เริ่มเกม</button>
+  </div>
+</div>
+
+<div id="levelScreen" class="screen">
+  <div class="card">
+    <h1 id="levelTitle">ด่านที่ 1</h1>
+    <p id="levelText">เก็บอาหารดีให้ครบ ห้ามเก็บอาหารไม่ดี</p>
+    <button onclick="startLevel()">เริ่มด่าน</button>
+  </div>
+</div>
+
+<div id="gameScreen">
+  <video id="video" autoplay playsinline muted></video>
+  <div class="game-frame"></div>
+
+  <div class="topbar">
+    <div class="pill level-pill">ด่าน <span id="levelNum">1</span>/3</div>
+    <div class="pill">⭐ คะแนน <span id="score">0</span></div>
+    <div class="pill time-pill">⏱ เหลือ <span id="time">00:20</span></div>
+  </div>
+
+  <button class="pause-btn" onclick="togglePause()">Ⅱ</button>
+
+  <div class="good-left">อาหารดีเหลือ <span id="goodLeft">0</span> ชิ้น</div>
+  <div id="ready" class="ready">3</div>
+
+  <div id="cursor" class="cursor"></div>
+  <div id="ring" class="collect-ring"></div>
+  <div id="feedback" class="feedback">+1</div>
+
+  <div id="goodBasket" class="basket">
+    <div class="emoji">🥦🍎</div>
+    <div class="text">อาหารดี<br>เก็บได้</div>
+  </div>
+
+  <div id="badBasket" class="basket">
+    <div class="emoji">🍔🍩</div>
+    <div class="text">อาหารไม่ดี<br>ห้ามเก็บ</div>
+  </div>
+
+  <div class="tip">👆 เก็บอาหารดีให้ครบ ห้ามแตะอาหารไม่ดี</div>
+</div>
+
+<div id="endScreen" class="screen">
+  <div class="card">
+    <h1 id="endTitle">จบเกมแล้ว</h1>
+    <div class="result-grid">
+      <div class="result-box">
+        <div class="result-label">🏁 ด่านที่ถึง</div>
+        <div class="result-value" id="finalLevel">1</div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">⭐ คะแนนรวม</div>
+        <div class="result-value" id="finalScore">0</div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">⏱ เวลารวม</div>
+        <div class="result-value" id="finalTime">00:00</div>
+      </div>
+    </div>
+    <p id="praise">ให้คนต่อไปลองเล่นใหม่นะ</p>
+    <button onclick="restartGame()">ให้คนต่อไปเล่น</button>
+    <button class="green" onclick="goHome()">กลับหน้าแรก</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+<script>
+const goodFoods = ["🥦","🍎","🥛","🍉","🥕","🍌","🐟","🥚"];
+const badFoods = ["🍩","🍟","🍕","🍔","🍭","🥤","🍰","🍦"];
+
+const levels = [
+  {good:4, bad:3, time:25, foodSize:104, minDistance:170, collectDistance:48},
+  {good:6, bad:5, time:22, foodSize:96, minDistance:145, collectDistance:44},
+  {good:8, bad:7, time:18, foodSize:84, minDistance:122, collectDistance:40}
+];
+
+let currentLevel = 0;
+let score = 0;
+let totalSeconds = 0;
+let timeLeft = 0;
+let timer = null;
+let countdownTimer = null;
+let paused = false;
+let gameEnded = false;
+let handReady = false;
+let canCollect = false;
+let playerX = innerWidth / 2;
+let playerY = innerHeight / 2;
+let foods = [];
+
+const game = document.getElementById("gameScreen");
+const cursor = document.getElementById("cursor");
+const ring = document.getElementById("ring");
+const ready = document.getElementById("ready");
+const video = document.getElementById("video");
+
+function startGame(){
+  currentLevel = 0;
+  score = 0;
+  totalSeconds = 0;
+  gameEnded = false;
+  document.getElementById("startScreen").style.display = "none";
+  showLevelIntro();
+}
+
+function showLevelIntro(){
+  document.getElementById("gameScreen").style.display = "none";
+  document.getElementById("endScreen").style.display = "none";
+  document.getElementById("levelScreen").style.display = "flex";
+
+  const levelNo = currentLevel + 1;
+  document.getElementById("levelTitle").innerText = "ด่านที่ " + levelNo;
+  document.getElementById("levelText").innerText =
+    "เก็บอาหารดีให้ครบภายใน " + levels[currentLevel].time + " วินาที ถ้าเก็บผิดหรือหมดเวลา จบเกมทันที";
+}
+
+function startLevel(){
+  const level = levels[currentLevel];
+
+  document.getElementById("levelScreen").style.display = "none";
+  game.style.display = "block";
+
+  paused = false;
+  canCollect = false;
+  timeLeft = level.time;
+  foods = [];
+
+  document.getElementById("levelNum").innerText = currentLevel + 1;
+  document.getElementById("score").innerText = score;
+  document.getElementById("time").innerText = formatTime(timeLeft);
+
+  setupHandTracking();
+  spawnFoods(level);
+  startCountdown();
+
+  clearInterval(timer);
+  timer = setInterval(updateTimer, 1000);
+  requestAnimationFrame(gameLoop);
+}
+
+function startCountdown(){
+  clearInterval(countdownTimer);
+  let count = 3;
+
+  ready.style.display = "block";
+  ready.innerText = count;
+
+  countdownTimer = setInterval(() => {
+    count--;
+    if(count > 0){
+      ready.innerText = count;
+    }else if(count === 0){
+      ready.innerText = "เริ่ม!";
+    }else{
+      clearInterval(countdownTimer);
+      ready.style.display = "none";
+      canCollect = true;
+    }
+  }, 1000);
+}
+
+function setupHandTracking(){
+  if(handReady) return;
+  handReady = true;
+
+  const hands = new Hands({
+    locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+  });
+
+  hands.setOptions({
+    maxNumHands: 1,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.65,
+    minTrackingConfidence: 0.65
+  });
+
+  hands.onResults(results => {
+    if(paused || gameEnded) return;
+
+    if(results.multiHandLandmarks && results.multiHandLandmarks.length > 0){
+      const indexFinger = results.multiHandLandmarks[0][8];
+      playerX = (1 - indexFinger.x) * innerWidth;
+      playerY = indexFinger.y * innerHeight;
+
+      cursor.style.display = "block";
+      ring.style.display = "block";
+      cursor.style.left = playerX + "px";
+      cursor.style.top = playerY + "px";
+      ring.style.left = playerX + "px";
+      ring.style.top = playerY + "px";
+    }
+  });
+
+  const camera = new Camera(video, {
+    onFrame: async () => await hands.send({image: video}),
+    width:1280,
+    height:720
+  });
+
+  camera.start().catch(() => {
+    document.querySelector(".tip").innerText = "เปิดกล้องไม่ได้ ใช้เมาส์คลิกอาหารเพื่อเล่นได้ค่ะ";
+  });
+}
+
+function spawnFoods(level){
+  clearFoods();
+
+  const items = [];
+  for(let i=0; i<level.good; i++){
+    items.push({type:"good", emoji:goodFoods[i % goodFoods.length]});
+  }
+  for(let i=0; i<level.bad; i++){
+    items.push({type:"bad", emoji:badFoods[i % badFoods.length]});
+  }
+  shuffle(items);
+
+  const positions = [];
+
+  items.forEach(item => {
+    const pos = getPositionNoOverlap(positions, level);
+    if(!pos) return;
+
+    positions.push(pos);
+
+    const el = document.createElement("div");
+    el.className = "food " + item.type;
+    el.innerText = item.emoji;
+    el.dataset.type = item.type;
+    el.style.width = level.foodSize + "px";
+    el.style.height = level.foodSize + "px";
+    el.style.fontSize = Math.round(level.foodSize * 0.7) + "px";
+    el.style.left = pos.x + "px";
+    el.style.top = pos.y + "px";
+    el.onclick = () => collectFood(el);
+
+    game.appendChild(el);
+    foods.push(el);
+  });
+
+  updateGoodLeft();
+}
+
+function getSafeArea(){
+  return {
+    left: 150,
+    right: innerWidth - 150,
+    top: 175,
+    bottom: innerHeight - 175
+  };
+}
+
+function getPositionNoOverlap(positions, level){
+  const safe = getSafeArea();
+  const size = level.foodSize;
+  const maxTries = 1200;
+
+  for(let t=0; t<maxTries; t++){
+    const x = safe.left + Math.random() * (safe.right - safe.left - size);
+    const y = safe.top + Math.random() * (safe.bottom - safe.top - size);
+
+    const ok = positions.every(p => {
+      const dx = (x + size/2) - (p.x + size/2);
+      const dy = (y + size/2) - (p.y + size/2);
+      return Math.hypot(dx,dy) >= level.minDistance;
+    });
+
+    if(ok) return {x,y};
+  }
+
+  return getGridPosition(positions, safe, level);
+}
+
+function getGridPosition(positions, safe, level){
+  const size = level.foodSize;
+  const step = level.minDistance;
+  for(let y=safe.top; y<safe.bottom-size; y+=step){
+    for(let x=safe.left; x<safe.right-size; x+=step){
+      const ok = positions.every(p => Math.hypot(x-p.x,y-p.y) >= level.minDistance);
+      if(ok) return {x,y};
+    }
+  }
+  return null;
+}
+
+function gameLoop(){
+  if(!paused && !gameEnded && canCollect){
+    const level = levels[currentLevel];
+    let nearest = null;
+    let nearestDistance = Infinity;
+
+    foods.slice().forEach(el => {
+      const rect = el.getBoundingClientRect();
+      const fx = rect.left + rect.width / 2;
+      const fy = rect.top + rect.height / 2;
+      const distance = Math.hypot(playerX - fx, playerY - fy);
+
+      if(distance <= level.collectDistance && distance < nearestDistance){
+        nearest = el;
+        nearestDistance = distance;
+      }
+    });
+
+    if(nearest) collectFood(nearest);
+  }
+
+  if(!gameEnded) requestAnimationFrame(gameLoop);
+}
+
+function collectFood(el){
+  if(paused || gameEnded || !canCollect || !foods.includes(el)) return;
+
+  if(el.dataset.type === "bad"){
+    showFeedback("เก็บผิด!", false);
+    setTimeout(() => endGame(false, "เก็บผิด"), 500);
+    return;
+  }
+
+  score += 1;
+  showFeedback("+1", true);
+  document.getElementById("score").innerText = score;
+
+  el.classList.add("hit");
+  foods = foods.filter(f => f !== el);
+  setTimeout(() => el.remove(), 150);
+  updateGoodLeft();
+
+  if(countGoodLeft() === 0){
+    setTimeout(() => passLevel(), 450);
+  }
+}
+
+function passLevel(){
+  canCollect = false;
+  clearInterval(timer);
+  clearInterval(countdownTimer);
+  clearFoods();
+
+  currentLevel++;
+
+  if(currentLevel >= levels.length){
+    endGame(true, "ผ่านครบ 3 ด่าน");
+  }else{
+    showLevelIntro();
+  }
+}
+
+function updateTimer(){
+  if(paused || gameEnded || !canCollect) return;
+  timeLeft--;
+  totalSeconds++;
+  document.getElementById("time").innerText = formatTime(timeLeft);
+
+  if(timeLeft <= 0){
+    endGame(false, "หมดเวลา");
+  }
+}
+
+function countGoodLeft(){
+  return foods.filter(el => el.dataset.type === "good").length;
+}
+
+function updateGoodLeft(){
+  document.getElementById("goodLeft").innerText = countGoodLeft();
+}
+
+function showFeedback(text, ok){
+  const fb = document.getElementById("feedback");
+  fb.innerText = text;
+  fb.style.color = ok ? "#00a878" : "#ff4d6d";
+  fb.style.display = "block";
+  setTimeout(() => fb.style.display = "none", 380);
+}
+
+function togglePause(){
+  paused = !paused;
+  document.querySelector(".pause-btn").innerText = paused ? "▶" : "Ⅱ";
+}
+
+function endGame(success, reason){
+  if(gameEnded) return;
+  gameEnded = true;
+  canCollect = false;
+  clearInterval(timer);
+  clearInterval(countdownTimer);
+  clearFoods();
+
+  document.getElementById("gameScreen").style.display = "none";
+  document.getElementById("levelScreen").style.display = "none";
+  document.getElementById("endScreen").style.display = "flex";
+
+  document.getElementById("endTitle").innerText = success ? "🏆 ผ่านครบ 3 ด่าน!" : "จบเกมแล้ว";
+  document.getElementById("finalLevel").innerText = Math.min(currentLevel + 1, 3);
+  document.getElementById("finalScore").innerText = score;
+  document.getElementById("finalTime").innerText = formatTime(totalSeconds);
+
+  let text = "";
+  if(success){
+    text = "สุดยอดมาก ผ่านครบทุกด่านแล้ว!";
+  }else if(reason === "เก็บผิด"){
+    text = "เก็บอาหารไม่ดี จบเกม ให้คนต่อไปลองเล่นใหม่นะ";
+  }else{
+    text = "หมดเวลาแล้ว จบเกม ให้คนต่อไปลองเล่นใหม่นะ";
+  }
+  document.getElementById("praise").innerText = text;
+}
+
+function restartGame(){
+  clearInterval(timer);
+  clearInterval(countdownTimer);
+  clearFoods();
+  startGame();
+}
+
+function goHome(){
+  clearInterval(timer);
+  clearInterval(countdownTimer);
+  clearFoods();
+  gameEnded = true;
+  canCollect = false;
+  document.getElementById("gameScreen").style.display = "none";
+  document.getElementById("levelScreen").style.display = "none";
+  document.getElementById("endScreen").style.display = "none";
+  document.getElementById("startScreen").style.display = "flex";
+}
+
+function clearFoods(){
+  foods.forEach(el => el.remove());
+  foods = [];
+  const el = document.getElementById("goodLeft");
+  if(el) el.innerText = "0";
+}
+
+function formatTime(sec){
+  const m = Math.floor(sec / 60).toString().padStart(2,"0");
+  const s = (sec % 60).toString().padStart(2,"0");
+  return `${m}:${s}`;
+}
+
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+}
+
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape") togglePause();
+});
+</script>
+</body>
+</html>

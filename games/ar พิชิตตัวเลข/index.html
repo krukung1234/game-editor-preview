@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#6c54e8">
+  <title>AR มือวิเศษ พิชิตสวนสัตว์ตัวเลข</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Mali:wght@500;600;700&family=Noto+Sans+Thai:wght@500;700;800&display=swap");
+
+    :root {
+      --ink: #28305d;
+      --purple: #6d55e8;
+      --pink: #ff5e9f;
+      --cyan: #39d6e7;
+      --yellow: #ffd75e;
+      --green: #54d69b;
+      --glass: rgba(255,255,255,.78);
+      --line: rgba(255,255,255,.82);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
+      font-family: "Noto Sans Thai", system-ui, sans-serif;
+      color: var(--ink);
+      background: #604fd0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    button { font: inherit; }
+
+    #camera, #handCanvas, .fallback-bg, .shade {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #camera {
+      object-fit: cover;
+      transform: scaleX(-1);
+      background: #5247b7;
+      opacity: 0;
+      transition: opacity .6s ease;
+    }
+
+    body.camera-ready #camera { opacity: 1; }
+
+    .fallback-bg {
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 15% 25%, rgba(255,235,128,.85) 0 6%, transparent 7%),
+        radial-gradient(circle at 87% 18%, rgba(107,233,226,.8) 0 7%, transparent 8%),
+        linear-gradient(140deg, #7467e8 0%, #5acbe4 50%, #8fe6bb 100%);
+      transition: opacity .5s;
+    }
+
+    body.camera-ready .fallback-bg { opacity: 0; }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(2px);
+      opacity: .5;
+      animation: drift 7s ease-in-out infinite alternate;
+    }
+    .blob:nth-child(1) { width: 36vmax; height: 36vmax; left: -12vmax; bottom: -18vmax; background: #ff85bc; }
+    .blob:nth-child(2) { width: 29vmax; height: 29vmax; right: -8vmax; bottom: -10vmax; background: #ffcf65; animation-delay: -2s; }
+    .blob:nth-child(3) { width: 18vmax; height: 18vmax; right: 22%; top: -10vmax; background: #ad86ff; animation-delay: -4s; }
+
+    @keyframes drift { to { transform: translate(4vw, -3vh) scale(1.08); } }
+
+    .shade {
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(37,28,90,.25), transparent 24%, transparent 72%, rgba(37,28,90,.22)),
+        radial-gradient(circle at center, transparent 45%, rgba(31,29,85,.12));
+    }
+
+    #handCanvas {
+      z-index: 3;
+      pointer-events: none;
+      filter: drop-shadow(0 0 8px rgba(37,242,255,.72));
+    }
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    }
+
+    .screen.active { display: flex; animation: screenIn .35s ease both; }
+    @keyframes screenIn { from { opacity: 0; transform: scale(.985); } }
+
+    .glass {
+      border: 2px solid var(--line);
+      background: var(--glass);
+      box-shadow: 0 16px 50px rgba(37,32,92,.24), inset 0 1px 0 white;
+      backdrop-filter: blur(14px) saturate(1.25);
+      -webkit-backdrop-filter: blur(14px) saturate(1.25);
+    }
+
+    .cover-card {
+      width: min(760px, 94vw);
+      max-height: 94vh;
+      overflow: hidden;
+      border-radius: 40px;
+      padding: clamp(22px, 4vw, 44px);
+      text-align: center;
+      position: relative;
+    }
+
+    .cover-card::before,
+    .cover-card::after {
+      content: "";
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      z-index: -1;
+      filter: blur(1px);
+    }
+    .cover-card::before { background: #ffe36b; left: -45px; top: -52px; }
+    .cover-card::after { background: #80e9dc; right: -40px; bottom: -55px; }
+
+    .mascot-row {
+      height: clamp(94px, 16vh, 150px);
+      display: flex;
+      justify-content: center;
+      align-items: end;
+      gap: clamp(8px, 3vw, 28px);
+      margin-bottom: 2px;
+    }
+
+    .mascot {
+      font-size: clamp(64px, 11vw, 108px);
+      line-height: 1;
+      filter: drop-shadow(0 8px 8px rgba(43,40,100,.17));
+      animation: bob 2s ease-in-out infinite;
+    }
+    .mascot:nth-child(2) { animation-delay: -.5s; transform: scale(.82); }
+    .mascot:nth-child(3) { animation-delay: -1s; }
+    @keyframes bob { 50% { translate: 0 -8px; rotate: 3deg; } }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 16px;
+      border-radius: 999px;
+      color: #6b4bd5;
+      font-weight: 800;
+      background: #f1ebff;
+      font-size: clamp(13px, 2vw, 17px);
+    }
+
+    h1 {
+      margin: 10px 0 4px;
+      font-family: "Mali", "Noto Sans Thai", sans-serif;
+      font-size: clamp(31px, 6vw, 62px);
+      line-height: 1.12;
+      letter-spacing: -1px;
+      background: linear-gradient(105deg, #7552e8 8%, #ed4f9b 58%, #f3a621);
+      color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: drop-shadow(0 3px white);
+    }
+
+    .subtitle {
+      margin: 4px auto 18px;
+      max-width: 560px;
+      color: #4d5791;
+      font-size: clamp(16px, 2.4vw, 21px);
+      font-weight: 700;
+    }
+
+    .primary-btn, .secondary-btn {
+      border: 0;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform .14s, box-shadow .14s;
+    }
+
+    .primary-btn {
+      min-width: min(360px, 88%);
+      padding: 15px 28px 16px;
+      color: white;
+      font-size: clamp(19px, 3vw, 26px);
+      background: linear-gradient(110deg, #33d197, #23b9df);
+      box-shadow: 0 7px 0 #159785, 0 12px 22px rgba(22,153,145,.28);
+    }
+
+    .primary-btn:active, .secondary-btn:active { transform: translateY(4px); }
+    .primary-btn:active { box-shadow: 0 3px 0 #159785; }
+
+    .privacy {
+      margin-top: 16px;
+      color: #73799c;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .rules-card {
+      width: min(820px, 94vw);
+      border-radius: 36px;
+      padding: clamp(20px, 4vw, 42px);
+      text-align: center;
+    }
+
+    .rules-card h2, .finish-card h2 {
+      margin: 0 0 8px;
+      font: 800 clamp(27px, 5vw, 46px)/1.2 "Mali", sans-serif;
+      color: #674cd7;
+    }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 22px 0 26px;
+    }
+
+    .rule {
+      min-height: 178px;
+      border-radius: 25px;
+      padding: 17px 13px;
+      background: rgba(255,255,255,.72);
+      border: 2px solid rgba(111,82,220,.13);
+    }
+    .rule .icon { display: block; font-size: clamp(45px, 7vw, 66px); margin-bottom: 6px; }
+    .rule strong { display: block; color: #674cd7; font-size: 18px; }
+    .rule span { display: block; margin-top: 4px; color: #596188; font-size: 15px; line-height: 1.45; }
+
+    #gameScreen {
+      display: none;
+      align-items: stretch;
+      justify-content: stretch;
+      padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    }
+    #gameScreen.active { display: flex; }
+
+    .game-shell {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: clamp(8px, 1.7vh, 16px);
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .round-pill, .score-pill, .timer-pill, .icon-btn {
+      border: 2px solid white;
+      background: rgba(255,255,255,.86);
+      box-shadow: 0 6px 16px rgba(38,32,91,.18);
+      backdrop-filter: blur(10px);
+    }
+
+    .icon-btn {
+      width: clamp(45px, 6vw, 58px);
+      aspect-ratio: 1;
+      padding: 0;
+      border-radius: 18px;
+      color: #7352d8;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .round-pill {
+      justify-self: center;
+      width: min(580px, 100%);
+      border-radius: 999px;
+      padding: 8px 18px;
+      text-align: center;
+      font: 800 clamp(16px, 2.5vw, 25px)/1.3 "Mali", sans-serif;
+      color: #6550c7;
+    }
+
+    .score-pill {
+      border-radius: 18px;
+      padding: 9px 15px;
+      min-width: 88px;
+      color: #b47505;
+      font-size: clamp(16px, 2.4vw, 22px);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .hud-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .timer-pill {
+      border-radius: 18px;
+      padding: 9px 13px;
+      min-width: 112px;
+      color: #4e5db3;
+      font: 800 clamp(14px, 2vw, 19px)/1 "Mali", sans-serif;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .score-pill.score-up { animation: scoreUp 1.15s ease; }
+    .score-pill.score-down { animation: scoreDown 1.15s ease; }
+    @keyframes scoreUp {
+      25%, 70% { color: white; background: #27c688; transform: scale(1.2); box-shadow: 0 0 0 8px rgba(70,224,164,.28), 0 8px 20px rgba(30,125,91,.3); }
+    }
+    @keyframes scoreDown {
+      25%, 70% { color: white; background: #ed4864; transform: scale(1.2); box-shadow: 0 0 0 8px rgba(255,93,119,.3), 0 8px 20px rgba(153,28,54,.32); }
+    }
+
+    #gameScreen.stage-1 .round-pill { color: white; background: linear-gradient(110deg, rgba(47,151,232,.92), rgba(43,202,218,.92)); }
+    #gameScreen.stage-2 .round-pill { color: white; background: linear-gradient(110deg, rgba(35,186,133,.93), rgba(86,211,126,.93)); }
+    #gameScreen.stage-3 .round-pill { color: white; background: linear-gradient(110deg, rgba(242,73,137,.93), rgba(255,103,159,.93)); }
+    #gameScreen.stage-4 .round-pill { color: white; background: linear-gradient(110deg, rgba(126,78,225,.93), rgba(239,71,151,.93)); }
+
+    .play-area {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(9px, 2vh, 17px);
+    }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 999px;
+      padding: 6px 14px;
+      background: rgba(255,255,255,.82);
+      border: 2px solid white;
+      font-weight: 800;
+      color: #7a57d4;
+      box-shadow: 0 5px 14px rgba(40,31,94,.15);
+    }
+    .progress-track {
+      width: min(28vw, 230px);
+      height: 11px;
+      border-radius: 99px;
+      background: #e7e4ee;
+      overflow: hidden;
+    }
+    #progressBar {
+      height: 100%;
+      width: 10%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ffd351, #ff7a9d);
+      transition: width .35s ease;
+    }
+
+    .stage-dots {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .stage-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d8d5df;
+      box-shadow: inset 0 1px 2px rgba(43,35,90,.15);
+    }
+    .stage-dot.done { background: #5ddba0; }
+    .stage-dot.current { width: 23px; border-radius: 99px; background: linear-gradient(90deg,#7659e9,#ff65a1); }
+
+    .question-card {
+      width: min(790px, 92vw);
+      border-radius: clamp(24px, 4vw, 38px);
+      padding: clamp(15px, 3vh, 27px) clamp(16px, 4vw, 35px);
+      text-align: center;
+      background: rgba(255,255,255,.77);
+      border: 3px solid rgba(255,255,255,.92);
+      box-shadow: 0 14px 35px rgba(38,30,91,.23);
+      backdrop-filter: blur(13px);
+      -webkit-backdrop-filter: blur(13px);
+    }
+
+    #questionText {
+      margin: 0;
+      color: #3f4777;
+      font-size: clamp(17px, 2.7vw, 25px);
+      font-weight: 800;
+    }
+
+    #visual {
+      min-height: clamp(76px, 14vh, 138px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(7px, 1.4vw, 14px);
+      padding: 7px 0 1px;
+      flex-wrap: wrap;
+    }
+
+    .emoji-item {
+      display: inline-grid;
+      place-items: center;
+      width: clamp(49px, 8vw, 78px);
+      aspect-ratio: 1;
+      border-radius: 21px;
+      font-size: clamp(34px, 6vw, 59px);
+      background: linear-gradient(145deg, #fffbe3, #fff3b6);
+      box-shadow: 0 5px 0 #efd985;
+      animation: itemPop .35s both;
+    }
+    @keyframes itemPop { from { opacity: 0; transform: scale(.45) rotate(-8deg); } }
+
+    .math-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(9px, 2vw, 22px);
+      font: 800 clamp(42px, 8vw, 80px)/1 "Mali", sans-serif;
+      color: #654cd0;
+      text-shadow: 0 3px white;
+    }
+    .math-visual .big-emoji { font-size: .9em; }
+    .sequence {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font: 800 clamp(36px, 7vw, 70px)/1 "Mali", sans-serif;
+      color: #654cd0;
+    }
+    .sequence span {
+      min-width: 1.25em;
+      padding: .14em .18em;
+      border-radius: .32em;
+      background: #f4efff;
+      border: 2px solid white;
+    }
+    .sequence .mystery { color: #ef4d96; background: #fff0f7; }
+
+    .shape-card {
+      display: grid;
+      place-items: center;
+      width: clamp(105px, 17vw, 160px);
+      aspect-ratio: 1;
+      border-radius: 30px;
+      background: linear-gradient(145deg, #fff, #f2edff);
+      border: 3px solid white;
+      box-shadow: 0 7px 0 #d8ccef, 0 12px 25px rgba(63,45,120,.15);
+      font-size: clamp(67px, 11vw, 105px);
+      animation: itemPop .4s both;
+    }
+
+    .shadow-prompt {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: clamp(116px, 19vw, 170px);
+      aspect-ratio: 1;
+      border-radius: 30px;
+      background: linear-gradient(145deg, #fff, #fff5d8);
+      border: 3px solid white;
+      box-shadow: 0 7px 0 #dbcfee, 0 12px 25px rgba(63,45,120,.17);
+      animation: itemPop .4s both;
+    }
+    .shadow-prompt small {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      translate: -50%;
+      padding: 2px 9px;
+      border-radius: 99px;
+      color: #7656d5;
+      background: #f1ebff;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .shadow-prompt .color-picture {
+      margin-top: 12px;
+      font-size: clamp(67px, 11vw, 105px);
+      filter: drop-shadow(0 7px 6px rgba(55,42,100,.18));
+    }
+
+    .balloon-guide {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 20px;
+      border-radius: 999px;
+      color: #a83f80;
+      background: #fff0f8;
+      border: 2px solid white;
+      font: 800 clamp(22px, 4vw, 35px)/1.2 "Mali", sans-serif;
+    }
+
+    .balloon-equation {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(8px, 2vw, 20px);
+      width: 100%;
+    }
+    .balloon-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-content: center;
+      justify-content: center;
+      gap: 3px;
+      width: clamp(105px, 20vw, 180px);
+      min-height: clamp(92px, 15vh, 135px);
+      padding: 10px;
+      border-radius: 24px;
+      color: #5c47c7;
+      background: rgba(255,252,224,.9);
+      border: 3px dashed #e7ca66;
+      box-shadow: inset 0 1px white;
+    }
+    .balloon-group span {
+      font-size: clamp(30px, 5vw, 50px);
+      line-height: .9;
+      filter: drop-shadow(0 4px 3px rgba(91,54,110,.15));
+    }
+    .equation-sign {
+      color: #704bd5;
+      font: 800 clamp(38px, 7vw, 65px)/1 "Mali", sans-serif;
+      text-shadow: 0 3px white;
+    }
+    .equation-question {
+      display: grid;
+      place-items: center;
+      width: clamp(65px, 10vw, 95px);
+      aspect-ratio: 1;
+      border-radius: 22px;
+      color: #ef4f98;
+      background: rgba(255,241,249,.92);
+      border: 3px dashed #a96bdd;
+      font: 800 clamp(40px, 7vw, 68px)/1 "Mali", sans-serif;
+    }
+
+    .instruction {
+      color: white;
+      text-shadow: 0 2px 9px rgba(35,31,88,.55);
+      font-size: clamp(15px, 2.3vw, 21px);
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .answers {
+      width: min(760px, 94vw);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(10px, 2.2vw, 22px);
+    }
+
+    .answer {
+      position: relative;
+      min-height: clamp(82px, 14vh, 132px);
+      border: 3px solid rgba(255,255,255,.92);
+      border-radius: clamp(22px, 3vw, 31px);
+      color: white;
+      cursor: pointer;
+      font: 800 clamp(34px, 7vw, 68px)/1 "Mali", sans-serif;
+      text-shadow: 0 3px rgba(50,35,110,.2);
+      box-shadow: 0 8px 0 var(--shadow), 0 13px 22px rgba(39,31,88,.2);
+      transform: translateY(0);
+      transition: transform .14s, filter .14s, box-shadow .14s;
+      overflow: hidden;
+    }
+    .answer::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border-radius: 20px;
+      border: 2px dashed rgba(255,255,255,.3);
+      pointer-events: none;
+    }
+    .answer:nth-child(1) { background: linear-gradient(145deg,#ff6bac,#ed4384); --shadow:#b72b66; }
+    .answer:nth-child(2) { background: linear-gradient(145deg,#48dce6,#338be8); --shadow:#2467b9; }
+    .answer:nth-child(3) { background: linear-gradient(145deg,#8c6bf2,#704de0); --shadow:#4d34a8; }
+    .answer:hover, .answer.hovered { transform: translateY(-5px) scale(1.025); filter: brightness(1.08); }
+    .answer:active { transform: translateY(5px); box-shadow: 0 3px 0 var(--shadow); }
+    .answer.correct { background: linear-gradient(145deg,#5fe09e,#27bc86); --shadow:#19855d; animation: correctPulse .55s both; }
+    .answer.wrong { animation: wrongShake .48s both; filter: grayscale(.25); }
+    @keyframes correctPulse { 50% { transform: scale(1.12); } }
+    @keyframes wrongShake { 20%,60% { transform: translateX(-10px); } 40%,80% { transform: translateX(10px); } }
+
+    .answer.word-answer {
+      font-size: clamp(18px, 3.5vw, 31px);
+      line-height: 1.2;
+      padding: 8px;
+    }
+
+    .answer.shadow-answer {
+      display: grid;
+      place-items: center;
+      color: #10121c;
+      background: rgba(255,255,255,.9);
+      --shadow: #9c8bc6;
+      text-shadow: none;
+      border-color: rgba(255,255,255,.96);
+    }
+    .answer.shadow-answer::after {
+      border: 3px dashed #69b9df;
+    }
+    .shadow-picture {
+      display: block;
+      font-size: clamp(50px, 9vw, 84px);
+      line-height: 1;
+      filter: brightness(0) saturate(100%) drop-shadow(0 4px 1px rgba(0,0,0,.12));
+    }
+
+    .answers.five-options {
+      width: min(820px, 96vw);
+      display: flex;
+      justify-content: center;
+      align-items: end;
+      gap: clamp(5px, 1.4vw, 14px);
+    }
+    .answers.balloon-math-answers {
+      width: min(650px, 92vw);
+      display: flex;
+      justify-content: center;
+      align-items: end;
+      gap: clamp(12px, 2.5vw, 24px);
+    }
+    .balloon-math-answers .balloon-answer { flex-basis: 160px; }
+
+    .balloon-answer {
+      flex: 0 1 128px;
+      min-width: 0;
+      min-height: clamp(106px, 20vh, 168px);
+      border-radius: 52% 48% 48% 52% / 45% 45% 55% 55%;
+      box-shadow: inset 10px 8px 15px rgba(255,255,255,.25), 0 7px 0 var(--shadow), 0 13px 22px rgba(39,31,88,.2);
+      overflow: visible;
+    }
+    .balloon-answer::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -13px;
+      translate: -50%;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-bottom: 0;
+      border-top: 17px solid var(--shadow);
+    }
+    .balloon-answer::after {
+      inset: 9px;
+      border-radius: 50%;
+    }
+    .balloon-answer:nth-child(1) { background: linear-gradient(145deg,#ff555f,#dc293f); --shadow:#a71f31; }
+    .balloon-answer:nth-child(2) { background: linear-gradient(145deg,#4d8bff,#3158d8); --shadow:#233e9b; }
+    .balloon-answer:nth-child(3) { background: linear-gradient(145deg,#43d67b,#20ab5b); --shadow:#147641; }
+    .balloon-answer:nth-child(4) { background: linear-gradient(145deg,#ffba35,#f07d14); --shadow:#a8560c; }
+    .balloon-answer:nth-child(5) { background: linear-gradient(145deg,#b056f1,#7c2ed6); --shadow:#561f99; }
+
+    .score-delta {
+      position: fixed;
+      z-index: 14;
+      translate: -50% -50%;
+      pointer-events: none;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 3px solid white;
+      color: white;
+      font: 800 clamp(23px, 4vw, 38px)/1 "Mali", sans-serif;
+      box-shadow: 0 8px 22px rgba(39,31,88,.3);
+      animation: scoreFloat .9s ease-out forwards;
+    }
+    .score-delta.plus { background: #29c889; }
+    .score-delta.minus { background: #ef4d72; }
+    @keyframes scoreFloat {
+      0% { opacity: 0; transform: scale(.5) translateY(12px); }
+      20% { opacity: 1; transform: scale(1.1); }
+      100% { opacity: 0; transform: scale(1) translateY(-70px); }
+    }
+
+    .statusbar {
+      justify-self: center;
+      border-radius: 999px;
+      padding: 6px 15px;
+      max-width: 92vw;
+      background: rgba(36,31,84,.56);
+      color: white;
+      font-size: clamp(12px, 1.8vw, 15px);
+      font-weight: 700;
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 6px;
+      background: #ffd45c;
+      box-shadow: 0 0 8px currentColor;
+    }
+    .status-dot.ready { background: #5ef0ad; }
+    .status-dot.error { background: #ff7d94; }
+
+    .finish-card {
+      width: min(670px, 94vw);
+      border-radius: 38px;
+      padding: clamp(22px, 4vw, 40px);
+      text-align: center;
+    }
+    .finish-mascot { font-size: clamp(58px, 10vw, 92px); animation: bob 1.4s infinite; }
+    .stars {
+      margin: 4px 0 12px;
+      font-size: clamp(30px, 5vw, 48px);
+      letter-spacing: 4px;
+      filter: drop-shadow(0 5px 3px rgba(113,77,0,.18));
+    }
+    .final-summary {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 14px;
+      margin: 10px auto 24px;
+    }
+    .summary-result {
+      display: flex;
+      min-height: 138px;
+      padding: 14px;
+      border-radius: 26px;
+      border: 3px solid white;
+      box-shadow: 0 9px 22px rgba(57,43,113,.13);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .summary-result span {
+      color: #596188;
+      font-size: clamp(16px, 2.3vw, 21px);
+      font-weight: 800;
+    }
+    .summary-result strong {
+      display: block;
+      margin-top: 4px;
+      font: 800 clamp(35px, 6vw, 58px)/1.05 "Mali", sans-serif;
+      white-space: nowrap;
+    }
+    .summary-result.score {
+      color: #fff;
+      background: linear-gradient(135deg, #7653e9, #bb62dc);
+    }
+    .summary-result.score span { color: rgba(255,255,255,.9); }
+    .summary-result.time {
+      color: #5144bf;
+      background: #f0ebff;
+    }
+    .summary-result.time strong {
+      font-size: clamp(29px, 4.8vw, 45px);
+      font-variant-numeric: tabular-nums;
+    }
+    @media (max-width: 560px) {
+      .final-summary { grid-template-columns: 1fr; gap: 9px; }
+      .summary-result { min-height: 100px; }
+    }
+
+    .stage-card {
+      width: min(690px, 94vw);
+      border-radius: 38px;
+      padding: clamp(25px, 5vw, 48px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .stage-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 15% 10%, rgba(255,220,95,.38), transparent 27%), radial-gradient(circle at 90% 90%, rgba(74,222,199,.28), transparent 30%);
+      pointer-events: none;
+    }
+    .stage-complete-icon { font-size: clamp(68px, 13vw, 112px); line-height: 1; animation: bob 1.5s infinite; }
+    .stage-card h2 { margin: 7px 0 5px; color: #674cd7; font: 800 clamp(28px, 5vw, 45px)/1.25 "Mali", sans-serif; }
+    .stage-score-box {
+      position: relative;
+      display: inline-grid;
+      grid-template-columns: auto auto;
+      align-items: end;
+      column-gap: 9px;
+      margin: 8px auto 2px;
+      padding: 10px 25px 12px;
+      border-radius: 25px;
+      color: #5c49c8;
+      background: rgba(255,255,255,.78);
+      border: 3px solid white;
+      box-shadow: 0 8px 20px rgba(57,43,113,.14);
+    }
+    .stage-score-box small {
+      grid-column: 1 / -1;
+      color: #60688f;
+      font-size: clamp(14px, 2.3vw, 18px);
+      font-weight: 800;
+    }
+    .stage-score-box strong {
+      font: 800 clamp(55px, 10vw, 88px)/.9 "Mali", sans-serif;
+    }
+    .stage-score-box span { padding-bottom: 6px; font-size: clamp(17px, 2.8vw, 23px); font-weight: 800; }
+    .stage-score-box.negative strong { color: #e74765; }
+    .next-mission {
+      position: relative;
+      margin: 20px auto 25px;
+      padding: 17px 20px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.74);
+      border: 2px solid white;
+      color: #4d5686;
+    }
+    .next-mission small { display: block; color: #ee4f93; font-weight: 800; }
+    .next-mission strong { display: block; margin: 3px 0; color: #614bd0; font: 800 clamp(20px, 3.5vw, 29px)/1.3 "Mali", sans-serif; }
+    .next-mission span { font-size: clamp(14px, 2.4vw, 18px); font-weight: 700; }
+    .countdown-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      color: #586087;
+      font-size: clamp(16px, 2.7vw, 21px);
+      font-weight: 800;
+    }
+    #countdownNumber {
+      display: grid;
+      place-items: center;
+      min-width: 70px;
+      height: 70px;
+      padding: 0 12px;
+      border-radius: 22px;
+      color: white;
+      background: linear-gradient(145deg, #7659e9, #ee559e);
+      box-shadow: 0 7px 0 #5135a9, 0 11px 23px rgba(69,44,143,.28);
+      font: 800 42px/1 "Mali", sans-serif;
+      animation: countPulse .75s ease infinite alternate;
+    }
+    #countdownNumber.go { min-width: 125px; background: linear-gradient(145deg,#43d79b,#20ad7e); box-shadow: 0 7px 0 #16815c; font-size: 29px; }
+    @keyframes countPulse { to { transform: scale(1.09); } }
+
+    .stage-preview {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: -10px 0 18px;
+    }
+    .stage-preview span {
+      padding: 5px 10px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.68);
+      border: 1px solid rgba(105,78,205,.14);
+      color: #5b5780;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    #toast {
+      position: fixed;
+      z-index: 12;
+      left: 50%;
+      top: 48%;
+      translate: -50% -50%;
+      padding: 15px 27px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.94);
+      color: #5e4ac1;
+      border: 3px solid white;
+      box-shadow: 0 12px 32px rgba(41,31,92,.3);
+      font: 800 clamp(22px, 4vw, 37px)/1.3 "Mali", sans-serif;
+      opacity: 0;
+      pointer-events: none;
+    }
+    #toast.show { animation: toast .85s both; }
+    @keyframes toast { 0% { opacity:0; transform:scale(.5); } 20%,75% { opacity:1; transform:scale(1); } 100% { opacity:0; transform:scale(1.1) translateY(-20px); } }
+
+    #answerFeedback {
+      position: fixed;
+      z-index: 100;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(33,25,78,.2);
+      pointer-events: none;
+    }
+    #answerFeedback.show { display: grid; opacity: 1; }
+    .feedback-card {
+      width: min(340px, 82vw);
+      padding: 24px 20px;
+      border-radius: 34px;
+      border: 6px solid white;
+      color: white;
+      text-align: center;
+      box-shadow: 0 18px 45px rgba(34,27,79,.42);
+      animation: feedbackCard .42s ease both;
+    }
+    #answerFeedback.good .feedback-card { background: linear-gradient(145deg, #58d69a, #25ad78); }
+    #answerFeedback.bad .feedback-card { background: linear-gradient(145deg, #ff7889, #e94661); }
+    #feedbackIcon { display: block; font-size: 48px; line-height: 1; }
+    #feedbackDelta { display: block; margin: 5px 0; font: 800 clamp(50px, 10vw, 82px)/1 "Mali", sans-serif; }
+    #feedbackText { display: block; font-size: clamp(18px, 3vw, 25px); font-weight: 800; }
+    @keyframes feedbackCard { from { opacity:0; transform:scale(.72); } to { opacity:1; transform:scale(1); } }
+
+    .confetti {
+      position: fixed;
+      z-index: 11;
+      top: -20px;
+      width: 11px;
+      height: 18px;
+      border-radius: 3px;
+      animation: fall 1.25s linear forwards;
+      pointer-events: none;
+    }
+    @keyframes fall { to { translate: var(--x) 110vh; rotate: 720deg; } }
+
+    .pinch-hint {
+      position: fixed;
+      z-index: 4;
+      width: 34px;
+      height: 34px;
+      margin: -17px;
+      border: 4px solid #fff36a;
+      border-radius: 50%;
+      box-shadow: 0 0 0 5px rgba(255,95,169,.55), 0 0 25px #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .08s;
+    }
+    .pinch-hint.visible { opacity: 1; }
+
+    @media (max-width: 650px) {
+      .rules-grid { grid-template-columns: 1fr; gap: 8px; margin: 15px 0 20px; }
+      .rule { min-height: 0; display: grid; grid-template-columns: 58px 1fr; text-align: left; align-items: center; padding: 10px 14px; }
+      .rule .icon { grid-row: 1 / 3; margin: 0; font-size: 42px; }
+      .rule strong { font-size: 16px; }
+      .rule span { font-size: 13px; margin: 0; }
+      .topbar { gap: 7px; }
+      .round-pill { padding-inline: 9px; }
+      .score-pill { min-width: 72px; padding: 8px 9px; }
+      .hud-right { gap: 4px; }
+      .timer-pill { min-width: 83px; padding: 8px 7px; font-size: 12px; }
+      .round-pill { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .balloon-answer { min-height: 112px; font-size: 38px; }
+      .answers.five-options { gap: 5px; }
+      .answers.balloon-math-answers { gap: 9px; }
+      .balloon-equation { gap: 5px; }
+      .balloon-group { padding: 7px 5px; }
+    }
+
+    @media (max-height: 610px) and (orientation: landscape) {
+      .cover-card { padding: 15px 28px 19px; }
+      .mascot-row { height: 74px; }
+      .mascot { font-size: 65px; }
+      h1 { font-size: 38px; margin-top: 4px; }
+      .subtitle { margin-bottom: 10px; font-size: 15px; }
+      .privacy { margin-top: 9px; }
+      .rules-card { padding: 16px 28px; }
+      .rules-grid { margin: 12px 0 16px; }
+      .rule { min-height: 135px; padding: 10px; }
+      .rule .icon { font-size: 43px; }
+      .rule span { font-size: 13px; }
+      .play-area { gap: 6px; }
+      .question-card { padding-block: 9px; }
+      #visual { min-height: 72px; }
+      .emoji-item { width: 48px; font-size: 34px; border-radius: 14px; }
+      .answer { min-height: 75px; font-size: 42px; }
+      .balloon-answer { min-height: 86px; font-size: 34px; }
+      .instruction { font-size: 14px; }
+      .statusbar { padding-block: 3px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="fallback-bg" aria-hidden="true">
+    <i class="blob"></i><i class="blob"></i><i class="blob"></i>
+  </div>
+  <video id="camera" autoplay muted playsinline aria-label="ภาพจากกล้อง"></video>
+  <div class="shade" aria-hidden="true"></div>
+  <canvas id="handCanvas" aria-hidden="true"></canvas>
+  <div id="pinchHint" class="pinch-hint" aria-hidden="true"></div>
+
+  <main>
+    <section id="coverScreen" class="screen active">
+      <div class="cover-card glass">
+        <div class="mascot-row" aria-hidden="true">
+          <span class="mascot">🐰</span><span class="mascot">✨</span><span class="mascot">🦊</span>
+        </div>
+        <div class="eyebrow">📷 เกมกล้อง AR สำหรับเด็ก</div>
+        <h1>มือวิเศษ<br>พิชิตสวนสัตว์ตัวเลข</h1>
+        <p class="subtitle">ผจญภัย 4 ด่าน 20 ข้อ ยกมือขึ้น จีบนิ้วเลือกคำตอบ แล้วช่วยเพื่อนสัตว์ทำภารกิจให้สำเร็จ!</p>
+        <button id="showRulesBtn" class="primary-btn">▶ ดูกติกาก่อนเล่น</button>
+        <div class="privacy">🔒 ภาพจากกล้องใช้เล่นบนอุปกรณ์นี้เท่านั้น ไม่มีการบันทึกภาพ</div>
+      </div>
+    </section>
+
+    <section id="rulesScreen" class="screen">
+      <div class="rules-card glass">
+        <h2>กติกามือวิเศษ ✨</h2>
+        <p style="margin:0;color:#626a92;font-weight:700">เตรียมมือให้พร้อม แล้วทำตาม 3 ขั้นตอนนี้เลย</p>
+        <div class="rules-grid">
+          <div class="rule"><span class="icon">🖐️</span><strong>1. ยกมือ</strong><span>หันฝ่ามือเข้าหากล้อง ให้เห็นมือครบทั้งมือ</span></div>
+          <div class="rule"><span class="icon">🤏</span><strong>2. เล็งแล้วจีบ</strong><span>เลื่อนมือไปที่คำตอบ แล้วจีบนิ้วโป้งกับนิ้วชี้</span></div>
+          <div class="rule"><span class="icon">⭐</span><strong>3. เก็บคะแนน</strong><span>ตอบถูก +1 ตอบผิด 0 แล้วไปข้อต่อไป เล่นให้ครบ 4 ด่าน</span></div>
+        </div>
+        <div class="stage-preview">
+          <span>👤 ด่าน 1 จับคู่เงา</span><span>🍎 ด่าน 2 นับจำนวน</span><span>➕ ด่าน 3 บวกภาพ</span><span>➖ ด่าน 4 บวก–ลบ</span>
+        </div>
+        <button id="startBtn" class="primary-btn">📷 เปิดกล้องและเริ่มเกม</button>
+        <p style="margin:15px 0 0;color:#757b9d;font-size:13px;font-weight:600">หากใช้กล้องไม่ได้ ยังสามารถแตะคำตอบบนหน้าจอได้</p>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen stage-1" aria-live="polite">
+      <div class="game-shell">
+        <header class="topbar">
+          <button id="homeBtn" class="icon-btn" title="กลับหน้าปก" aria-label="กลับหน้าปก">⌂</button>
+          <div id="stageTitle" class="round-pill">ด่านที่ 1 : จับคู่ภาพกับเงา</div>
+          <div class="hud-right">
+            <div class="timer-pill">⏱ <span id="timerDisplay">00:00.0</span></div>
+            <div class="score-pill">🏅 <span id="score">0</span></div>
+          </div>
+        </header>
+
+        <div class="play-area">
+          <div class="progress-wrap">
+            <span id="questionNumber">ข้อ 1/5</span>
+            <div class="progress-track"><div id="progressBar"></div></div>
+            <div id="stageDots" class="stage-dots" aria-label="ความคืบหน้า 4 ด่าน"></div>
+          </div>
+          <article class="question-card">
+            <p id="questionText">นับจำนวนเพื่อนสัตว์ให้ถูกต้อง</p>
+            <div id="visual"></div>
+          </article>
+          <div class="instruction">🤏 เลื่อนมือไปที่คำตอบ แล้วจีบนิ้วโป้งกับนิ้วชี้</div>
+          <div id="answers" class="answers"></div>
+        </div>
+
+        <div id="trackingStatus" class="statusbar">
+          <span id="statusDot" class="status-dot"></span><span id="statusText">กำลังเตรียมกล้อง...</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="stageScreen" class="screen">
+      <div class="stage-card glass">
+        <div class="stage-complete-icon">🎉</div>
+        <h2 id="stageCompleteTitle">ผ่านด่านที่ 1 แล้ว!</h2>
+        <div id="stageScoreBox" class="stage-score-box">
+          <small>คะแนนสะสม</small>
+          <strong id="stageScoreValue">5</strong>
+          <span>คะแนน</span>
+        </div>
+        <div class="next-mission">
+          <small>ภารกิจต่อไป</small>
+          <strong id="nextStageTitle">ด่านที่ 2 : นับจำนวนแสนสนุก</strong>
+          <span id="nextMissionText">นับเพื่อนสัตว์และสิ่งของให้ครบ แล้วจีบตัวเลขที่ถูกต้อง</span>
+        </div>
+        <div class="countdown-wrap">
+          <span>เริ่มด่านต่อไปใน</span>
+          <strong id="countdownNumber">3</strong>
+        </div>
+      </div>
+    </section>
+
+    <section id="finishScreen" class="screen">
+      <div class="finish-card glass">
+        <div class="finish-mascot">🏆</div>
+        <h2>เก่งมาก ภารกิจสำเร็จ!</h2>
+        <div id="finalStars" class="stars">⭐⭐⭐</div>
+        <div class="final-summary">
+          <div class="summary-result score">
+            <span>คะแนนที่ได้</span>
+            <strong id="finalScore">20 คะแนน</strong>
+          </div>
+          <div class="summary-result time">
+            <span>⏱ ใช้เวลา</span>
+            <strong id="finalTime">00:00.0</strong>
+          </div>
+        </div>
+        <button id="replayBtn" class="primary-btn">↻ เล่นอีกครั้ง</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="answerFeedback" role="status" aria-live="assertive">
+    <div class="feedback-card">
+      <span id="feedbackIcon">✅</span>
+      <strong id="feedbackDelta">+1</strong>
+      <span id="feedbackText">ตอบถูก +1 คะแนน</span>
+    </div>
+  </div>
+  <div id="toast" role="status"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script>
+    (() => {
+      "use strict";
+
+      const stages = [
+        {
+          title: "ด่านที่ 1 : จับคู่ภาพกับเงา",
+          mission: "ดูภาพสีให้ดี แล้วจีบเงาดำที่มีรูปร่างตรงกับภาพ",
+          instruction: "👀 ดูภาพสี แล้วจีบเงาที่ตรงกัน",
+          questions: []
+        },
+        {
+          title: "ด่านที่ 2 : นับจำนวนแสนสนุก",
+          mission: "นับเพื่อนสัตว์และสิ่งของให้ครบ แล้วจีบตัวเลขที่ถูกต้อง",
+          instruction: "🔎 นับให้ครบ แล้วจีบตัวเลขคำตอบ",
+          questions: []
+        },
+        {
+          title: "ด่านที่ 3 : เกมบวกภาพแสนสนุก",
+          mission: "นับภาพทั้งสองกลุ่มแล้วบวกกัน จากนั้นจีบลูกโป่งคำตอบที่ถูกต้อง",
+          instruction: "➕ นับภาพทั้งสองกลุ่ม แล้วจีบผลบวก",
+          questions: []
+        },
+        {
+          title: "ด่านที่ 4 : เกมบวก–ลบแสนสนุก",
+          mission: "คิดเลขจากภาพให้ถูกต้อง แล้วจีบผลลัพธ์เพื่อพิชิตด่านสุดท้าย",
+          instruction: "➕ คิดให้ดี แล้วจีบผลลัพธ์ที่ถูกต้อง",
+          questions: []
+        }
+      ];
+
+      const shadowPool = [
+        { id:"rabbit", symbol:"🐰", label:"กระต่าย" }, { id:"cat", symbol:"🐱", label:"แมว" },
+        { id:"bear", symbol:"🐻", label:"หมี" }, { id:"fish", symbol:"🐟", label:"ปลา" },
+        { id:"butterfly", symbol:"🦋", label:"ผีเสื้อ" }, { id:"bird", symbol:"🐦", label:"นก" },
+        { id:"apple", symbol:"🍎", label:"แอปเปิล" }, { id:"strawberry", symbol:"🍓", label:"สตรอว์เบอร์รี" },
+        { id:"banana", symbol:"🍌", label:"กล้วย" }, { id:"car", symbol:"🚗", label:"รถยนต์" },
+        { id:"bicycle", symbol:"🚲", label:"จักรยาน" }, { id:"airplane", symbol:"✈️", label:"เครื่องบิน" },
+        { id:"flower", symbol:"🌼", label:"ดอกไม้" }, { id:"frog", symbol:"🐸", label:"กบ" },
+        { id:"turtle", symbol:"🐢", label:"เต่า" }
+      ];
+
+      const picturePool = [
+        { item:"🐥", name:"ลูกเจี๊ยบ", unit:"ตัว" }, { item:"🍎", name:"แอปเปิล", unit:"ผล" },
+        { item:"🐟", name:"ปลา", unit:"ตัว" }, { item:"🥕", name:"แครอต", unit:"หัว" },
+        { item:"🍓", name:"สตรอว์เบอร์รี", unit:"ลูก" }, { item:"⭐", name:"ดาว", unit:"ดวง" },
+        { item:"🐝", name:"ผึ้ง", unit:"ตัว" }, { item:"🐰", name:"กระต่าย", unit:"ตัว" },
+        { item:"🌼", name:"ดอกไม้", unit:"ดอก" }, { item:"🍪", name:"คุกกี้", unit:"ชิ้น" },
+        { item:"🧁", name:"คัพเค้ก", unit:"ชิ้น" }, { item:"🐞", name:"เต่าทอง", unit:"ตัว" }
+      ];
+
+      function shuffle(list) {
+        const result = [...list];
+        for (let i = result.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [result[i], result[j]] = [result[j], result[i]];
+        }
+        return result;
+      }
+
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function numberOptions(answer, min = 0, max = 9) {
+        const choices = new Set([answer]);
+        while (choices.size < 3) {
+          const nearby = answer + randomInt(-2, 2);
+          choices.add(nearby >= min && nearby <= max && nearby !== answer ? nearby : randomInt(min, max));
+        }
+        return shuffle([...choices]);
+      }
+
+      function generateRandomGame() {
+        const shadowTargets = shuffle(shadowPool).slice(0, 5);
+        stages[0].questions = shadowTargets.map(target => {
+          const distractors = shuffle(shadowPool.filter(item => item.id !== target.id)).slice(0, 2);
+          return {
+            text: `เงาใดตรงกับภาพ${target.label}?`,
+            type: "shadow",
+            symbol: target.symbol,
+            options: shuffle([target, ...distractors]),
+            answer: target.id
+          };
+        });
+
+        const countPictures = shuffle(picturePool).slice(0, 5);
+        const counts = shuffle([2, 3, 4, 5, 6, 7, 8]).slice(0, 5);
+        stages[1].questions = countPictures.map((picture, index) => ({
+          text: `มี${picture.name}ทั้งหมดกี่${picture.unit}?`,
+          type: "items",
+          item: picture.item,
+          count: counts[index],
+          options: numberOptions(counts[index], 1, 9),
+          answer: counts[index]
+        }));
+
+        stages[2].questions = shuffle(picturePool).slice(0, 5).map(picture => {
+          const left = randomInt(1, 5);
+          const right = randomInt(1, Math.min(5, 9 - left));
+          const answer = left + right;
+          return {
+            text: `มี${picture.name}ทั้งสองกลุ่มรวมกันกี่${picture.unit}?`,
+            type: "pictureMath",
+            item: picture.item,
+            left,
+            right,
+            options: numberOptions(answer, 1, 9),
+            answer
+          };
+        });
+
+        const operations = shuffle(["+", "+", "+", "−", "−"]);
+        stages[3].questions = shuffle(picturePool).slice(0, 5).map((picture, index) => {
+          const op = operations[index];
+          const left = op === "+" ? randomInt(1, 5) : randomInt(4, 9);
+          const right = op === "+" ? randomInt(1, Math.min(4, 9 - left)) : randomInt(1, Math.min(5, left - 1));
+          const answer = op === "+" ? left + right : left - right;
+          return {
+            text: op === "+"
+              ? `มี${picture.name} ${left} ${picture.unit} มาเพิ่มอีก ${right} ${picture.unit} รวมเป็นกี่${picture.unit}?`
+              : `มี${picture.name} ${left} ${picture.unit} นำออกไป ${right} ${picture.unit} เหลือกี่${picture.unit}?`,
+            type: "math",
+            left,
+            op,
+            right,
+            emoji: picture.item,
+            options: numberOptions(answer, 0, 9),
+            answer
+          };
+        });
+      }
+
+      const connections = [
+        [0,1],[1,2],[2,3],[3,4],
+        [0,5],[5,6],[6,7],[7,8],
+        [5,9],[9,10],[10,11],[11,12],
+        [9,13],[13,14],[14,15],[15,16],
+        [13,17],[17,18],[18,19],[19,20],[0,17]
+      ];
+
+      const $ = (id) => document.getElementById(id);
+      const screens = ["coverScreen", "rulesScreen", "gameScreen", "stageScreen", "finishScreen"];
+      const video = $("camera");
+      const canvas = $("handCanvas");
+      const ctx = canvas.getContext("2d");
+      const pinchHint = $("pinchHint");
+      let hands = null;
+      let stream = null;
+      let processing = false;
+      let running = false;
+      let stageIndex = 0;
+      let questionIndex = 0;
+      let score = 0;
+      let correctCount = 0;
+      let wrongCount = 0;
+      let accepting = true;
+      let wasPinching = false;
+      let lastPinchAt = 0;
+      let audioCtx = null;
+      let stageCountdownTimer = null;
+      let stageLaunchTimer = null;
+      let stopwatchTimer = null;
+      let stopwatchStartedAt = 0;
+      let elapsedTimeMs = 0;
+      let cssWidth = innerWidth;
+      let cssHeight = innerHeight;
+
+      function showScreen(id) {
+        screens.forEach(name => $(name).classList.toggle("active", name === id));
+      }
+
+      function formatTime(milliseconds) {
+        const tenths = Math.floor(milliseconds / 100);
+        const minutes = Math.floor(tenths / 600);
+        const seconds = Math.floor((tenths % 600) / 10);
+        const decimal = tenths % 10;
+        return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${decimal}`;
+      }
+
+      function updateStopwatch() {
+        if (stopwatchStartedAt) elapsedTimeMs = performance.now() - stopwatchStartedAt;
+        $("timerDisplay").textContent = formatTime(elapsedTimeMs);
+      }
+
+      function resetStopwatch() {
+        if (stopwatchTimer) clearInterval(stopwatchTimer);
+        stopwatchTimer = null;
+        stopwatchStartedAt = 0;
+        elapsedTimeMs = 0;
+        $("timerDisplay").textContent = "00:00.0";
+      }
+
+      function startStopwatch() {
+        resetStopwatch();
+        stopwatchStartedAt = performance.now();
+        updateStopwatch();
+        stopwatchTimer = setInterval(updateStopwatch, 100);
+      }
+
+      function stopStopwatch() {
+        if (stopwatchStartedAt) elapsedTimeMs = performance.now() - stopwatchStartedAt;
+        if (stopwatchTimer) clearInterval(stopwatchTimer);
+        stopwatchTimer = null;
+        stopwatchStartedAt = 0;
+        updateStopwatch();
+        return elapsedTimeMs;
+      }
+
+      function resizeCanvas() {
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        cssWidth = innerWidth;
+        cssHeight = innerHeight;
+        canvas.width = Math.round(cssWidth * dpr);
+        canvas.height = Math.round(cssHeight * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      function renderQuestion() {
+        const stage = stages[stageIndex];
+        const q = stage.questions[questionIndex];
+        $("stageTitle").textContent = stage.title;
+        $("questionNumber").textContent = `ข้อ ${questionIndex + 1}/5`;
+        $("progressBar").style.width = `${((questionIndex + 1) / 5) * 100}%`;
+        $("questionText").textContent = q.text;
+        document.querySelector(".instruction").textContent = stage.instruction;
+        const gameScreen = $("gameScreen");
+        gameScreen.classList.remove("stage-1", "stage-2", "stage-3", "stage-4");
+        gameScreen.classList.add(`stage-${stageIndex + 1}`);
+
+        const stageDots = $("stageDots");
+        stageDots.innerHTML = "";
+        stages.forEach((_, index) => {
+          const dot = document.createElement("i");
+          dot.className = "stage-dot";
+          if (index < stageIndex) dot.classList.add("done");
+          if (index === stageIndex) dot.classList.add("current");
+          stageDots.appendChild(dot);
+        });
+
+        const visual = $("visual");
+        visual.innerHTML = "";
+
+        if (q.type === "shadow") {
+          visual.innerHTML = `<div class="shadow-prompt"><small>ภาพสี</small><span class="color-picture">${q.symbol}</span></div>`;
+        } else if (q.type === "items") {
+          for (let i = 0; i < q.count; i++) {
+            const item = document.createElement("span");
+            item.className = "emoji-item";
+            item.textContent = q.item;
+            item.style.animationDelay = `${i * 45}ms`;
+            visual.appendChild(item);
+          }
+        } else if (q.type === "math") {
+          visual.innerHTML = `<div class="math-visual"><span class="big-emoji">${q.emoji}</span><span>${q.left}</span><span>${q.op}</span><span>${q.right}</span><span>= ?</span></div>`;
+        } else if (q.type === "pictureMath") {
+          const pictures = count => Array.from({ length: count }, () => `<span>${q.item}</span>`).join("");
+          visual.innerHTML = `<div class="balloon-equation"><div class="balloon-group">${pictures(q.left)}</div><b class="equation-sign">+</b><div class="balloon-group">${pictures(q.right)}</div><b class="equation-sign">=</b><div class="equation-question">?</div></div>`;
+        } else if (q.type === "balloon") {
+          visual.innerHTML = `<div class="balloon-guide">🎯 เลขเป้าหมาย <strong>${q.target}</strong></div>`;
+        } else {
+          visual.innerHTML = `<div class="sequence">${q.values.map(v => `<span>${v}</span>`).join("")}</div>`;
+        }
+
+        const answers = $("answers");
+        answers.innerHTML = "";
+        answers.className = q.type === "balloon"
+          ? "answers five-options"
+          : q.type === "pictureMath"
+            ? "answers balloon-math-answers"
+            : "answers";
+        q.options.forEach(option => {
+          const isObjectOption = typeof option === "object";
+          const value = isObjectOption ? option.id : option;
+          const btn = document.createElement("button");
+          btn.className = "answer";
+          if (q.type === "balloon" || q.type === "pictureMath") btn.classList.add("balloon-answer");
+          if (q.type === "shadow") btn.classList.add("shadow-answer");
+          if (typeof value === "string" && q.type !== "shadow") btn.classList.add("word-answer");
+          btn.type = "button";
+          btn.dataset.value = value;
+          if (q.type === "shadow") {
+            btn.innerHTML = `<span class="shadow-picture" aria-hidden="true">${option.symbol}</span>`;
+            btn.setAttribute("aria-label", `เงารูป${option.label}`);
+          } else {
+            btn.textContent = value;
+            btn.setAttribute("aria-label", `คำตอบ ${value}`);
+          }
+          btn.addEventListener("click", () => chooseAnswer(value, btn));
+          answers.appendChild(btn);
+        });
+        accepting = true;
+        wasPinching = true;
+      }
+
+      function chooseAnswer(value, button) {
+        if (!accepting) return;
+        accepting = false;
+        const q = stages[stageIndex].questions[questionIndex];
+        const isFinalAttempt = stageIndex === stages.length - 1 && questionIndex === stages[stageIndex].questions.length - 1;
+        if (isFinalAttempt) stopStopwatch();
+        if (String(value) === String(q.answer)) {
+          correctCount++;
+          score = correctCount;
+          $("score").textContent = score;
+          button.classList.add("correct");
+          spawnScoreDelta(button, 1);
+          showResultFeedback(true);
+          playTone(true);
+          burstConfetti();
+          setTimeout(nextQuestion, 1650);
+        } else {
+          wrongCount++;
+          $("score").textContent = score;
+          button.classList.add("wrong");
+          spawnScoreDelta(button, 0);
+          showResultFeedback(false);
+          playTone(false);
+          setTimeout(nextQuestion, 1650);
+        }
+      }
+
+      function nextQuestion() {
+        $("answerFeedback").classList.remove("show");
+        questionIndex++;
+        if (questionIndex >= stages[stageIndex].questions.length) {
+          if (stageIndex >= stages.length - 1) {
+            finishGame();
+          } else {
+            showStageComplete();
+          }
+        } else {
+          renderQuestion();
+        }
+      }
+
+      function spawnScoreDelta(button, delta) {
+        const rect = button.getBoundingClientRect();
+        const badge = document.createElement("span");
+        badge.className = `score-delta ${delta > 0 ? "plus" : "minus"}`;
+        badge.textContent = delta > 0 ? "ทำถูก +1" : "ทำผิด +0";
+        badge.style.left = `${rect.left + rect.width / 2}px`;
+        badge.style.top = `${rect.top + rect.height / 2}px`;
+        document.body.appendChild(badge);
+        setTimeout(() => badge.remove(), 950);
+      }
+
+      function showResultFeedback(isCorrect) {
+        const feedback = $("answerFeedback");
+        const scorePill = document.querySelector(".score-pill");
+        $("feedbackIcon").textContent = isCorrect ? "✅" : "❌";
+        $("feedbackDelta").textContent = isCorrect ? "+1" : "+0";
+        $("feedbackText").textContent = isCorrect ? "ตอบถูก +1 คะแนน" : "ตอบผิด +0 คะแนน";
+        feedback.className = isCorrect ? "good" : "bad";
+        void feedback.offsetWidth;
+        feedback.classList.add("show");
+        scorePill.classList.remove("score-up", "score-down");
+        void scorePill.offsetWidth;
+        scorePill.classList.add(isCorrect ? "score-up" : "score-down");
+      }
+
+      function showStageComplete() {
+        const nextStage = stages[stageIndex + 1];
+        $("stageCompleteTitle").textContent = `ผ่านด่านที่ ${stageIndex + 1} แล้ว!`;
+        $("stageScoreValue").textContent = score;
+        $("stageScoreBox").classList.toggle("negative", score < 0);
+        $("nextStageTitle").textContent = nextStage.title;
+        $("nextMissionText").textContent = nextStage.mission;
+        clearStageCountdown();
+        let count = 3;
+        const countdown = $("countdownNumber");
+        countdown.textContent = count;
+        countdown.classList.remove("go");
+        showScreen("stageScreen");
+        burstConfetti();
+        stageCountdownTimer = setInterval(() => {
+          count--;
+          if (count > 0) {
+            countdown.textContent = count;
+          } else {
+            clearInterval(stageCountdownTimer);
+            stageCountdownTimer = null;
+            countdown.textContent = "เริ่ม!";
+            countdown.classList.add("go");
+            stageLaunchTimer = setTimeout(continueToNextStage, 600);
+          }
+        }, 1000);
+      }
+
+      function continueToNextStage() {
+        clearStageCountdown();
+        stageIndex++;
+        questionIndex = 0;
+        renderQuestion();
+        showScreen("gameScreen");
+        showToast(`เริ่มด่านที่ ${stageIndex + 1} เลย! ✨`);
+      }
+
+      function clearStageCountdown() {
+        if (stageCountdownTimer) clearInterval(stageCountdownTimer);
+        if (stageLaunchTimer) clearTimeout(stageLaunchTimer);
+        stageCountdownTimer = null;
+        stageLaunchTimer = null;
+      }
+
+      function showToast(message) {
+        const toast = $("toast");
+        toast.textContent = message;
+        toast.classList.remove("show");
+        void toast.offsetWidth;
+        toast.classList.add("show");
+      }
+
+      function burstConfetti() {
+        const colors = ["#ff5e9f","#42d8e5","#ffd450","#7258e8","#59dda0"];
+        for (let i = 0; i < 24; i++) {
+          const bit = document.createElement("i");
+          bit.className = "confetti";
+          bit.style.left = `${10 + Math.random() * 80}%`;
+          bit.style.background = colors[i % colors.length];
+          bit.style.setProperty("--x", `${(Math.random() - .5) * 35}vw`);
+          bit.style.animationDelay = `${Math.random() * .18}s`;
+          document.body.appendChild(bit);
+          setTimeout(() => bit.remove(), 1500);
+        }
+      }
+
+      function playTone(ok) {
+        try {
+          audioCtx ||= new (window.AudioContext || window.webkitAudioContext)();
+          const now = audioCtx.currentTime;
+          const notes = ok ? [523.25, 659.25, 783.99] : [220, 180];
+          notes.forEach((freq, index) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = "sine";
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(.001, now + index * .09);
+            gain.gain.exponentialRampToValueAtTime(.15, now + index * .09 + .02);
+            gain.gain.exponentialRampToValueAtTime(.001, now + index * .09 + .17);
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start(now + index * .09);
+            osc.stop(now + index * .09 + .18);
+          });
+        } catch (_) {}
+      }
+
+      function status(text, state = "") {
+        $("statusText").textContent = text;
+        $("statusDot").className = `status-dot ${state}`;
+      }
+
+      async function startGame() {
+        clearStageCountdown();
+        resetStopwatch();
+        generateRandomGame();
+        stageIndex = 0;
+        questionIndex = 0;
+        score = 0;
+        correctCount = 0;
+        wrongCount = 0;
+        $("score").textContent = "0";
+        renderQuestion();
+        showScreen("gameScreen");
+        accepting = false;
+        status("กำลังขออนุญาตใช้กล้อง...");
+        await startCameraAndHands();
+        startStopwatch();
+        accepting = true;
+      }
+
+      async function startCameraAndHands() {
+        try {
+          if (!navigator.mediaDevices?.getUserMedia) throw new Error("ไม่รองรับกล้อง");
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
+            audio: false
+          });
+          video.srcObject = stream;
+          await video.play();
+          document.body.classList.add("camera-ready");
+          status("เปิดกล้องแล้ว • กำลังเตรียมโครงกระดูกมือ");
+
+          if (typeof Hands !== "function") throw new Error("โมเดลมือไม่พร้อม");
+          hands = new Hands({
+            locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+          });
+          hands.setOptions({
+            maxNumHands: 1,
+            modelComplexity: 0,
+            minDetectionConfidence: .6,
+            minTrackingConfidence: .55
+          });
+          hands.onResults(onHandResults);
+          running = true;
+          requestAnimationFrame(processFrame);
+        } catch (error) {
+          console.warn(error);
+          running = false;
+          status("ใช้กล้องหรือการตรวจจับมือไม่ได้ • แตะคำตอบเพื่อเล่นได้เลย", "error");
+          showToast("เล่นแบบแตะหน้าจอได้เลย 👆");
+        }
+      }
+
+      async function processFrame() {
+        if (!running) return;
+        if (!processing && video.readyState >= 2 && hands) {
+          processing = true;
+          try { await hands.send({ image: video }); }
+          catch (error) {
+            console.warn("Hand tracking paused", error);
+            status("ตรวจจับมือสะดุด • แตะคำตอบเพื่อเล่นได้", "error");
+          }
+          processing = false;
+        }
+        requestAnimationFrame(processFrame);
+      }
+
+      function onHandResults(results) {
+        ctx.clearRect(0, 0, cssWidth, cssHeight);
+        const list = results.multiHandLandmarks || [];
+        if (!list.length) {
+          pinchHint.classList.remove("visible");
+          status("ยังไม่พบมือ • ยกมือให้กล้องเห็นครบทั้งมือ");
+          document.querySelectorAll(".answer.hovered").forEach(el => el.classList.remove("hovered"));
+          wasPinching = false;
+          return;
+        }
+
+        const landmarks = list[0];
+        const points = landmarks.map(p => ({ x: (1 - p.x) * cssWidth, y: p.y * cssHeight, z: p.z }));
+        drawSkeleton(points);
+        status("พบมือแล้ว • เล็งคำตอบและจีบนิ้วได้เลย", "ready");
+
+        const thumb = points[4];
+        const index = points[8];
+        const pinchX = (thumb.x + index.x) / 2;
+        const pinchY = (thumb.y + index.y) / 2;
+        const distance = Math.hypot(thumb.x - index.x, thumb.y - index.y);
+        const palmSize = Math.max(40, Math.hypot(points[0].x - points[9].x, points[0].y - points[9].y));
+        const pinching = distance < palmSize * .46;
+
+        pinchHint.style.left = `${pinchX}px`;
+        pinchHint.style.top = `${pinchY}px`;
+        pinchHint.classList.toggle("visible", pinching);
+
+        let target = null;
+        document.querySelectorAll(".answer").forEach(btn => {
+          const r = btn.getBoundingClientRect();
+          const inside = pinchX >= r.left && pinchX <= r.right && pinchY >= r.top && pinchY <= r.bottom;
+          btn.classList.toggle("hovered", inside);
+          if (inside) target = btn;
+        });
+
+        const now = performance.now();
+        if (pinching && !wasPinching && target && accepting && now - lastPinchAt > 550) {
+          lastPinchAt = now;
+          chooseAnswer(target.dataset.value, target);
+        }
+        wasPinching = pinching;
+      }
+
+      function drawSkeleton(p) {
+        ctx.save();
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.strokeStyle = "rgba(238, 255, 255, .98)";
+        ctx.lineWidth = Math.max(4, Math.min(cssWidth, cssHeight) * .009);
+        ctx.shadowColor = "#28e6ff";
+        ctx.shadowBlur = 15;
+        connections.forEach(([a,b]) => {
+          ctx.beginPath();
+          ctx.moveTo(p[a].x, p[a].y);
+          ctx.lineTo(p[b].x, p[b].y);
+          ctx.stroke();
+        });
+        p.forEach((point, i) => {
+          ctx.beginPath();
+          ctx.fillStyle = i === 4 || i === 8 ? "#fff06b" : "#ff65ad";
+          ctx.arc(point.x, point.y, i === 4 || i === 8 ? 8 : 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "white";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        });
+        ctx.restore();
+      }
+
+      function stopCamera() {
+        clearStageCountdown();
+        running = false;
+        processing = false;
+        if (stream) stream.getTracks().forEach(track => track.stop());
+        stream = null;
+        video.srcObject = null;
+        hands?.close?.();
+        hands = null;
+        ctx.clearRect(0, 0, cssWidth, cssHeight);
+        pinchHint.classList.remove("visible");
+        document.body.classList.remove("camera-ready");
+      }
+
+      function finishGame() {
+        const totalTime = stopStopwatch();
+        stopCamera();
+        const stars = correctCount >= 18 ? 3 : correctCount >= 13 ? 2 : 1;
+        $("finalStars").textContent = "⭐".repeat(stars) + "☆".repeat(3 - stars);
+        $("finalTime").textContent = formatTime(totalTime);
+        $("finalScore").textContent = `${correctCount} คะแนน`;
+        showScreen("finishScreen");
+        playTone(true);
+        burstConfetti();
+      }
+
+      $("showRulesBtn").addEventListener("click", () => showScreen("rulesScreen"));
+      $("startBtn").addEventListener("click", startGame);
+      $("replayBtn").addEventListener("click", startGame);
+      $("homeBtn").addEventListener("click", () => {
+        resetStopwatch();
+        stopCamera();
+        showScreen("coverScreen");
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden && running) status("พักเกมชั่วคราว");
+      });
+    })();
+  </script>
+</body>
+</html>

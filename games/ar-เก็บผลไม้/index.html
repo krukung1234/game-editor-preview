@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffd8e8">
+  <title>ตะกร้าจอมเก็บผลไม้</title>
+  <style>
+    :root {
+      --pink: #ff6f9f;
+      --pink-dark: #e94f86;
+      --yellow: #ffd65a;
+      --cream: #fffaf0;
+      --ink: #4f3850;
+      --green: #69c86f;
+      --sky: #c9f2ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family: "Leelawadee UI", Tahoma, sans-serif;
+      color: var(--ink);
+      background: #ffddec;
+      touch-action: none;
+      user-select: none;
+    }
+
+    button { font: inherit; }
+
+    #game {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+      isolation: isolate;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 15% 18%, rgba(255,255,255,.9) 0 5%, transparent 5.4%),
+        linear-gradient(180deg, #caf4ff 0%, #f9edff 68%, #d5f2c8 100%);
+    }
+
+    #camera {
+      position: absolute;
+      inset: 0;
+      z-index: -4;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+      filter: saturate(.96) brightness(1.05);
+      opacity: 0;
+      transition: opacity .65s ease;
+    }
+
+    #camera.ready { opacity: 1; }
+
+    .camera-wash {
+      position: absolute;
+      inset: 0;
+      z-index: -3;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(202,244,255,.18), transparent 40%),
+        linear-gradient(0deg, rgba(255,238,205,.18), transparent 34%);
+    }
+
+    .top-clouds, .garden {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .cloud {
+      position: absolute;
+      width: 145px;
+      height: 38px;
+      border-radius: 40px;
+      background: rgba(255,255,255,.76);
+      filter: drop-shadow(0 6px 8px rgba(101,140,150,.08));
+      animation: cloudDrift 13s ease-in-out infinite alternate;
+    }
+
+    .cloud::before, .cloud::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: inherit;
+    }
+
+    .cloud::before { width: 64px; height: 64px; left: 24px; bottom: 9px; }
+    .cloud::after  { width: 48px; height: 48px; right: 20px; bottom: 7px; }
+    .cloud.one { top: 15%; left: -38px; transform: scale(.72); }
+    .cloud.two { top: 24%; right: -42px; transform: scale(.58); animation-delay: -4s; }
+    @keyframes cloudDrift { to { translate: 22px 4px; } }
+
+    .garden::before, .garden::after {
+      content: "";
+      position: absolute;
+      bottom: -13vh;
+      border-radius: 50% 50% 0 0;
+    }
+
+    .garden::before {
+      left: -12%;
+      width: 76%;
+      height: 27vh;
+      background: rgba(152,220,125,.82);
+      transform: rotate(5deg);
+      box-shadow: 42vw -2vh 0 rgba(125,204,113,.82);
+    }
+
+    .garden::after {
+      left: -10%;
+      width: 120%;
+      height: 16vh;
+      bottom: -8vh;
+      background: rgba(81,174,92,.88);
+    }
+
+    .flowers {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 11vh;
+      min-height: 58px;
+      opacity: .95;
+      background-image:
+        radial-gradient(circle, #fff 0 4px, #ffd451 4.5px 6px, transparent 6.5px),
+        radial-gradient(circle, #ff9cba 0 5px, #fff1a7 5.5px 7px, transparent 7.5px),
+        radial-gradient(circle, #fff 0 3px, #ffd451 3.5px 5px, transparent 5.5px);
+      background-size: 84px 45px, 137px 61px, 103px 54px;
+      background-position: 8px 9px, 36px 27px, 62px 1px;
+      mask-image: linear-gradient(to top, #000 0 70%, transparent);
+    }
+
+    header {
+      position: absolute;
+      z-index: 20;
+      top: max(12px, env(safe-area-inset-top));
+      left: 50%;
+      width: min(94%, 700px);
+      transform: translateX(-50%);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pill {
+      min-width: 98px;
+      padding: 9px 14px;
+      border: 3px solid rgba(255,255,255,.9);
+      border-radius: 22px;
+      color: #58405b;
+      background: rgba(255,255,255,.87);
+      box-shadow: 0 7px 18px rgba(92,58,89,.14);
+      font-weight: 800;
+      font-size: clamp(15px, 2.7vw, 21px);
+      backdrop-filter: blur(8px);
+    }
+
+    .pill.timer { justify-self: start; }
+    .pill.score { justify-self: end; text-align: right; }
+
+    #title-badge {
+      position: relative;
+      padding: 8px 21px 10px;
+      border: 3px solid white;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #ff8eb3, #ff6799);
+      color: white;
+      box-shadow: 0 8px 0 #d94d80, 0 13px 25px rgba(97,44,78,.2);
+      text-align: center;
+      font-weight: 900;
+      font-size: clamp(17px, 3vw, 25px);
+      line-height: 1.1;
+      transform: rotate(-1deg);
+      white-space: nowrap;
+    }
+
+    #title-badge::before, #title-badge::after {
+      position: absolute;
+      top: -18px;
+      font-size: 25px;
+      filter: drop-shadow(0 2px 0 white);
+    }
+
+    #title-badge::before { content: "🍓"; left: -10px; transform: rotate(-18deg); }
+    #title-badge::after  { content: "🍊"; right: -10px; transform: rotate(16deg); }
+
+    #status {
+      position: absolute;
+      z-index: 15;
+      top: 86px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 88%;
+      padding: 7px 13px;
+      border-radius: 999px;
+      color: #604760;
+      background: rgba(255,255,255,.76);
+      box-shadow: 0 4px 12px rgba(74,50,78,.1);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      transition: .25s ease;
+      backdrop-filter: blur(6px);
+    }
+
+    #status.good { color: #257347; background: rgba(230,255,232,.91); }
+    #status.warn { color: #9b4d21; background: rgba(255,242,211,.94); }
+
+    #head-score {
+      position: absolute;
+      z-index: 18;
+      left: 50%;
+      top: 38%;
+      min-width: 118px;
+      padding: 9px 15px;
+      border: 4px solid rgba(255,255,255,.94);
+      border-radius: 999px;
+      color: #633d5b;
+      background: linear-gradient(135deg, rgba(255,250,195,.96), rgba(255,183,211,.96));
+      box-shadow: 0 7px 0 rgba(199,79,124,.38), 0 12px 22px rgba(77,39,66,.2);
+      font-size: clamp(17px, 2.8vw, 23px);
+      font-weight: 1000;
+      text-align: center;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translate(-50%, -100%) scale(.82);
+      transition: left .09s linear, top .09s linear, opacity .2s ease, transform .2s ease;
+      pointer-events: none;
+    }
+
+    #head-score.visible {
+      opacity: 1;
+      transform: translate(-50%, -100%) scale(1);
+    }
+
+    #head-score.bump {
+      animation: headScoreBump .32s ease-out;
+    }
+
+    @keyframes headScoreBump {
+      45% { transform: translate(-50%, -100%) scale(1.28) rotate(-3deg); }
+    }
+
+    #playfield {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      overflow: hidden;
+    }
+
+    .falling {
+      position: absolute;
+      top: 0;
+      width: 76px;
+      height: 76px;
+      display: grid;
+      place-items: center;
+      font-size: 64px;
+      line-height: 1;
+      filter: drop-shadow(0 7px 5px rgba(66,42,52,.25));
+      will-change: transform;
+      animation: wobble .48s ease-in-out infinite alternate;
+    }
+
+    .falling.junk {
+      width: 68px;
+      height: 68px;
+      font-size: 54px;
+      padding: 4px;
+      border: 2px solid rgba(255,255,255,.75);
+      border-radius: 50%;
+      background: rgba(255,244,229,.73);
+    }
+
+    @keyframes wobble {
+      from { rotate: -8deg; }
+      to { rotate: 9deg; }
+    }
+
+    #basket {
+      position: absolute;
+      z-index: 12;
+      left: 50%;
+      bottom: max(19px, env(safe-area-inset-bottom));
+      width: 150px;
+      height: 92px;
+      transform: translateX(-50%);
+      will-change: left;
+      filter: drop-shadow(0 10px 9px rgba(77,44,40,.28));
+      transition: filter .15s;
+    }
+
+    #basket.caught { filter: drop-shadow(0 0 15px #fff) drop-shadow(0 8px 8px rgba(77,44,40,.25)); }
+
+    .basket-handle {
+      position: absolute;
+      z-index: 1;
+      left: 30px;
+      top: 0;
+      width: 90px;
+      height: 69px;
+      border: 10px solid #a75d34;
+      border-bottom: 0;
+      border-radius: 50px 50px 0 0;
+    }
+
+    .basket-fruit {
+      position: absolute;
+      z-index: 2;
+      left: 21px;
+      top: 25px;
+      font-size: 31px;
+      letter-spacing: -12px;
+      transform: rotate(-4deg);
+    }
+
+    .basket-body {
+      position: absolute;
+      z-index: 3;
+      left: 5px;
+      right: 5px;
+      bottom: 0;
+      height: 61px;
+      border: 4px solid #8f4c2f;
+      border-radius: 12px 12px 28px 28px;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 12px, rgba(121,56,32,.22) 12px 15px),
+        repeating-linear-gradient(90deg, #d8894c 0 17px, #f1ad68 17px 32px);
+      box-shadow: inset 0 7px 0 rgba(255,211,144,.5);
+    }
+
+    .basket-rim {
+      position: absolute;
+      z-index: 4;
+      left: 0;
+      right: 0;
+      top: 36px;
+      height: 17px;
+      border: 4px solid #8f4c2f;
+      border-radius: 10px;
+      background: #e59b5d;
+    }
+
+    .pop-score {
+      position: absolute;
+      z-index: 30;
+      translate: -50% 0;
+      font-size: 36px;
+      font-weight: 1000;
+      color: #fff;
+      -webkit-text-stroke: 2px #2f9153;
+      text-shadow: 0 4px 0 rgba(33,105,59,.25);
+      pointer-events: none;
+      animation: scorePop .8s ease-out forwards;
+    }
+
+    .pop-score.minus {
+      -webkit-text-stroke-color: #e3425f;
+      text-shadow: 0 4px 0 rgba(170,36,61,.25);
+    }
+
+    @keyframes scorePop {
+      0% { opacity: 0; scale: .45; translate: -50% 20px; }
+      20% { opacity: 1; scale: 1.25; }
+      100% { opacity: 0; scale: .9; translate: -50% -72px; }
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background: rgba(255,235,244,.48);
+      backdrop-filter: blur(8px);
+      transition: opacity .3s ease, visibility .3s ease;
+    }
+
+    .screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .card {
+      position: relative;
+      width: min(92vw, 440px);
+      padding: 31px 27px 27px;
+      border: 5px solid white;
+      border-radius: 34px;
+      background: linear-gradient(165deg, #fffdf6, #fff1f7);
+      box-shadow: 0 18px 0 rgba(224,101,143,.25), 0 30px 55px rgba(96,49,84,.22);
+      text-align: center;
+    }
+
+    .card::before, .card::after {
+      position: absolute;
+      top: -29px;
+      font-size: 45px;
+      filter: drop-shadow(0 4px 0 white);
+    }
+
+    .card::before { content: "🌼"; left: 28px; transform: rotate(-18deg); }
+    .card::after  { content: "🌸"; right: 28px; transform: rotate(18deg); }
+
+    .hero {
+      height: 92px;
+      font-size: 78px;
+      line-height: 1;
+      filter: drop-shadow(0 7px 5px rgba(83,45,68,.14));
+      animation: heroBounce 1.1s ease-in-out infinite alternate;
+    }
+
+    @keyframes heroBounce { to { transform: translateY(-7px) rotate(3deg); } }
+
+    h1, h2 {
+      margin: 8px 0;
+      color: #e64f86;
+      font-weight: 1000;
+      line-height: 1.15;
+    }
+
+    h1 { font-size: clamp(26px, 7vw, 38px); }
+    h2 { font-size: clamp(25px, 6vw, 34px); }
+
+    .subtitle {
+      margin: 8px auto 17px;
+      max-width: 340px;
+      color: #765b75;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .rules {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 17px 0 21px;
+    }
+
+    .rule {
+      padding: 10px;
+      border-radius: 17px;
+      background: #eaffeb;
+      color: #33834d;
+      font-weight: 900;
+    }
+
+    .rule.bad { background: #fff0f0; color: #d34861; }
+    .rule .icons { display: block; margin-bottom: 3px; font-size: 24px; }
+
+    .main-button, .small-button {
+      border: 0;
+      cursor: pointer;
+      font-weight: 1000;
+      transition: transform .15s, filter .15s;
+    }
+
+    .main-button {
+      width: 100%;
+      padding: 14px 20px;
+      border: 3px solid white;
+      border-radius: 999px;
+      color: white;
+      background: linear-gradient(180deg, #ff83ab, #f5538b);
+      box-shadow: 0 7px 0 #c93d70, 0 12px 18px rgba(171,47,95,.23);
+      font-size: 19px;
+    }
+
+    .main-button:hover { filter: brightness(1.04); transform: translateY(-1px); }
+    .main-button:active { transform: translateY(5px); box-shadow: 0 2px 0 #c93d70; }
+    .main-button:disabled { opacity: .6; cursor: wait; }
+
+    .small-button {
+      margin-top: 16px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      color: #855a76;
+      background: #fff;
+      box-shadow: 0 3px 9px rgba(94,50,74,.12);
+      font-size: 13px;
+    }
+
+    #countdown {
+      position: absolute;
+      inset: 0;
+      z-index: 90;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: rgba(255,120,167,.22);
+      font-size: min(35vw, 190px);
+      font-weight: 1000;
+      -webkit-text-stroke: 5px #ef6597;
+      text-shadow: 0 10px 0 rgba(183,59,103,.25);
+      pointer-events: none;
+    }
+
+    #countdown.hidden { display: none; }
+    #countdown.pulse { animation: countPulse .75s ease-out; }
+    @keyframes countPulse { from { scale: .4; opacity: 0; } 40% { scale: 1.18; opacity: 1; } to { scale: 1; opacity: 1; } }
+
+    #final-score {
+      display: inline-grid;
+      place-items: center;
+      min-width: 135px;
+      min-height: 105px;
+      margin: 12px 0 16px;
+      border: 5px solid white;
+      border-radius: 28px;
+      color: white;
+      background: linear-gradient(135deg, #ff9dbc, #ff6295);
+      box-shadow: 0 8px 0 #dc4b7c;
+      font-size: 60px;
+      font-weight: 1000;
+    }
+
+    #result-message { margin: 4px 0 15px; font-weight: 800; }
+
+    .particle {
+      position: fixed;
+      z-index: 120;
+      left: 50%;
+      top: 50%;
+      pointer-events: none;
+      animation: burst var(--duration) cubic-bezier(.12,.7,.16,1) forwards;
+      animation-delay: var(--delay);
+      filter: drop-shadow(0 3px 2px rgba(81,50,46,.16));
+    }
+
+    @keyframes burst {
+      0% { opacity: 0; transform: translate(-50%,-50%) scale(.2) rotate(0); }
+      12% { opacity: 1; }
+      100% { opacity: 0; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(var(--scale)) rotate(var(--rotate)); }
+    }
+
+    .camera-note {
+      margin-top: 13px;
+      color: #a06f8b;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 580px) {
+      header { grid-template-columns: 1fr 1fr; }
+      #title-badge {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        justify-self: center;
+        font-size: 17px;
+      }
+      .pill { grid-row: 2; min-width: 104px; padding: 7px 12px; }
+      #status { top: 112px; }
+      #basket { width: 132px; height: 83px; }
+      .basket-handle { left: 27px; width: 78px; height: 62px; }
+      .basket-rim { top: 32px; }
+      .basket-body { height: 56px; }
+      .basket-fruit { left: 13px; font-size: 29px; }
+      .falling { width: 66px; height: 66px; font-size: 56px; }
+      .falling.junk { width: 58px; height: 58px; font-size: 47px; }
+      .card { padding: 27px 21px 23px; }
+    }
+
+    @media (max-height: 650px) {
+      .hero { height: 56px; font-size: 53px; }
+      .card { padding-top: 20px; }
+      .rules { margin: 10px 0 13px; }
+      .subtitle { margin-bottom: 8px; }
+      .card::before, .card::after { font-size: 34px; top: -22px; }
+    }
+  </style>
+</head>
+<body>
+  <main id="game" aria-label="เกมตะกร้าจอมเก็บผลไม้">
+    <video id="camera" playsinline muted autoplay></video>
+    <div class="camera-wash"></div>
+
+    <div class="top-clouds" aria-hidden="true">
+      <div class="cloud one"></div>
+      <div class="cloud two"></div>
+    </div>
+    <div class="garden" aria-hidden="true"><div class="flowers"></div></div>
+
+    <header>
+      <div class="pill timer">⏰ <span id="time">30</span> วิ</div>
+      <div id="title-badge">ตะกร้าจอมเก็บผลไม้</div>
+      <div class="pill score">⭐ <span id="score">0</span> คะแนน</div>
+    </header>
+
+    <div id="status">เตรียมขยับศีรษะซ้าย–ขวาได้เลย</div>
+    <div id="head-score" aria-live="polite">⭐ <span id="head-score-value">0</span> คะแนน</div>
+    <section id="playfield" aria-label="พื้นที่เล่นเกม"></section>
+
+    <div id="basket" aria-label="ตะกร้าผลไม้">
+      <div class="basket-handle"></div>
+      <div class="basket-fruit">🍇🍎🍊</div>
+      <div class="basket-body"></div>
+      <div class="basket-rim"></div>
+    </div>
+
+    <section id="welcome" class="screen">
+      <div class="card">
+        <div class="hero">🧺</div>
+        <h1>ตะกร้าจอมเก็บผลไม้</h1>
+        <p class="subtitle">หันหรือขยับศีรษะซ้าย–ขวา ให้ตะกร้าตามไปเก็บของดีภายใน 30 วินาที!</p>
+        <div class="rules">
+          <div class="rule"><span class="icons">🍎 🍓 🍊</span>ผลไม้ +1</div>
+          <div class="rule bad"><span class="icons">🍔 🍟 🍩</span>ของไม่มีประโยชน์ −1</div>
+        </div>
+        <button id="start" class="main-button">📷 เปิดกล้องและเริ่มเกม</button>
+        <button id="pointer-mode" class="small-button">ใช้เมาส์/นิ้วแทน</button>
+        <p class="camera-note">ภาพจากกล้องใช้เพื่อติดตามตำแหน่งใบหน้าบนอุปกรณ์นี้เท่านั้น ไม่มีการบันทึกหรือส่งออก</p>
+      </div>
+    </section>
+
+    <div id="countdown" class="hidden" aria-live="assertive"></div>
+
+    <section id="result" class="screen hidden" aria-modal="true" role="dialog">
+      <div class="card">
+        <div class="hero">🎉</div>
+        <h2>หมดเวลาแล้ว!</h2>
+        <p>คะแนนรวมของคุณคือ</p>
+        <div id="final-score">0</div>
+        <p id="result-message">เก่งมากเลย!</p>
+        <button id="restart" class="main-button">🔄 เล่นอีกครั้ง</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection@0.4/face_detection.js" crossorigin="anonymous"></script>
+  <script>
+    (() => {
+      "use strict";
+
+      const GAME_SECONDS = 30;
+      const fruits = ["🍎", "🍊", "🍓", "🍇", "🍉", "🍐", "🍑", "🥝", "🍌", "🍒", "🍍"];
+      const junkFoods = ["🍔", "🍟", "🍕", "🍩", "🍭", "🥤", "🍦", "🧁"];
+
+      const game = document.getElementById("game");
+      const video = document.getElementById("camera");
+      const playfield = document.getElementById("playfield");
+      const basket = document.getElementById("basket");
+      const welcome = document.getElementById("welcome");
+      const result = document.getElementById("result");
+      const countdown = document.getElementById("countdown");
+      const scoreEl = document.getElementById("score");
+      const timeEl = document.getElementById("time");
+      const finalScoreEl = document.getElementById("final-score");
+      const resultMessage = document.getElementById("result-message");
+      const statusEl = document.getElementById("status");
+      const headScore = document.getElementById("head-score");
+      const headScoreValue = document.getElementById("head-score-value");
+      const startButton = document.getElementById("start");
+      const pointerButton = document.getElementById("pointer-mode");
+      const restartButton = document.getElementById("restart");
+
+      let score = 0;
+      let timeLeft = GAME_SECONDS;
+      let running = false;
+      let inputMode = "face";
+      let faceDetector = null;
+      let mediaStream = null;
+      let detectionLoopActive = false;
+      let processingFace = false;
+      let faceSeenAt = 0;
+      let targetBasketX = innerWidth / 2;
+      let basketX = innerWidth / 2;
+      let objects = [];
+      let spawnTimer = null;
+      let gameTimer = null;
+      let animationId = null;
+      let lastFrame = 0;
+      let audioContext = null;
+
+      function setStatus(text, type = "") {
+        statusEl.textContent = text;
+        statusEl.className = type;
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function cameraPointToScreen(x, y) {
+        const areaWidth = game.clientWidth;
+        const areaHeight = game.clientHeight;
+        const videoWidth = video.videoWidth || areaWidth;
+        const videoHeight = video.videoHeight || areaHeight;
+        const coverScale = Math.max(areaWidth / videoWidth, areaHeight / videoHeight);
+        const drawnWidth = videoWidth * coverScale;
+        const drawnHeight = videoHeight * coverScale;
+        const cropX = (drawnWidth - areaWidth) / 2;
+        const cropY = (drawnHeight - areaHeight) / 2;
+
+        return {
+          x: areaWidth - (x * drawnWidth - cropX),
+          y: y * drawnHeight - cropY,
+          scale: coverScale
+        };
+      }
+
+      function setupAudio() {
+        if (!audioContext) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) audioContext = new AudioCtx();
+        }
+        if (audioContext?.state === "suspended") audioContext.resume();
+      }
+
+      function tone(good) {
+        if (!audioContext) return;
+        const now = audioContext.currentTime;
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = good ? "sine" : "triangle";
+        osc.frequency.setValueAtTime(good ? 620 : 220, now);
+        osc.frequency.exponentialRampToValueAtTime(good ? 930 : 125, now + .14);
+        gain.gain.setValueAtTime(.001, now);
+        gain.gain.exponentialRampToValueAtTime(.12, now + .015);
+        gain.gain.exponentialRampToValueAtTime(.001, now + .18);
+        osc.connect(gain).connect(audioContext.destination);
+        osc.start(now);
+        osc.stop(now + .2);
+      }
+
+      async function startCamera() {
+        if (!navigator.mediaDevices?.getUserMedia) {
+          throw new Error("อุปกรณ์นี้ไม่รองรับการเปิดกล้องผ่านเบราว์เซอร์");
+        }
+
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user", width: { ideal: 960 }, height: { ideal: 720 } },
+          audio: false
+        });
+        video.srcObject = mediaStream;
+        await video.play();
+        video.classList.add("ready");
+
+        if (!window.FaceDetection) {
+          throw new Error("โหลดระบบติดตามใบหน้าไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต");
+        }
+
+        if (!faceDetector) {
+          faceDetector = new FaceDetection({
+            locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection@0.4/${file}`
+          });
+          faceDetector.setOptions({ model: "short", minDetectionConfidence: .55 });
+          faceDetector.onResults(onFaceResults);
+        }
+
+        detectionLoopActive = true;
+        detectFace();
+      }
+
+      async function detectFace() {
+        if (!detectionLoopActive) return;
+        if (!processingFace && video.readyState >= 2 && faceDetector) {
+          processingFace = true;
+          try {
+            await faceDetector.send({ image: video });
+          } catch (error) {
+            console.warn("Face tracking paused:", error);
+          } finally {
+            processingFace = false;
+          }
+        }
+        setTimeout(detectFace, 55);
+      }
+
+      function onFaceResults(results) {
+        const detection = results.detections?.[0];
+        if (!detection || inputMode !== "face") return;
+
+        const box = detection.boundingBox;
+        if (!box) return;
+
+        const width = game.clientWidth;
+        const padding = basket.offsetWidth / 2 + 7;
+        const faceCenter = cameraPointToScreen(box.xCenter, box.yCenter);
+        const faceTop = cameraPointToScreen(box.xCenter, box.yCenter - box.height / 2);
+
+        targetBasketX = clamp(faceCenter.x, padding, width - padding);
+        headScore.style.left = `${clamp(faceCenter.x, 72, width - 72)}px`;
+        headScore.style.top = `${clamp(faceTop.y - 14, 142, game.clientHeight - 120)}px`;
+        headScore.classList.add("visible");
+        faceSeenAt = performance.now();
+        setStatus("จับใบหน้าได้แล้ว ✨ หันซ้าย–ขวาเพื่อขยับตะกร้า", "good");
+      }
+
+      function enablePointerMode(message = "เลื่อนเมาส์หรือนิ้วซ้าย–ขวาเพื่อขยับตะกร้า") {
+        inputMode = "pointer";
+        headScore.classList.remove("visible");
+        setStatus(message, "warn");
+      }
+
+      function pointerMove(clientX) {
+        if (inputMode !== "pointer") return;
+        const rect = game.getBoundingClientRect();
+        const padding = basket.offsetWidth / 2 + 7;
+        targetBasketX = clamp(clientX - rect.left, padding, rect.width - padding);
+      }
+
+      game.addEventListener("pointermove", event => pointerMove(event.clientX));
+      game.addEventListener("pointerdown", event => pointerMove(event.clientX));
+
+      function clearObjects() {
+        objects.forEach(item => item.el.remove());
+        objects = [];
+        document.querySelectorAll(".pop-score").forEach(el => el.remove());
+      }
+
+      function resetGame() {
+        score = 0;
+        timeLeft = GAME_SECONDS;
+        scoreEl.textContent = "0";
+        headScoreValue.textContent = "0";
+        timeEl.textContent = String(GAME_SECONDS);
+        targetBasketX = game.clientWidth / 2;
+        basketX = targetBasketX;
+        basket.style.left = `${basketX}px`;
+        clearObjects();
+      }
+
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      async function showCountdown() {
+        countdown.classList.remove("hidden");
+        for (const text of ["3", "2", "1", "เริ่ม!"]) {
+          countdown.textContent = text;
+          countdown.classList.remove("pulse");
+          void countdown.offsetWidth;
+          countdown.classList.add("pulse");
+          await sleep(text === "เริ่ม!" ? 600 : 800);
+        }
+        countdown.classList.add("hidden");
+      }
+
+      async function beginGame() {
+        resetGame();
+        welcome.classList.add("hidden");
+        result.classList.add("hidden");
+        await showCountdown();
+        running = true;
+        lastFrame = performance.now();
+        faceSeenAt = performance.now();
+
+        spawnObject();
+        spawnTimer = setInterval(spawnObject, 570);
+        gameTimer = setInterval(() => {
+          timeLeft -= 1;
+          timeEl.textContent = String(Math.max(0, timeLeft));
+          if (timeLeft <= 10) timeEl.parentElement.style.background = "rgba(255,225,228,.94)";
+          if (timeLeft <= 0) endGame();
+        }, 1000);
+        animationId = requestAnimationFrame(gameLoop);
+      }
+
+      function spawnObject() {
+        if (!running && timeLeft !== GAME_SECONDS) return;
+        const isFruit = Math.random() < .72;
+        const el = document.createElement("div");
+        const width = playfield.clientWidth;
+        const isMobile = width <= 580;
+        const size = isFruit ? (isMobile ? 66 : 76) : (isMobile ? 58 : 68);
+        const x = 8 + Math.random() * Math.max(1, width - size - 16);
+        const speed = 145 + Math.random() * 95 + Math.min(score, 15) * 2;
+        el.className = `falling${isFruit ? "" : " junk"}`;
+        el.textContent = (isFruit ? fruits : junkFoods)[Math.floor(Math.random() * (isFruit ? fruits.length : junkFoods.length))];
+        el.style.left = `${x}px`;
+        el.style.transform = "translateY(-95px)";
+        el.setAttribute("aria-hidden", "true");
+        playfield.appendChild(el);
+        objects.push({ el, x, y: -95, size, speed, isFruit, caught: false });
+      }
+
+      function showScorePop(delta) {
+        const pop = document.createElement("div");
+        pop.className = `pop-score${delta < 0 ? " minus" : ""}`;
+        pop.textContent = delta > 0 ? "+1" : "−1";
+        pop.style.left = `${basketX}px`;
+        pop.style.top = `${basket.getBoundingClientRect().top - 24}px`;
+        game.appendChild(pop);
+        setTimeout(() => pop.remove(), 850);
+      }
+
+      function collect(item) {
+        item.caught = true;
+        const delta = item.isFruit ? 1 : -1;
+        score += delta;
+        scoreEl.textContent = String(score);
+        headScoreValue.textContent = String(score);
+        headScore.classList.remove("bump");
+        void headScore.offsetWidth;
+        headScore.classList.add("bump");
+        showScorePop(delta);
+        tone(item.isFruit);
+        basket.classList.add("caught");
+        setTimeout(() => basket.classList.remove("caught"), 150);
+        item.el.remove();
+
+        if (item.isFruit) {
+          setStatus("เยี่ยม! ได้ผลไม้ +1 คะแนน 🍓", "good");
+        } else {
+          setStatus("โอ๊ะ! อาหารไม่มีประโยชน์ −1 คะแนน 🍟", "warn");
+        }
+      }
+
+      function gameLoop(now) {
+        if (!running) return;
+        const dt = Math.min((now - lastFrame) / 1000, .05);
+        lastFrame = now;
+
+        if (inputMode === "face" && now - faceSeenAt > 1800) {
+          headScore.classList.remove("visible");
+          setStatus("ยังไม่เห็นใบหน้า ลองขยับให้อยู่กลางภาพนะคะ", "warn");
+        }
+
+        basketX += (targetBasketX - basketX) * Math.min(1, dt * 9);
+        basket.style.left = `${basketX}px`;
+
+        const basketRect = basket.getBoundingClientRect();
+        const catchTop = basketRect.top + 12;
+        const catchLeft = basketRect.left + 7;
+        const catchRight = basketRect.right - 7;
+
+        for (let i = objects.length - 1; i >= 0; i -= 1) {
+          const item = objects[i];
+          item.y += item.speed * dt;
+          item.el.style.transform = `translateY(${item.y}px)`;
+
+          const itemBottom = item.y + item.size;
+          const itemCenterX = item.x + item.size / 2;
+          const hitsBasket = itemBottom >= catchTop &&
+            item.y < basketRect.bottom - 22 &&
+            itemCenterX > catchLeft &&
+            itemCenterX < catchRight;
+
+          if (hitsBasket) {
+            collect(item);
+            objects.splice(i, 1);
+          } else if (item.y > innerHeight + 90) {
+            item.el.remove();
+            objects.splice(i, 1);
+          }
+        }
+
+        animationId = requestAnimationFrame(gameLoop);
+      }
+
+      function resultText(points) {
+        if (points >= 30) return "สุดยอด! นักเก็บผลไม้ระดับแชมป์ 🏆";
+        if (points >= 18) return "เก่งมาก! ตะกร้าเต็มไปด้วยของดี 💖";
+        if (points >= 8) return "ทำได้ดีมาก ลองอีกครั้งเพื่อทำลายสถิตินะ ✨";
+        return "เริ่มต้นได้ดี! รอบหน้าจับผลไม้ให้แม่นขึ้นนะ 🌱";
+      }
+
+      function starBurst() {
+        const symbols = ["⭐", "✨", "🌟", "💖", "⭐", "🌼"];
+        for (let i = 0; i < 72; i += 1) {
+          const particle = document.createElement("span");
+          const angle = Math.random() * Math.PI * 2;
+          const distance = 130 + Math.random() * Math.max(innerWidth, innerHeight) * .62;
+          particle.className = "particle";
+          particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+          particle.style.setProperty("--x", `${Math.cos(angle) * distance}px`);
+          particle.style.setProperty("--y", `${Math.sin(angle) * distance}px`);
+          particle.style.setProperty("--rotate", `${Math.floor(Math.random() * 850 - 425)}deg`);
+          particle.style.setProperty("--scale", String(.65 + Math.random() * 1.15));
+          particle.style.setProperty("--duration", `${1.35 + Math.random() * 1.25}s`);
+          particle.style.setProperty("--delay", `${Math.random() * .35}s`);
+          particle.style.fontSize = `${15 + Math.random() * 25}px`;
+          document.body.appendChild(particle);
+          setTimeout(() => particle.remove(), 3100);
+        }
+      }
+
+      function endGame() {
+        if (!running) return;
+        running = false;
+        clearInterval(spawnTimer);
+        clearInterval(gameTimer);
+        cancelAnimationFrame(animationId);
+        clearObjects();
+        timeLeft = 0;
+        timeEl.textContent = "0";
+        finalScoreEl.textContent = String(score);
+        resultMessage.textContent = resultText(score);
+        result.classList.remove("hidden");
+        starBurst();
+        tone(true);
+        setTimeout(() => tone(true), 180);
+      }
+
+      startButton.addEventListener("click", async () => {
+        setupAudio();
+        startButton.disabled = true;
+        startButton.textContent = "กำลังเปิดกล้อง…";
+        inputMode = "face";
+        setStatus("กำลังเตรียมระบบติดตามใบหน้า…");
+        try {
+          await startCamera();
+          setStatus("เปิดกล้องแล้ว เตรียมตัวได้เลย ✨", "good");
+          await beginGame();
+        } catch (error) {
+          console.error(error);
+          enablePointerMode("เปิดกล้องไม่ได้ — ใช้เมาส์หรือนิ้วเล่นแทนได้เลย");
+          await beginGame();
+        } finally {
+          startButton.disabled = false;
+          startButton.textContent = "📷 เปิดกล้องและเริ่มเกม";
+        }
+      });
+
+      pointerButton.addEventListener("click", async () => {
+        setupAudio();
+        enablePointerMode();
+        await beginGame();
+      });
+
+      restartButton.addEventListener("click", async () => {
+        setupAudio();
+        timeEl.parentElement.style.background = "";
+        await beginGame();
+      });
+
+      window.addEventListener("resize", () => {
+        const padding = basket.offsetWidth / 2 + 7;
+        targetBasketX = clamp(targetBasketX, padding, game.clientWidth - padding);
+      });
+
+      window.addEventListener("beforeunload", () => {
+        detectionLoopActive = false;
+        mediaStream?.getTracks().forEach(track => track.stop());
+      });
+    })();
+  </script>
+</body>
+</html>

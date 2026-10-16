@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>เกมตีตัวตุ่น แม่ ก กา AR</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <video id="camera" class="camera" autoplay muted playsinline></video>
+      <div class="camera-fallback" aria-hidden="true">
+        <div class="sky">
+          <span class="cloud c1"></span>
+          <span class="cloud c2"></span>
+          <span class="cloud c3"></span>
+        </div>
+        <div class="hills"></div>
+      </div>
+
+      <section class="topbar" aria-label="ข้อมูลเกม">
+        <div class="stat">
+          <span class="stat-icon">⏱</span>
+          <span class="stat-label">เวลา</span>
+          <strong id="timeLeft">60</strong>
+          <span class="stat-unit">วินาที</span>
+        </div>
+        <div class="title-sign" aria-label="เกมตีตัวตุ่น แม่ ก กา">
+          <h1>เกมตีตัวตุ่น</h1>
+          <p>แม่ ก กา</p>
+        </div>
+        <div class="stat">
+          <span class="stat-icon">🏆</span>
+          <span class="stat-label">คะแนน</span>
+          <strong id="score">0</strong>
+          <span class="stat-unit">คะแนน</span>
+        </div>
+      </section>
+
+      <section class="play-stage" aria-label="สนามเกม">
+        <div class="grass-card">
+          <div class="flowers" aria-hidden="true"></div>
+          <div id="holes" class="holes" aria-label="หลุมตัวตุ่น"></div>
+        </div>
+      </section>
+
+      <section id="startScreen" class="start-screen" aria-live="polite">
+        <div class="start-card">
+          <h2 id="startTitle">ตีตัวตุ่น แม่ ก กา</h2>
+          <p id="startCopy">กติกาการเล่น</p>
+          <ul class="rules-list">
+            <li>แต่ละรอบมีตัวตุ่นขึ้นมา 2 ตัว</li>
+            <li>ใน 2 ตัวนั้นมีคำแม่ ก กา 1 คำเสมอ</li>
+            <li>ตีคำแม่ ก กาให้เร็วที่สุด</li>
+            <li>ตีถูกได้ 1 คะแนน ตีผิดได้ 0 คะแนน</li>
+          </ul>
+          <div class="rules">
+            <span class="good">ถูก +1</span>
+            <span class="bad">ผิด 0</span>
+          </div>
+          <button id="startButton" class="primary-button" type="button">เริ่มแบบเปิดกล้อง AR</button>
+          <button id="noCameraButton" class="ghost-button no-camera-button" type="button">เริ่มแบบไม่เปิดกล้อง</button>
+          <button id="exitButton" class="secondary-button exit-button" type="button">ออกจากเกม</button>
+        </div>
+      </section>
+
+      <div id="message" class="message" aria-live="assertive"></div>
+      <div id="hammer" class="hammer" aria-hidden="true"></div>
+      <div id="confetti" class="confetti" aria-hidden="true"></div>
+    </main>
+
+    <script src="./game.js"></script>
+  </body>
+</html>
