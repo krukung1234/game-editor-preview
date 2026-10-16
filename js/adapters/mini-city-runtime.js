@@ -57,11 +57,12 @@
       saveState(){try{localStorage.setItem(adapter.runKey+'.progress',JSON.stringify(api.getState()))}catch{}}
     });
     api.setState({stars:0,completed:[],unlocked:1});
-    const responsive=document.createElement('link');responsive.rel='stylesheet';responsive.href=new URL('../../css/mini-city-editor-play.css?v=editor-1',location.href).href;document.head.append(responsive);
+    const responsive=document.createElement('link');responsive.rel='stylesheet';responsive.href=new URL('../../css/mini-city-editor-play.css?v=editor-2',location.href).href;document.head.append(responsive);
     document.title=data.meta.title;
     const cover=document.querySelector('#coverScreen .bg');if(cover){if(data.meta.cover)cover.src=adapter.resolveImage(data.meta.cover);else{cover.removeAttribute('src');cover.hidden=true}}
     const badge=document.createElement('div');badge.className='editor-game-title';badge.textContent=data.meta.title+' • '+data.meta.subject+' '+data.meta.grade+' • '+data.meta.topic;document.querySelector('#coverScreen').append(badge);
     const instructions=document.createElement('small');instructions.style.cssText='display:block;margin-top:6px;font-size:13px;line-height:1.5';instructions.textContent=data.meta.instructions;badge.append(instructions);
+    if(data.meta.description){const description=document.createElement('small');description.style.cssText='display:block;margin-top:6px;font-size:13px;line-height:1.5';description.textContent=data.meta.description;badge.append(description)}
     // The native button already holds the original help callback; append after it renders.
     document.getElementById('helpBtn').addEventListener('click',()=>{const p=document.createElement('p');p.textContent=data.meta.instructions;document.getElementById('modalBox').prepend(p)});
     const back=document.createElement('a');back.href='../../index.html';back.className='editor-return';back.textContent='← กลับหน้าหลัก / ปรับแต่ง';document.body.append(back);

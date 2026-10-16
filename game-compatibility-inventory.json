@@ -1,0 +1,368 @@
+[
+  {
+    "game": "AR Career Quest ตามล่าหาอาชีพ",
+    "source": "games/AR Career Quest ตามล่าหาอาชีพ/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "question"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "AR mini city",
+    "source": "games/AR mini city/index.html",
+    "adapter": "mini-city",
+    "dataCandidates": [
+      "missions",
+      "tasks",
+      "food",
+      "missionByAnswer",
+      "gameData",
+      "item",
+      "task"
+    ],
+    "localScripts": [
+      "../../js/game-adapters.js?v=editor-2",
+      "../../js/adapters/mini-city-runtime.js?v=editor-2"
+    ]
+  },
+  {
+    "game": "AR Paint Academy",
+    "source": "games/AR Paint Academy/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "TOOLS",
+      "toolMap",
+      "LEVELS",
+      "missions",
+      "toolButton"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "AR คำตรงข้ามไทย",
+    "source": "games/AR คำตรงข้ามไทย/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "QUESTIONS"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar พิชิตตัวเลข",
+    "source": "games/ar พิชิตตัวเลข/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "questionIndex",
+      "item",
+      "isObjectOption"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "AR หนูน้อยเก็บชีสแสนอร่อย",
+    "source": "games/AR หนูน้อยเก็บชีสแสนอร่อย/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "levels",
+      "level",
+      "item"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "AR-bakery-pastry",
+    "source": "games/AR-bakery-pastry/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "LEVELS",
+      "trayWord"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar-computer",
+    "source": "games/ar-computer/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "gameData",
+      "currentLevelIndex",
+      "currentQuestionIndex",
+      "objects",
+      "draggedObject",
+      "uiLevelIntro",
+      "levelData",
+      "qData"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar-dino-fire-shooter",
+    "source": "games/ar-dino-fire-shooter/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "questionEl",
+      "usedWords",
+      "word",
+      "data",
+      "correctWord",
+      "wrongWord"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar-dressed",
+    "source": "games/ar-dressed/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "clothesData",
+      "items",
+      "item",
+      "itemIndex"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar-fishing-adventure",
+    "source": "games/ar-fishing-adventure/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "wordData"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar-good-food-v1",
+    "source": "games/ar-good-food-v1/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "goodFoods",
+      "badFoods",
+      "items"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar-good-food-v2",
+    "source": "games/ar-good-food-v2/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "goodFoods",
+      "badFoods",
+      "levels",
+      "currentLevel",
+      "level",
+      "items"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar-good-food-v3",
+    "source": "games/ar-good-food-v3/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "goodFoods",
+      "badFoods",
+      "levels",
+      "currentLevel",
+      "foods",
+      "levelNo",
+      "level",
+      "items"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "AR-How-Do-You-Feel",
+    "source": "games/AR-How-Do-You-Feel/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [],
+    "localScripts": []
+  },
+  {
+    "game": "ar-kob-game",
+    "source": "games/ar-kob-game/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [],
+    "localScripts": [
+      "./game.js"
+    ]
+  },
+  {
+    "game": "ar-kok-game",
+    "source": "games/ar-kok-game/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [],
+    "localScripts": [
+      "./game.js"
+    ]
+  },
+  {
+    "game": "ar-living-things-game-updated",
+    "source": "games/ar-living-things-game-updated/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [],
+    "localScripts": []
+  },
+  {
+    "game": "ar-mole-game",
+    "source": "games/ar-mole-game/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [],
+    "localScripts": [
+      "./game.js"
+    ]
+  },
+  {
+    "game": "ar-Multiplication",
+    "source": "games/ar-Multiplication/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "missionText",
+      "questionText",
+      "TOTAL_QUESTIONS",
+      "QUESTION_SECONDS",
+      "MISSION_TITLES",
+      "questions",
+      "questionStartMs",
+      "nextQuestionTimeout"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "AR-Safety-Hero-Academy",
+    "source": "games/AR-Safety-Hero-Academy/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "level"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar-sudoku",
+    "source": "games/ar-sudoku/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "levelText",
+      "levelCompleteText",
+      "nextLevelButton",
+      "LEVELS",
+      "currentLevel",
+      "puzzle",
+      "pendingNextLevel",
+      "bankSize"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar-sushi-game",
+    "source": "games/ar-sushi-game/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "WORDS",
+      "LEVEL_ORDER",
+      "level",
+      "item"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar-words-english",
+    "source": "games/ar-words-english/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "WORDS",
+      "questions",
+      "levelFor",
+      "level"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar-คำพังเพย",
+    "source": "games/ar-คำพังเพย/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "DATA",
+      "LEVELS",
+      "currentLevel",
+      "sameLevel",
+      "item",
+      "NEW_LEVELS",
+      "dataLevel"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "AR-สัตว์มีกระดูกสันหลัง",
+    "source": "games/AR-สัตว์มีกระดูกสันหลัง/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "animals",
+      "levels",
+      "questions"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "ar-เก็บผลไม้",
+    "source": "games/ar-เก็บผลไม้/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "fruits",
+      "junkFoods",
+      "objects",
+      "isFruit",
+      "item",
+      "itemBottom",
+      "itemCenterX"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "AR-แยกขยะด้วยมือ",
+    "source": "games/AR-แยกขยะด้วยมือ/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "roundItems"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "AR_ANATOMY_LAB_A01",
+    "source": "games/AR_ANATOMY_LAB_A01/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "missionVisited",
+      "missions",
+      "functionQuestions",
+      "scanMissions",
+      "missionScores",
+      "summaryMission",
+      "data",
+      "missionTotals"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "AR_Magnet_Lab",
+    "source": "games/AR_Magnet_Lab/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "objects",
+      "missionSlots",
+      "missionSlotsMobile",
+      "scene"
+    ],
+    "localScripts": []
+  },
+  {
+    "game": "AR_Opposite",
+    "source": "games/AR_Opposite/index.html",
+    "adapter": "not-supported",
+    "dataCandidates": [
+      "question"
+    ],
+    "localScripts": []
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "result": "PASS",
+  "browser": "Chrome headless",
+  "viewports": [
+    "375x812",
+    "768x1024",
+    "1440x1000"
+  ],
+  "fixtureGames": 31,
+  "jsErrors": [],
+  "externalWrites": [],
+  "tests": [
+    "VIP wrong/correct password, remembered login and logout",
+    "31 cards, categories, search, play/admin links",
+    "form validation and 15 grade options",
+    "original prompt and customization composition",
+    "native Clipboard API round-trip",
+    "clipboard fallback failure/success",
+    "output invalidation on edits/reopen",
+    "close buttons, Escape, backdrop and keyboard focus",
+    "no horizontal modal overflow and opening scroll position",
+    "versioned JS and CSS requests"
+  ],
+  "limitation": "Firestore SDK mocked; no production data accessed or written; AR game internals not exercised"
+}

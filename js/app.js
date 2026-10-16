@@ -307,22 +307,21 @@ function render() {
         ? "#"
         : `game-player.html?url=${encodeURIComponent(url)}&title=${encodeURIComponent(game.title || "เกม")}`;
 
-      const editorAdapter = window.GameAdapters?.find(game);
+      const editorReady = Boolean(window.GameAdapters && window.GameEditor);
+      const editorAdapter = editorReady ? window.GameAdapters.find(game) : null;
+      const editorNoteId = 'editor-status-' + encodeURIComponent(String(game.id));
+      const editorStatus = editorAdapter
+        ? ''
+        : editorReady ? 'ยังไม่รองรับการแก้ไขและทดลองเล่น' : 'โหลดตัวปรับแต่งไม่สำเร็จ กรุณารีเฟรชหน้า';
       const editorButton = editorAdapter
         ? `<button type="button" class="edit-game-button" data-edit-game-id="${safeText(game.id)}">⚙️ ปรับแต่งเกม</button>`
-        : `<span class="editor-unsupported">⚙️ ยังไม่รองรับการปรับแต่ง</span>`;
-
+        : `<button type="button" class="edit-game-button" disabled aria-describedby="${safeText(editorNoteId)}" title="${safeText(editorStatus)}">⚙️ ปรับแต่งเกม</button>`;
+      const editorNote = editorStatus
+        ? `<p id="${safeText(editorNoteId)}" class="editor-unsupported">${safeText(editorStatus)}</p>`
+        : '<p class="editor-supported">ปรับข้อมูลและทดลองเล่นได้ • Mini City</p>';
       const promptButton = hasPrompt(game)
-        ? `
-          <button
-            type="button"
-            class="prompt-button"
-            data-game-id="${safeText(game.id)}"
-          >
-            📋 Prompt
-          </button>
-        `
-        : "";
+        ? `<button type="button" class="prompt-button" data-game-id="${safeText(game.id)}">📋 Prompt</button>`
+        : '<button type="button" class="prompt-button" disabled title="เกมนี้ยังไม่มี Prompt ต้นฉบับ">📋 Prompt</button>';
 
       return `
         <article
@@ -347,7 +346,7 @@ function render() {
             <p>${safeText(truncate(game.description || "", 92))}</p>
 
             <div class="card-bottom">
-              <div class="game-buttons ${promptButton ? "" : "single"}">
+              <div class="game-buttons">
                 ${promptButton}
                 ${editorButton}
                 <a
@@ -358,6 +357,7 @@ function render() {
                   ${soon ? "เร็ว ๆ นี้" : "▶ เล่นเกม"}
                 </a>
               </div>
+              ${editorNote}
             </div>
           </div>
         </article>
@@ -365,14 +365,14 @@ function render() {
     })
     .join("");
 
-  document.querySelectorAll(".edit-game-button").forEach(button => {
+  document.querySelectorAll(".edit-game-button:not(:disabled)").forEach(button => {
     button.addEventListener("click", () => {
       const game = games.find(item => String(item.id) === button.dataset.editGameId);
       if (game) window.GameEditor.open(game, button);
     });
   });
 
-  document.querySelectorAll(".prompt-button")
+  document.querySelectorAll(".prompt-button:not(:disabled)")
     .forEach(button => {
       button.addEventListener("click", () => {
         openPrompt(button.dataset.gameId);

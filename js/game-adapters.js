@@ -24,7 +24,7 @@
   function validate(input) {
     if(!input || input.schemaVersion!==1 || input.adapterId!=='mini-city') fail('ไฟล์นี้ไม่ใช่ข้อมูล Mini City รุ่นที่รองรับ');
     const meta=input.meta||{};
-    const data={schemaVersion:1,adapterId:'mini-city',meta:{title:text(meta.title,'ชื่อเกม',200),subject:text(meta.subject,'วิชา',100),grade:text(meta.grade,'ระดับชั้น',50),topic:text(meta.topic,'หัวข้อ',500),instructions:text(meta.instructions,'คำแนะนำ',2000),praise:text(meta.praise,'คำชม',500),cover:image(meta.cover||'')},questions:[]};
+    const data={schemaVersion:1,adapterId:'mini-city',meta:{title:text(meta.title,'ชื่อเกม',200),description:text(meta.description||'','คำอธิบายเกม',2000,true),subject:text(meta.subject,'วิชา',100),grade:text(meta.grade,'ระดับชั้น',50),topic:text(meta.topic,'หัวข้อ',500),instructions:text(meta.instructions,'คำแนะนำ',2000),praise:text(meta.praise,'คำชม',500),cover:image(meta.cover||'')},questions:[]};
     if(!Array.isArray(input.questions)||input.questions.length<5||input.questions.length>100) fail('ต้องมีภารกิจอย่างน้อย 1 ข้อต่อด่าน และรวมไม่เกิน 100 ข้อ');
     const ids=new Set();
     for(const q of input.questions) {
@@ -70,7 +70,7 @@
   }
   const entry={id:'mini-city',zones,key,runKey,validate,matches:normalizeLocation,
     resolveImage:value=>value?new URL(value,root).href:'',
-    async defaults(){const r=await fetch(new URL('js/adapters/mini-city-defaults.json?v=editor-1',root));if(!r.ok)throw Error('โหลดข้อมูลต้นฉบับไม่สำเร็จ');return validate(await r.json())},
+    async defaults(){const r=await fetch(new URL('js/adapters/mini-city-defaults.json?v=editor-2',root));if(!r.ok)throw Error('โหลดข้อมูลต้นฉบับไม่สำเร็จ');return validate(await r.json())},
     read(){const value=localStorage.getItem(key);return value?validate(JSON.parse(value)):null},
     save(value){const data=validate(value);try{localStorage.setItem(key,JSON.stringify(data))}catch{fail('บันทึกไม่ได้ พื้นที่เบราว์เซอร์เต็มหรือไม่อนุญาต กรุณาส่งออก JSON')}return data},
     launch(value){const data=validate(value);try{localStorage.setItem(runKey,JSON.stringify(data))}catch{fail('เตรียมเกมไม่ได้ พื้นที่เบราว์เซอร์เต็ม กรุณาลดรูปภาพ')}return new URL('games/AR mini city/index.html?editor=mini-city',root).href},
