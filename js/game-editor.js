@@ -245,8 +245,10 @@
     }catch(error){if(token===session&&!controller.signal.aborted){announce('ทดลองเล่นไม่ได้: '+error.message,true);focusProblem(error)}}
     finally{if(operation===controller){operation=null;playButton.disabled=false;downloadButton.disabled=false;resetButton.disabled=false;body.inert=false}}
   }
+  let closeAuthorized=false;
   function finishClose(){
     if(!dialog.open)return;
+    closeAuthorized=true;
     if(closeConfirmation.open)closeConfirmation.close();
     confirmationReturnFocus=null;
     if(!playPreview.hidden)stopPreview();
@@ -282,7 +284,7 @@
   function restoreOriginal(){if(!draft||!confirm('ต้องการคืนค่าข้อมูลเกมต้นฉบับหรือไม่? การเปลี่ยนแปลงที่ยังไม่ได้ดาวน์โหลดจะหายไป'))return;operation?.abort();operation=null;draft=adapter.clone(original);releaseImages();imageChecks.clear();activeZone='shopping';activeId=draft.questions.find(q=>q.zone===activeZone).id;missionsMounted=false;imagesMounted=false;details.replaceChildren();list.replaceChildren();imagePanel.replaceChildren();workspace.dataset.details='false';renderMeta();selectSection(selectedSection);announce('คืนค่าข้อมูลต้นฉบับครบทุกส่วนแล้ว',false,true)}
 
   const closeButton=button('×',close,'editor-close');closeButton.id='editorCloseBtn';closeButton.setAttribute('aria-label','ปิดหน้าต่างปรับแต่งเกม');
-  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • MINI CITY • รุ่น 20261016-12'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้เนื้อหา แล้วทดลองเล่นด้วยระบบเกมเดิม'})]),closeButton]);
+  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • MINI CITY • รุ่น 20261016-13'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้เนื้อหา แล้วทดลองเล่นด้วยระบบเกมเดิม'})]),closeButton]);
   const fixedHeading=el('div',{class:'editor-fixed-heading'},[heading,status]);
   const toolbar=el('div',{class:'editor-toolbar'},[el('h3',{text:'จัดการคำถามและคำตอบ'}),count,button('+ เพิ่มภารกิจ',()=>addQuestion(false))]);
   const workspace=el('div',{class:'editor-workspace'},[list,details]);workspace.dataset.details='false';
@@ -298,8 +300,23 @@
   dialog.append(fixedHeading,sectionTabs,body,footer,playPreview);
   dialog.setAttribute('aria-labelledby','editorHeading');
   dialog.addEventListener('cancel',event=>{event.preventDefault();if(!playPreview.hidden)stopPreview();else close()});
-  dialog.addEventListener('close',()=>{if(!dialog.open){if(closeConfirmation.open)closeConfirmation.close();confirmationReturnFocus=null;lastEditorFocus=null;document.body.style.overflow=pageOverflow}});
-  dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)close()}});
+  dialog.addEventListener('close',()=>{
+    const authorized=closeAuthorized;closeAuthorized=false;
+    if(dialog.open)return;
+    // Keep the same DOM and Working Copy if a native/external close bypassed our close flow.
+    // Focus/visibility changes never dispose data, re-render fields or open a new session.
+    if(!authorized&&(draft||loading)){
+      const target=lastEditorFocus,confirming=closeConfirmation.open;
+      if(confirming)closeConfirmation.close();
+      dialog.showModal();
+      if(confirming){closeConfirmation.showModal();continueButton.focus({preventScroll:true})}
+      else if(target?.isConnected&&target.getClientRects().length&&!target.disabled&&!target.closest('[inert]'))target.focus({preventScroll:true});
+      return;
+    }
+    if(closeConfirmation.open)closeConfirmation.close();
+    confirmationReturnFocus=null;lastEditorFocus=null;document.body.style.overflow=pageOverflow;
+  });
+  // Backdrop clicks can be window-activation clicks; only X/Escape request closing.
   document.body.append(dialog,closeConfirmation);
   window.GameEditor={async open(game,button){
     if(loading||dialog.open)return;adapter=GameAdapters.find(game);if(!adapter)return;
