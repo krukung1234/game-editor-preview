@@ -416,7 +416,8 @@ function openPrompt(gameId) {
   promptModal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
   site.inert = true;
-  promptSubject.focus();
+  promptSubject.focus({ preventScroll: true });
+  promptModal.querySelector(".prompt-modal-box").scrollTop = 0;
 }
 
 promptForm.addEventListener("input", resetPromptOutput);
@@ -430,7 +431,7 @@ promptForm.addEventListener("submit", event => {
   resetPromptOutput();
   promptText.value = [
     "ปรับปรุงเกมต้นฉบับโดยใช้โค้ดเดิมเป็นฐาน ห้ามสร้างเกมใหม่ทดแทนหรือเปลี่ยนโครงสร้างโดยไม่จำเป็น",
-    "ชื่อเกมต้นฉบับ: " + promptOriginal.value,
+    "ชื่อเกมต้นฉบับ: " + (selectedPromptGame.title || "เกม"),
     "ชื่อเกมใหม่: " + promptNewName.value.trim(),
     "วิชา: " + promptSubject.value,
     "ระดับชั้น: " + promptGrade.value,
@@ -462,7 +463,7 @@ document.addEventListener("keydown", event => {
   if (!promptModal.classList.contains("show")) return;
   if (event.key === "Escape") { event.preventDefault(); closePrompt(); }
   if (event.key === "Tab") {
-    const items = [...promptModal.querySelectorAll('button:not(:disabled), input, select, textarea')];
+    const items = [...promptModal.querySelectorAll('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)')];
     const first = items[0], last = items[items.length-1];
     if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }

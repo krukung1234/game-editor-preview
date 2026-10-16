@@ -90,3 +90,11 @@ footer{padding:36px;text-align:center;color:#60657e;font-weight:800}
 #promptHint{color:var(--muted);font-size:14px}.copy-message.error{color:#9d2222;background:#fff0f0}
 .prompt-modal-box{max-height:calc(100dvh - 44px);overscroll-behavior:contain}
 @media(max-width:620px){.prompt-form{grid-template-columns:minmax(0,1fr)}.prompt-modal-box{max-height:calc(100dvh - 24px)}.prompt-form input,.prompt-form select,.prompt-form textarea{font-size:16px}}
+
+/* Prompt release 20261016-2 */
+.prompt-version{display:inline-block;margin-bottom:8px;padding:4px 10px;border-radius:999px;background:#eee9ff;color:#57439a;font-size:12px;font-weight:700}
+.prompt-form{padding:18px;border:1px solid #e8e1f8;border-radius:18px;background:#fcfaff}
+.prompt-form label{line-height:1.6}.prompt-form input,.prompt-form select{min-height:48px}
+.prompt-modal-box>label[for="promptText"]{display:block;margin:20px 0 8px;font-weight:700}
+.prompt-modal-heading h2{overflow-wrap:anywhere}#promptText{min-height:260px}
+@media(max-width:620px){.prompt-form{padding:14px;gap:14px}.prompt-modal-heading{gap:10px}.prompt-version{font-size:11px}.prompt-icon{display:none}}
