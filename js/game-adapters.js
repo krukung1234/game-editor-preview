@@ -42,6 +42,7 @@
         const price=Number(o.price||0);if(!Number.isFinite(price)||price<0||price>100000) fail('ราคาต้องเป็น 0–100000');
         n.options.push({label:text(o.label,'ตัวเลือก',200),image:image(o.image||''),correct:o.correct,price});
       }
+      if(new Set(n.options.map(o=>o.label.normalize('NFKC').toLocaleLowerCase())).size!==n.options.length)fail('ตัวเลือกซ้ำ กรุณาใช้ข้อความที่แตกต่างกันในแต่ละข้อ');
       const answers=n.options.filter(o=>o.correct).length;
       if(n.zone==='education'||(n.zone==='food'&&mode==='list')) {if(answers!==3)fail('ด่านจัดกระเป๋า/ซื้อของตามรายการต้องมีคำตอบถูก 3 ข้อ');}
       else if(n.zone==='food') {
@@ -72,10 +73,16 @@
   const entry={id:'mini-city',zones,key,runKey,validate,matches:normalizeLocation,
     resolveImage:value=>value?new URL(image(value),root).href:'',
     fallbackImage:new URL('images/editor-image-placeholder.svg',root).href,
-    async defaults(){const r=await fetch(new URL('js/adapters/mini-city-defaults.json?v=personal-1',root),{cache:'no-store',credentials:'omit'});if(!r.ok)throw Error('โหลดข้อมูลต้นฉบับไม่สำเร็จ');return validate(await r.json())},
-    read(){const value=localStorage.getItem(key);return value?validate(JSON.parse(value)):null},
-    save(value){const data=validate(value);try{localStorage.setItem(key,JSON.stringify(data))}catch{fail('บันทึกไม่ได้ พื้นที่เบราว์เซอร์เต็มหรือไม่อนุญาต กรุณาส่งออก JSON')}return data},
-    launch(value){const data=validate(value),id=crypto.randomUUID();try{sessionStorage.setItem(runKey,JSON.stringify({id,data}))}catch{fail('เตรียมเกมไม่ได้ พื้นที่ของแท็บเต็ม กรุณาส่งออก JSON หรือลดรูปภาพ')}const url=new URL('personal-game-player.html',root);url.searchParams.set('editor','mini-city');url.searchParams.set('draft',id);return url.href},
+    async defaults(){const r=await fetch(new URL('js/adapters/mini-city-defaults.json?v=editor-20261016-8',root),{cache:'no-store',credentials:'omit'});if(!r.ok)throw Error('โหลดข้อมูลต้นฉบับไม่สำเร็จ');return validate(await r.json())},
+    launch(value){const data=validate(value),token=crypto.randomUUID(),url=new URL('personal-game-player.html',root);url.searchParams.set('editor','mini-city');url.searchParams.set('preview',token);return {url:url.href,data,token}},
+    connectPreview(frame,run,onClose){
+      const receive=event=>{
+        if(event.origin!==root.origin||event.source!==frame.contentWindow||event.data?.token!==run.token)return;
+        if(event.data.type==='mini-city-request')frame.contentWindow.postMessage({type:'mini-city-data',token:run.token,data:clone(run.data)},root.origin);
+        if(event.data.type==='mini-city-close')onClose();
+      };
+      window.addEventListener('message',receive);return()=>window.removeEventListener('message',receive);
+    },
     clone,image
   };
   const registry=new Map([['mini-city',entry]]);

@@ -1,0 +1,18 @@
+/* Public entry to the existing editor: local source catalogue, no account or database SDK. */
+window.APP_CONFIG={CATEGORIES:['สังคมศึกษา','ภาษาไทย','คณิตศาสตร์','วิทยาศาสตร์','ภาษาอังกฤษ','สุขศึกษา','ศิลปะ','การงานอาชีพ','วิทยาการคำนวณ','อื่น ๆ']};
+(async()=>{
+  const status=document.getElementById('catalogueStatus');
+  try{
+    const response=await fetch('js/editor-catalogue.json?v=editor-20261016-8',{credentials:'omit',cache:'no-store'});
+    if(!response.ok)throw Error('อ่านรายการเกมไม่ได้ กรุณารีเฟรชหน้า');
+    const catalogue=await response.json(),container=document.getElementById('editorCatalogue');
+    for(const game of catalogue){
+      const card=document.createElement('article'),image=document.createElement('img'),heading=document.createElement('h2'),note=document.createElement('p'),button=document.createElement('button');
+      image.src='games/'+encodeURIComponent(game.folder)+'/cover.png';image.alt=game.title;image.loading='lazy';image.addEventListener('error',()=>{image.hidden=true;note.textContent+=' • ภาพปกไม่พร้อมใช้งาน'},{once:true});
+      heading.textContent=game.title;const adapter=GameAdapters.find(game);button.type='button';button.className='editor-button primary';button.disabled=!adapter;
+      button.textContent=adapter?'⚙️ ปรับแต่งเกม':'⚙️ ยังไม่รองรับ';note.textContent=adapter?'ปรับแต่ง ทดลองเล่น และดาวน์โหลด ZIP ด้วยระบบเกมเดิม':'ยังไม่มี Adapter ที่ทดสอบการแก้ไขและดาวน์โหลดจริง จึงยังไม่เปิดให้ปรับแต่ง';
+      button.addEventListener('click',()=>GameEditor.open(game,button));card.append(image,heading,note,button);container.append(card);
+    }
+    status.textContent=catalogue.length+' เกม • รองรับการปรับแต่งและดาวน์โหลด AR Mini City';
+  }catch(error){status.textContent=error.message}
+})();

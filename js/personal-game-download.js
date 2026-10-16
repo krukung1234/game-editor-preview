@@ -19,12 +19,14 @@
     return new Blob([...parts,...directory,end],{type:'application/zip'});
   }
   async function get(url){
-    const r=await fetch(url,{method:'GET',credentials:'omit',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(60000)});
+    let r;
+    try{r=await fetch(url,{method:'GET',credentials:'omit',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(60000)})}
+    catch{throw Error('โหลดไฟล์สำหรับแพ็กเกมไม่ได้: '+decodeURIComponent(new URL(url,root).pathname)+' • กรุณาตรวจอินเทอร์เน็ต สิทธิ์ CORS และลองใหม่ ไม่มีการสร้าง ZIP ที่ขาดไฟล์')}
     if(!r.ok||r.type==='opaque')throw Error('โหลดไฟล์สำหรับแพ็กเกมไม่ได้ ('+r.status+') กรุณาตรวจเครือข่ายและไฟล์ที่เผยแพร่');
     return r;
   }
   async function download(adapter,input,progress=()=>{}){
-    const data=adapter.validate(input),backup=JSON.stringify(data,null,2),files=new Map();let total=0;
+    const data=adapter.validate(input),files=new Map();let total=0;
     const add=(name,bytes)=>{
       if(!name||name.startsWith('/')||name.split('/').some(s=>s==='..')||name.includes('\\'))throw Error('เส้นทางไฟล์ไม่ถูกต้อง');
       if(files.has(name))return;
@@ -70,19 +72,19 @@
     for(const q of data.questions){q.image=await collectImage(q.image);for(const o of q.options)o.image=await collectImage(o.image)}
     const id=crypto.randomUUID();
     text('personal-game-data.js','window.MiniCityPersonalGame='+JSON.stringify({version:1,id,data}).replaceAll('<','\\u003c')+';\n');
-    text('my-game.json',backup);
     const page=dom.implementation.createHTMLDocument(data.meta.title);page.documentElement.lang='th';page.head.append(Object.assign(page.createElement('meta'),{name:'viewport',content:'width=device-width, initial-scale=1'}));
     const heading=page.createElement('h1');heading.textContent=data.meta.title;
     const note=page.createElement('p');note.textContent='เกมส่วนตัวของคุณ • เล่นด้วยคลิก/แตะได้หลังแตก ZIP ครบทุกไฟล์ • กล้อง/Hand Tracking แนะนำเปิดผ่าน localhost หรือ HTTPS และอนุญาตกล้อง';
     const link=page.createElement('a');link.href='games/AR%20mini%20city/index.html';link.textContent='▶ เปิดเกมของฉัน';link.style.cssText='display:inline-block;background:#6940d9;color:white;padding:18px 30px;border-radius:14px;text-decoration:none;font-size:24px';
     page.body.style.cssText='font-family:Tahoma,sans-serif;max-width:760px;margin:50px auto;padding:24px;color:#28164c;line-height:1.8';page.body.append(heading,note,link);
     text('index.html','<!DOCTYPE html>\n'+page.documentElement.outerHTML);
-    text('README-TH.txt',`เกมส่วนตัว: ${input.meta.title}\n\n1. แตก ZIP ทั้งหมดก่อน เปิด index.html แล้วกดเปิดเกม\n2. คลิก/แตะ ภารกิจ คะแนน เสียงและภาพใช้ไฟล์ที่รวมมา ไม่ต้องเชื่อม GitHub หรือ Firebase\n3. รวม MediaPipe Hands 0.4.1675469240 และโมเดล/WASM แล้ว หากต้องการกล้อง/Hand Tracking ให้เปิดโฟลเดอร์นี้ผ่าน localhost หรือ HTTPS และอนุญาตกล้อง การเปิด file:// อาจเล่นคลิกได้แต่ browser บล็อกโหลดโมเดล AR\n4. ถ้ามี Python: เปิด terminal ในโฟลเดอร์นี้ รัน python -m http.server 8000 แล้วเปิด http://localhost:8000/ (หลังติดตั้ง Python แล้วไม่ต้องใช้อินเทอร์เน็ต)\n5. อุปกรณ์ต้องรองรับกล้อง/WebGL/WASM เสียงพูดภาษาไทยขึ้นกับเสียงที่ติดตั้งในเครื่อง การอนุญาตกล้องต้องได้รับจากผู้ใช้\n6. my-game.json คือสำรองข้อมูลสำหรับนำเข้า Editor บนเว็บเพื่อแก้ต่อ personal-game-data.js เป็นข้อมูลสำหรับเล่นแพ็กนี้\n7. ไม่ส่งการบันทึกหรือคะแนนกลับไปยัง GitHub/Firestore ฉบับนี้แยกจากต้นฉบับและผู้ใช้อื่น\n8. ควรเก็บไฟล์นี้เป็นการใช้ส่วนตัวตามสิทธิ์ของสื่อ/เกมต้นฉบับ และคงไฟล์ license ของ MediaPipe ที่รวมมา\n`);
+    text('README-TH.txt',`เกมส่วนตัว: ${input.meta.title}\n\n1. แตก ZIP ทั้งหมดก่อน เปิด index.html แล้วกดเปิดเกม\n2. คลิก/แตะ ภารกิจ คะแนน เสียงและภาพใช้ไฟล์ที่รวมมา ไม่ต้องเชื่อม GitHub หรือ Firebase\n3. รวม MediaPipe Hands 0.4.1675469240 และโมเดล/WASM แล้ว หากต้องการกล้อง/Hand Tracking ให้เปิดโฟลเดอร์นี้ผ่าน localhost หรือ HTTPS และอนุญาตกล้อง การเปิด file:// อาจเล่นคลิกได้แต่ browser บล็อกโหลดโมเดล AR\n4. ถ้ามี Python: เปิด terminal ในโฟลเดอร์นี้ รัน python -m http.server 8000 แล้วเปิด http://localhost:8000/ (หลังติดตั้ง Python แล้วไม่ต้องใช้อินเทอร์เน็ต)\n5. อุปกรณ์ต้องรองรับกล้อง/WebGL/WASM เสียงพูดภาษาไทยขึ้นกับเสียงที่ติดตั้งในเครื่อง การอนุญาตกล้องต้องได้รับจากผู้ใช้\n6. personal-game-data.js เป็นข้อมูลฉบับปรับแต่งสำหรับเล่นแพ็กนี้ บนเว็บไซต์ไม่มีระบบบันทึกฉบับร่างหรือนำเข้า/ส่งออก JSON\n7. ไม่ส่งการบันทึกหรือคะแนนกลับไปยัง GitHub/Firestore ฉบับนี้แยกจากต้นฉบับและผู้ใช้อื่น\n8. ควรเก็บไฟล์นี้เป็นการใช้ส่วนตัวตามสิทธิ์ของสื่อ/เกมต้นฉบับ และคงไฟล์ license ของ MediaPipe ที่รวมมา\n`);
     const contents=[];for(const [name,bytes] of files)contents.push({path:name,size:bytes.length,sha256:await digest(bytes)});
     text('PACKAGE-MANIFEST.json',JSON.stringify({version:1,adapterId:adapter.id,id,mediaPipeVersion:'0.4.1675469240',files:contents},null,2));
     progress('กำลังสร้าง ZIP • '+(total/1024/1024).toFixed(1)+' MB');
     await new Promise(resolve=>setTimeout(resolve,0));
-    const blob=zip(files),href=URL.createObjectURL(blob),a=document.createElement('a');a.href=href;a.download='my-mini-city-game.zip';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),60000);
+    const safeName=[...data.meta.title.normalize('NFKC')].map(char=>char.charCodeAt(0)<32||'<>:"/\\|?*'.includes(char)?'-':char).join('').replace(/[. ]+$/g,'').slice(0,100)||'my-ar-game';
+    const blob=zip(files),href=URL.createObjectURL(blob),a=document.createElement('a');a.href=href;a.download=safeName+'.zip';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),60000);
   }
   window.PersonalGameDownload={download};
 })();
