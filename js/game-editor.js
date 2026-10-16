@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const el=(tag,props={},children=[])=>{const n=document.createElement(tag);for(const [k,v] of Object.entries(props)){if(k==='class')n.className=v;else if(k.startsWith('on'))n.addEventListener(k.slice(2),v);else if(k==='text')n.textContent=v;else n[k]=v}n.append(...children);return n};
-  let adapter,draft,original,activeZone='shopping',activeId,opener,dirty=false,loading=false;
+  let adapter,draft,original,activeZone='shopping',activeId,opener,loading=false;
   const dialog=el('dialog',{id:'gameEditor',class:'game-editor-dialog'});
   const status=el('p',{id:'editorStatus',class:'editor-status',role:'status'});
   const details=el('div',{id:'editorQuestionDetails'});
@@ -16,14 +16,14 @@
   const tabs=el('div',{class:'editor-zones'});
   const body=el('div',{id:'editorBody',class:'editor-body'});
   let pageOverflow='';
-  let previewCleanup=null,downloadedSnapshot=null;
+  let previewCleanup=null;
   const playPreview=el('div',{class:'editor-play-preview'});playPreview.hidden=true;
   let imageSequence=0;
   const freezeOriginal=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(freezeOriginal);Object.freeze(value)}return value};
   const uid=()=>crypto.randomUUID().replaceAll('-','');
   let statusTimer;
   const announce=(message,error=false,temporary=false)=>{clearTimeout(statusTimer);status.textContent=message;status.classList.toggle('error',error);if(temporary)statusTimer=setTimeout(()=>{status.textContent=''},6000)};
-  const mark=()=>{dirty=true;announce('กำลังแก้ไขสำเนาชั่วคราว • ทดลองเล่นแล้วดาวน์โหลดก่อนปิดหน้าต่าง')};
+  const mark=()=>{announce('กำลังแก้ไขสำเนาชั่วคราว • ทดลองเล่นแล้วดาวน์โหลดก่อนปิดหน้าต่าง')};
   const button=(text,fn,className='editor-button')=>el('button',{type:'button',text,class:className,onclick:fn});
   function field(label,id,value,oninput,type='text'){
     const props={id,value,oninput:event=>oninput(event.target.value)};
@@ -38,7 +38,7 @@
     return el('div',{class:'editor-field'},[el('label',{htmlFor:id,text:label}),select]);
   }
   function current(){return draft.questions.find(q=>q.id===activeId)}
-  function changed(){if(!dirty||!draft)return false;const value=JSON.stringify(draft);return value!==JSON.stringify(original)&&value!==downloadedSnapshot}
+  function changed(){return !!draft&&!!original&&JSON.stringify(draft)!==JSON.stringify(original)}
   function releaseImages(all=false){const used=all?new Set():new Set([draft?.meta.cover,...(draft?.questions||[]).flatMap(q=>[q.image,...q.options.map(o=>o.image)])]);for(const url of imageFiles.keys())if(!used.has(url)){URL.revokeObjectURL(url);imageFiles.delete(url);imageChecks.delete(url)}}
   async function loadImage(file){
     if(!file)return '';
@@ -205,9 +205,9 @@
     if(operation||pendingImages||!draft)return;
     const controller=new AbortController(),token=session;operation=controller;downloadButton.disabled=true;playButton.disabled=true;resetButton.disabled=true;body.inert=true;
     try{
-      announce('กำลังตรวจข้อมูลและรูปภาพ…');const data=await ready(controller.signal),snapshot=JSON.stringify(draft);
+      announce('กำลังตรวจข้อมูลและรูปภาพ…');const data=await ready(controller.signal);
       await PersonalGameDownload.download(adapter,data,message=>{if(token===session)announce(message)},{signal:controller.signal});
-      if(token!==session)return;downloadedSnapshot=snapshot;dirty=false;announce('ส่ง ZIP ให้เบราว์เซอร์แล้ว • แตกไฟล์แล้วเปิด index.html ดูวิธีใช้กล้องในเกม',false,true);
+      if(token!==session)return;announce('ส่ง ZIP ให้เบราว์เซอร์แล้ว • แตกไฟล์แล้วเปิด index.html ดูวิธีใช้กล้องในเกม',false,true);
     }catch(error){if(token===session&&!controller.signal.aborted){announce('ดาวน์โหลดไม่สำเร็จ: '+error.message,true);focusProblem(error)}}
     finally{if(operation===controller){operation=null;body.inert=false;downloadButton.disabled=false;playButton.disabled=false;resetButton.disabled=false}}
   }
@@ -222,16 +222,44 @@
     }catch(error){if(token===session&&!controller.signal.aborted){announce('ทดลองเล่นไม่ได้: '+error.message,true);focusProblem(error)}}
     finally{if(operation===controller){operation=null;playButton.disabled=false;downloadButton.disabled=false;resetButton.disabled=false;body.inert=false}}
   }
-  function close(){
-    if(changed()&&!confirm('ข้อมูลที่ปรับแต่งไว้จะหายไปหากปิดหน้าต่าง ต้องการปิดหรือไม่?'))return;
+  function finishClose(){
+    if(!dialog.open)return;
+    if(closeConfirmation.open)closeConfirmation.close();
+    confirmationReturnFocus=null;
     if(!playPreview.hidden)stopPreview();
-    session++;operation?.abort();operation=null;pendingImages=0;loading=false;draft=null;original=null;downloadedSnapshot=null;meta.replaceChildren();details.replaceChildren();list.replaceChildren();tabs.replaceChildren();imagePanel.replaceChildren();releaseImages(true);for(const img of activeImages)img.removeAttribute('src');activeImages.clear();imageChecks.clear();dirty=false;clearTimeout(statusTimer);
+    session++;operation?.abort();operation=null;pendingImages=0;loading=false;draft=null;original=null;meta.replaceChildren();details.replaceChildren();list.replaceChildren();tabs.replaceChildren();imagePanel.replaceChildren();releaseImages(true);for(const img of activeImages)img.removeAttribute('src');activeImages.clear();imageChecks.clear();clearTimeout(statusTimer);
     document.body.style.overflow=pageOverflow;dialog.close();opener?.focus();
   }
-  function restoreOriginal(){if(!draft||!confirm('ต้องการคืนค่าข้อมูลเกมต้นฉบับหรือไม่? การเปลี่ยนแปลงที่ยังไม่ได้ดาวน์โหลดจะหายไป'))return;operation?.abort();operation=null;draft=adapter.clone(original);releaseImages();imageChecks.clear();dirty=false;downloadedSnapshot=null;activeZone='shopping';activeId=draft.questions.find(q=>q.zone===activeZone).id;missionsMounted=false;imagesMounted=false;details.replaceChildren();list.replaceChildren();imagePanel.replaceChildren();workspace.dataset.details='false';renderMeta();selectSection(selectedSection);announce('คืนค่าข้อมูลต้นฉบับครบทุกส่วนแล้ว',false,true)}
+  let confirmationReturnFocus=null,lastEditorFocus=null;
+  const closeConfirmation=el('dialog',{id:'editorCloseConfirmation',class:'editor-close-confirmation',role:'alertdialog'});
+  closeConfirmation.setAttribute('aria-modal','true');closeConfirmation.setAttribute('aria-labelledby','editorCloseConfirmationTitle');closeConfirmation.setAttribute('aria-describedby','editorCloseConfirmationMessage');
+  function continueEditing(){
+    if(!closeConfirmation.open)return;
+    closeConfirmation.close();
+    const target=confirmationReturnFocus;confirmationReturnFocus=null;
+    if(dialog.open){if(target?.isConnected&&target.getClientRects().length&&!target.disabled&&!target.closest('[inert]'))target.focus({preventScroll:true});else closeButton.focus({preventScroll:true})}
+  }
+  const continueButton=button('แก้ไขต่อ',continueEditing);continueButton.id='editorContinueEditing';
+  const confirmCloseButton=button('ยืนยันการปิด',finishClose,'editor-button primary');confirmCloseButton.id='editorConfirmClose';
+  closeConfirmation.append(el('h2',{id:'editorCloseConfirmationTitle',text:'ยืนยันการปิดหน้าต่าง'}),el('p',{id:'editorCloseConfirmationMessage',text:'หากปิดหน้าต่างตอนนี้ การเปลี่ยนแปลงทั้งหมดจะหายไป และเมื่อเปิดใหม่จะกลับเป็นเกมต้นฉบับ'}),el('div',{class:'editor-close-confirmation-actions'},[continueButton,confirmCloseButton]));
+  closeConfirmation.addEventListener('cancel',event=>{event.preventDefault();event.stopPropagation();continueEditing()});
+  closeConfirmation.addEventListener('keydown',event=>{
+    if(event.key!=='Tab')return;
+    if(event.shiftKey&&document.activeElement===continueButton){event.preventDefault();confirmCloseButton.focus()}
+    else if(!event.shiftKey&&document.activeElement===confirmCloseButton){event.preventDefault();continueButton.focus()}
+  });
+  dialog.addEventListener('focusin',event=>{if(event.target!==dialog)lastEditorFocus=event.target});
+  function close(){
+    if(!dialog.open||closeConfirmation.open)return;
+    if(!changed()){finishClose();return}
+    const focused=document.activeElement;
+    confirmationReturnFocus=dialog.contains(focused)&&focused!==dialog?focused:lastEditorFocus;
+    closeConfirmation.showModal();continueButton.focus({preventScroll:true});
+  }
+  function restoreOriginal(){if(!draft||!confirm('ต้องการคืนค่าข้อมูลเกมต้นฉบับหรือไม่? การเปลี่ยนแปลงที่ยังไม่ได้ดาวน์โหลดจะหายไป'))return;operation?.abort();operation=null;draft=adapter.clone(original);releaseImages();imageChecks.clear();activeZone='shopping';activeId=draft.questions.find(q=>q.zone===activeZone).id;missionsMounted=false;imagesMounted=false;details.replaceChildren();list.replaceChildren();imagePanel.replaceChildren();workspace.dataset.details='false';renderMeta();selectSection(selectedSection);announce('คืนค่าข้อมูลต้นฉบับครบทุกส่วนแล้ว',false,true)}
 
   const closeButton=button('×',close,'editor-close');closeButton.id='editorCloseBtn';closeButton.setAttribute('aria-label','ปิดหน้าต่างปรับแต่งเกม');
-  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • MINI CITY • รุ่น 20261016-10'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้เนื้อหา แล้วทดลองเล่นด้วยระบบเกมเดิม'})]),closeButton]);
+  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • MINI CITY • รุ่น 20261016-11'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้เนื้อหา แล้วทดลองเล่นด้วยระบบเกมเดิม'})]),closeButton]);
   const fixedHeading=el('div',{class:'editor-fixed-heading'},[heading,status]);
   const toolbar=el('div',{class:'editor-toolbar'},[el('h3',{text:'จัดการคำถามและคำตอบ'}),count,button('+ เพิ่มภารกิจ',()=>addQuestion(false))]);
   const workspace=el('div',{class:'editor-workspace'},[list,details]);workspace.dataset.details='false';
@@ -247,17 +275,17 @@
   dialog.append(fixedHeading,sectionTabs,body,footer,playPreview);
   dialog.setAttribute('aria-labelledby','editorHeading');
   dialog.addEventListener('cancel',event=>{event.preventDefault();if(!playPreview.hidden)stopPreview();else close()});
-  dialog.addEventListener('close',()=>{if(!dialog.open){document.body.style.overflow=pageOverflow}});
+  dialog.addEventListener('close',()=>{if(!dialog.open){if(closeConfirmation.open)closeConfirmation.close();confirmationReturnFocus=null;lastEditorFocus=null;document.body.style.overflow=pageOverflow}});
   dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)close()}});
-  document.body.append(dialog);
+  document.body.append(dialog,closeConfirmation);
   window.GameEditor={async open(game,button){
     if(loading||dialog.open)return;adapter=GameAdapters.find(game);if(!adapter)return;
     loading=true;opener=button;session++;const token=session,controller=new AbortController();operation=controller;
     pageOverflow=document.body.style.overflow;document.body.style.overflow='hidden';body.hidden=true;footer.hidden=true;sectionTabs.hidden=true;playPreview.hidden=true;dialog.showModal();announce('กำลังอ่านข้อมูลต้นฉบับของเกม…');
     try{
       const source=await adapter.defaults({signal:controller.signal});if(token!==session)return;
-      original=freezeOriginal({...source,meta:{...source.meta,description:game.description||source.meta.description}});draft=adapter.clone(original);dirty=false;activeZone='shopping';activeId=draft.questions.find(q=>q.zone===activeZone).id;
-      downloadedSnapshot=null;missionsMounted=false;imagesMounted=false;workspace.dataset.details='false';body.hidden=false;body.inert=false;footer.hidden=false;sectionTabs.hidden=false;playButton.disabled=false;downloadButton.disabled=false;resetButton.disabled=false;renderMeta();selectSection('info');announce('เริ่มจากต้นฉบับ • ข้อมูลชั่วคราว ไม่บันทึกอัตโนมัติ');body.scrollTop=0;
+      original=freezeOriginal({...source,meta:{...source.meta,description:game.description||source.meta.description}});draft=adapter.clone(original);activeZone='shopping';activeId=draft.questions.find(q=>q.zone===activeZone).id;
+      missionsMounted=false;imagesMounted=false;workspace.dataset.details='false';body.hidden=false;body.inert=false;footer.hidden=false;sectionTabs.hidden=false;playButton.disabled=false;downloadButton.disabled=false;resetButton.disabled=false;renderMeta();selectSection('info');announce('เริ่มจากต้นฉบับ • ข้อมูลชั่วคราว ไม่บันทึกอัตโนมัติ');body.scrollTop=0;
     }catch(error){if(token===session&&!controller.signal.aborted)announce('เปิดตัวแก้ไขไม่ได้: '+error.message+' • ปิดแล้วลองใหม่',true)}
     finally{if(token===session){loading=false;if(operation===controller)operation=null}}
   }};
