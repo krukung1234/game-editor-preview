@@ -40,7 +40,12 @@
     }
     if(view.getUint32(position,true)!==0x02014b50)throw Error('ZIP ไม่มีสารบัญไฟล์');
   }
+  async function archive(files,title,{signal}={}){
+    let size=0;for(const [path,bytes]of files){if(path.startsWith('/')||path.includes('\\')||path.split('/').includes('..'))throw Error('เส้นทาง ZIP ไม่ปลอดภัย');size+=bytes.length;if(size>250*1024*1024)throw Error('ไฟล์เกมรวมเกิน 250 MB')}
+    const folder=safeName(title),namedFiles=new Map([...files].map(([path,bytes])=>[folder+'/'+path,bytes])),blob=zip(namedFiles);await verifyZip(blob,namedFiles,signal);signal?.throwIfAborted();const href=URL.createObjectURL(blob),link=document.createElement('a');link.href=href;link.download=folder+'.zip';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(href),60000);
+  }
   async function download(adapter,input,progress=()=>{},{signal}={}){
+    if(adapter.kind==='native'){await import(new URL('js/shared-game-package.js?v=shared-15',root).href);return SharedNativeGames.download(adapter,input,progress,{signal,archive})}
     const data=adapter.validate(input),files=new Map(),sources=new Map();let total=0;
     const add=(name,bytes)=>{if(files.has(name))return;if(name.startsWith('/')||name.includes('\\')||name.split('/').includes('..'))throw Error('เส้นทางไฟล์ไม่ถูกต้อง');total+=bytes.length;if(total>250*1024*1024)throw Error('เกมมีขนาดเกิน 250 MB');files.set(name,bytes)};
     const text=(name,value)=>add(name,encoder.encode(value));
@@ -87,9 +92,7 @@
     // Static assets keep their native asset paths under images/ through the document base.
     text('index.html','<!DOCTYPE html>\n'+dom.documentElement.outerHTML);
     resources.clear();inlineVendors.clear();signal?.throwIfAborted();progress('กำลังสร้างและตรวจ ZIP • '+(total/1024/1024).toFixed(1)+' MB');await pause();
-    const folder=safeName(data.meta.title),namedFiles=new Map([...files].map(([path,bytes])=>[folder+'/'+path,bytes]));
-    const blob=zip(namedFiles);await verifyZip(blob,namedFiles,signal);signal?.throwIfAborted();
-    const href=URL.createObjectURL(blob),link=document.createElement('a');link.href=href;link.download=folder+'.zip';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(href),60000);
+    await archive(files,data.meta.title,{signal});
   }
   window.PersonalGameDownload={download};
 })();

@@ -38,9 +38,9 @@
     const select=el('select',{id,onchange:e=>change(e.target.value)});for(const item of values){const [v,t]=Array.isArray(item)?item:[item,item];select.append(el('option',{value:v,text:t}))}select.value=value;
     return el('div',{class:'editor-field'},[el('label',{htmlFor:id,text:label}),select]);
   }
-  function current(){return draft.questions.find(q=>q.id===activeId)}
+  function current(){return draft.questions?.find(q=>q.id===activeId)}
   function changed(){return !!draft&&!!original&&JSON.stringify(draft)!==JSON.stringify(original)}
-  const sceneImages=data=>data?.presentation?[data.presentation.mapBackground,data.presentation.serviceMapBackground,data.presentation.backpackImage,...Object.values(data.presentation.stages).map(stage=>stage.background)]:[];
+  const sceneImages=data=>data?.assets?Object.values(data.assets):data?.presentation?[data.presentation.mapBackground,data.presentation.serviceMapBackground,data.presentation.backpackImage,...Object.values(data.presentation.stages).map(stage=>stage.background)]:[];
   function releaseImages(all=false){const used=all?new Set():new Set([draft?.meta.cover,...sceneImages(draft),...(draft?.questions||[]).flatMap(q=>[q.image,...q.options.map(o=>o.image)])]);for(const url of imageFiles.keys())if(!used.has(url)){URL.revokeObjectURL(url);imageFiles.delete(url);imageChecks.delete(url)}}
   async function loadImage(file){
     if(!file)return '';
@@ -108,11 +108,12 @@
     gradeBox.append(groups,levels);updateGrades();
     const title=meta.children[0];title.classList.add('editor-field-wide');meta.insertBefore(subjectBox,meta.children[1]);meta.insertBefore(gradeBox,meta.children[2]);
     const textSettings=el('details',{class:'editor-text-settings editor-field-wide'},[el('summary',{text:'ตั้งค่าข้อความ'})]);
-    for(const [key,label,type] of [['description','คำอธิบายเกม','textarea'],['instructions','ข้อความคำแนะนำ','textarea'],['praise','ข้อความคำชม']])textSettings.append(field(label,'editor-'+key,draft.meta[key],value=>{draft.meta[key]=value;mark()},type));
-    meta.append(textSettings);
+    for(const [key,label,type] of [['description','คำอธิบายเกม','textarea'],['instructions',adapter.kind==='native'?'คำแนะนำเพิ่มเติม (แถบข้อมูลบทเรียน)':'ข้อความคำแนะนำ','textarea'],['praise',adapter.kind==='native'?'คำชมเมื่อคะแนนเพิ่ม / ผ่านภารกิจ':'ข้อความคำชม']])textSettings.append(field(label,'editor-'+key,draft.meta[key],value=>{draft.meta[key]=value;mark()},type));
+    meta.append(textSettings);if(adapter.kind==='native')meta.append(el('p',{class:'editor-note editor-field-wide',text:'ขอบเขตของเกมนี้: '+adapter.bundle.note+' • กติกาและรูปแบบด่านเดิมยังคงอยู่ ข้อความที่ฝังในภาพต้องเปลี่ยนที่ตัวภาพ'}));
   }
 
   function renderImages(){
+    if(adapter.kind==='native'){renderNativeImages();return}
     imagePanel.replaceChildren();
     function scene(key,label,owner,baseline){
       const card=el('section',{class:'editor-scene-card'});card.dataset.scene=key;
@@ -135,6 +136,7 @@
     body.scrollTop=0;
   }
   function renderTabs(){
+    if(adapter.kind==='native'){renderNativeTabs();return}
     if(!tabs.childElementCount)for(const [zone,label] of Object.entries(adapter.zones)){const b=button(label,()=>{if(activeZone===zone)return;activeZone=zone;activeId=draft.questions.find(q=>q.zone===zone).id;workspace.dataset.details='false';renderQuestions()});b.dataset.zone=zone;tabs.append(b)}
     for(const b of tabs.children){b.textContent=draft.presentation.stages[b.dataset.zone].name;b.classList.toggle('active',b.dataset.zone===activeZone);b.setAttribute('aria-pressed',String(b.dataset.zone===activeZone))}
   }
@@ -148,6 +150,7 @@
   }
   list.addEventListener('click',event=>{
     const action=event.target.closest('button[data-action]'),row=action?.closest('[data-id]');if(!row||!draft)return;
+    if(adapter.kind==='native'){if(action.dataset.action==='select'){activeId=row.dataset.id;renderNativeQuestion();workspace.dataset.details='true';for(const item of list.children)item.classList.toggle('active',item.dataset.id===activeId)}return}
     const id=row.dataset.id,q=draft.questions.find(item=>item.id===id);
     if(action.dataset.action==='select'){if(activeId!==id){activeId=id;for(const item of list.children)item.classList.toggle('active',item.dataset.id===id);renderQuestion()}workspace.dataset.details='true';body.scrollTop=0}
     if(action.dataset.action==='up')move(id,-1);
@@ -160,6 +163,7 @@
     }
   });
   function renderQuestions(){
+    if(adapter.kind==='native'){renderNativeQuestions();return}
     renderTabs();renderStage();list.replaceChildren();
     const questions=draft.questions.filter(q=>q.zone===activeZone);count.textContent=questions.length+' ภารกิจในด่านนี้';
     for(const [i,q] of questions.entries()){
@@ -173,6 +177,7 @@
     renderQuestion();
   }
   function renderQuestion(){
+    if(adapter.kind==='native'){renderNativeQuestion();return}
     details.replaceChildren();const q=current();if(!q)return;
     details.append(button('← กลับรายการภารกิจ',()=>{workspace.dataset.details='false';body.scrollTop=0},'editor-button editor-back-list'),field('คำถาม / สถานการณ์','editor-question-title',q.title,v=>{q.title=v;mark();const index=draft.questions.filter(x=>x.zone===activeZone).findIndex(x=>x.id===q.id);list.querySelectorAll('.editor-question-select')[index].textContent=(index+1)+'. '+v},'textarea'),imageField('ภาพประกอบคำถาม',q.image,value=>q.image=value));
     const note=q.zone==='shopping'?'2 กลุ่ม • ตอบถูก 1 คะแนน':q.zone==='education'?'เลือก 3 จาก 6 ชิ้น • ถูกชิ้นละ 1 คะแนน':q.zone==='food'?'เลือกสินค้า 3 จาก 6 ชิ้น • กติกาและคะแนนตามโหมดเกมเดิม':'เลือกคำตอบถูก 1 ข้อ • ได้ 1 คะแนน';
@@ -194,8 +199,48 @@
     details.append(options);
     if(['health','service'].includes(q.zone)){const add=button('+ เพิ่มตัวเลือก',()=>{q.options.push({label:'ตัวเลือกใหม่',image:'',correct:false,price:0});mark();renderQuestion()});add.disabled=q.options.length>=6;details.append(add)}
   }
+  function initializeSelection(){
+    if(adapter.kind==='native'){activeZone=adapter.bundle.groups[0]?.id;activeId=adapter.bundle.groups[0]?.records[0]?.id}
+    else{activeZone='shopping';activeId=draft.questions.find(q=>q.zone===activeZone).id}
+  }
+  function nativeGroup(){return adapter.bundle.groups.find(g=>g.id===activeZone)}
+  function renderNativeTabs(){
+    tabs.replaceChildren();const groups=adapter.bundle.groups;
+    if(groups.length>8){tabs.append(selectField('ชุดภารกิจ / ด่าน','nativeGroup',groups.map(g=>[g.id,g.label]),activeZone,value=>{activeZone=value;activeId=nativeGroup().records[0]?.id;workspace.dataset.details='false';renderNativeQuestions()}));return}
+    for(const group of groups){const b=button(group.label,()=>{activeZone=group.id;activeId=group.records[0]?.id;workspace.dataset.details='false';renderNativeQuestions()});b.classList.toggle('active',group.id===activeZone);b.setAttribute('aria-pressed',String(group.id===activeZone));tabs.append(b)}
+  }
+  function renderNativeQuestions(){
+    renderNativeTabs();const group=nativeGroup();list.replaceChildren();stageFields.replaceChildren(el('p',{class:'editor-note',text:adapter.bundle.note+' • จำนวนรายการและโครงสร้างคงเดิมตามกติกาเกม'}));
+    if(!group)return;count.textContent=group.records.length+' รายการในชุดนี้';
+    for(const [index,row]of group.records.entries()){
+      const f=adapter.bundle.fields.find(f=>f.id===row.fields[0]),label=String(draft.values[f?.id]??row.label).split('\n')[0].slice(0,80),select=button((index+1)+'. '+label,()=>{activeId=row.id;renderNativeQuestion();workspace.dataset.details='true';for(const item of list.children)item.classList.toggle('active',item.dataset.id===row.id)},'editor-question-select');
+      const item=el('div',{class:'editor-question-row '+(row.id===activeId?'active':'')},[select]);item.dataset.id=row.id;list.append(item);
+    }
+    renderNativeQuestion();
+  }
+  function renderNativeQuestion(){
+    details.replaceChildren();const row=nativeGroup()?.records.find(r=>r.id===activeId);if(!row)return;
+    details.append(button('← กลับรายการภารกิจ',()=>{workspace.dataset.details='false';body.scrollTop=0},'editor-button editor-back-list'));
+    for(const id of row.fields){const f=adapter.bundle.fields.find(f=>f.id===id),value=draft.values[id],change=v=>{draft.values[id]=v;mark()};let node;
+      if(f.kind==='boolean'){const checkbox=el('input',{id:'native-'+id,type:'checkbox',checked:value,onchange:e=>change(e.target.checked)});node=el('div',{class:'editor-field'},[el('label',{htmlFor:checkbox.id,text:f.label}),checkbox])}
+      else if(f.kind==='select')node=selectField(f.label,'native-'+id,f.choices,value,change);
+      else{node=field(f.label,'native-'+id,value,change,f.kind==='number'?'number':'textarea');const input=node.querySelector('input,textarea');if(f.kind==='grid'){input.rows=4;input.inputMode='numeric';input.placeholder='1 0 0 4\n0 4 1 0\n0 1 4 0\n4 0 0 1'}if(f.kind==='number'){input.min=f.min??0;input.max=f.max??100000}}
+      node.dataset.nativeField=id;details.append(node);
+    }
+  }
+  function renderNativeImages(offset=0){
+    imagePanel.replaceChildren();const entries=Object.entries(adapter.bundle.assets),page=entries.slice(offset,offset+12);
+    if(!entries.length){imagePanel.append(el('p',{class:'editor-note',text:'เกมนี้วาดภาพด้วยโค้ดหรือใช้สัญลักษณ์ จึงไม่มีไฟล์ภาพให้เปลี่ยน แก้สัญลักษณ์ที่รองรับได้ในแท็บภารกิจ'}));imagesMounted=true;return}
+    for(const [key,asset]of page){const card=el('section',{class:'editor-scene-card'});card.dataset.scene=key;card.append(imageField(asset.label,draft.assets[key],value=>draft.assets[key]=value),button('↺ คืนภาพต้นฉบับ',()=>{draft.assets[key]=original.assets[key];releaseImages();mark();renderNativeImages(offset)}));imagePanel.append(card)}
+    const actions=el('div',{class:'editor-image-actions'},[el('p',{class:'editor-note',text:'ภาพ '+(entries.length?offset+1:0)+'–'+Math.min(offset+12,entries.length)+' / '+entries.length+' • เปลี่ยนเฉพาะภาพที่เกมอ้างอิง แผ่น sprite ต้องรักษาขนาดและตำแหน่งช่องเดิม'})]);
+    if(offset>0)actions.append(button('← ภาพก่อนหน้า',()=>renderNativeImages(offset-12)));if(offset+12<entries.length)actions.append(button('ภาพถัดไป →',()=>renderNativeImages(offset+12)));imagePanel.append(actions);imagesMounted=true;
+  }
   function checked(){return adapter.validate(draft)}
   function focusProblem(error){
+    if(adapter.kind==='native'){
+      if(error.nativeField){const b=adapter.bundle,group=b.groups.find(g=>g.records.some(r=>r.fields.includes(error.nativeField)));if(group){activeZone=group.id;activeId=group.records.find(r=>r.fields.includes(error.nativeField)).id;selectSection('missions');renderNativeQuestions();workspace.dataset.details='true';const input=document.getElementById('native-'+error.nativeField);input?.focus();input?.scrollIntoView({block:'center'})}}
+      return;
+    }
     if(!error.field&&!error.questionId)return;
     body.inert=false;
     if(error.stageId){activeZone=error.stageId;activeId=draft.questions.find(q=>q.zone===activeZone).id;if(missionsMounted)renderQuestions();}
@@ -216,7 +261,7 @@
     target=target||panels[selectedSection].querySelector('input,textarea,button');target?.focus({preventScroll:true});target?.scrollIntoView({block:'center'});
   }
   async function ready(signal){
-    const data=checked(),images=[{value:data.meta.cover,field:'รูปภาพ',scene:'cover'},...['mapBackground','serviceMapBackground','backpackImage'].map(scene=>({value:data.presentation[scene],field:'รูปภาพ',scene})),...Object.entries(data.presentation.stages).map(([scene,stage])=>({value:stage.background,field:'รูปภาพ',scene})),...data.questions.flatMap(q=>[{value:q.image,field:'รูปภาพ',questionId:q.id},...q.options.map((o,optionIndex)=>({value:o.image,field:'รูปภาพ',questionId:q.id,optionIndex}))])].filter(item=>item.value);
+    const data=checked(),images=adapter.kind==='native'?adapter.images(data).filter(item=>item.value&&item.value!==original.assets[item.scene]):[{value:data.meta.cover,field:'รูปภาพ',scene:'cover'},...['mapBackground','serviceMapBackground','backpackImage'].map(scene=>({value:data.presentation[scene],field:'รูปภาพ',scene})),...Object.entries(data.presentation.stages).map(([scene,stage])=>({value:stage.background,field:'รูปภาพ',scene})),...data.questions.flatMap(q=>[{value:q.image,field:'รูปภาพ',questionId:q.id},...q.options.map((o,optionIndex)=>({value:o.image,field:'รูปภาพ',questionId:q.id,optionIndex}))])].filter(item=>item.value);
     let next=0;
     const worker=async()=>{while(next<images.length){signal.throwIfAborted();const item=images[next++],url=adapter.resolveImage(item.value);try{
       if(!imageChecks.has(url)){const img=new Image();activeImages.add(img);img.src=url;const timer=setTimeout(()=>img.removeAttribute('src'),15000);const promise=img.decode().finally(()=>{clearTimeout(timer);activeImages.delete(img)}).catch(error=>{if(imageChecks.get(url)===promise)imageChecks.delete(url);throw error});imageChecks.set(url,promise)}
@@ -234,14 +279,14 @@
     }catch(error){if(token===session&&!controller.signal.aborted){announce('ดาวน์โหลดไม่สำเร็จ: '+error.message,true);focusProblem(error)}}
     finally{if(operation===controller){operation=null;body.inert=false;downloadButton.disabled=false;playButton.disabled=false;resetButton.disabled=false}}
   }
-  function stopPreview(){previewCleanup?.();previewCleanup=null;playPreview.replaceChildren();playPreview.hidden=true;body.hidden=false;footer.hidden=false;sectionTabs.hidden=false;playButton.focus()}
+  function stopPreview(){if(adapter?.kind==='native')try{playPreview.querySelector('iframe')?.contentWindow?.document.getElementById('nativeGameFrame')?.contentWindow?.NativeGameSession?.dispose()}catch{}previewCleanup?.();previewCleanup=null;playPreview.replaceChildren();playPreview.hidden=true;delete dialog.dataset.nativePreview;body.hidden=false;footer.hidden=false;sectionTabs.hidden=false;playButton.focus()}
   async function startPreview(){
     if(operation||pendingImages||!playPreview.hidden||!draft)return;
     const controller=new AbortController(),token=session;operation=controller;playButton.disabled=true;downloadButton.disabled=true;resetButton.disabled=true;body.inert=true;
     try{
       announce('กำลังตรวจข้อมูลและรูปภาพ…');const data=await ready(controller.signal);if(token!==session)return;
       const run=adapter.launch(data),frame=el('iframe',{title:'ทดลองเล่นเกมต้นฉบับด้วยข้อมูลที่แก้ไข',class:'editor-preview-frame'});frame.setAttribute('allow','camera; microphone; autoplay; fullscreen');
-      previewCleanup=adapter.connectPreview(frame,run,stopPreview);playPreview.replaceChildren(button('← กลับไปแก้ไข',stopPreview,'editor-button editor-preview-back'),frame);playPreview.hidden=false;body.hidden=true;footer.hidden=true;sectionTabs.hidden=true;frame.src=run.url;announce('ทดลองเล่นด้วยเกมเดิม • กลับไปแก้ไขได้');
+      previewCleanup=adapter.connectPreview(frame,run,stopPreview);playPreview.replaceChildren(button('← กลับไปแก้ไข',stopPreview,'editor-button editor-preview-back'),frame);playPreview.hidden=false;dialog.dataset.nativePreview=String(adapter.kind==='native');body.hidden=true;footer.hidden=true;sectionTabs.hidden=true;frame.src=run.url;announce('ทดลองเล่นด้วยเกมเดิม • กลับไปแก้ไขได้');
     }catch(error){if(token===session&&!controller.signal.aborted){announce('ทดลองเล่นไม่ได้: '+error.message,true);focusProblem(error)}}
     finally{if(operation===controller){operation=null;playButton.disabled=false;downloadButton.disabled=false;resetButton.disabled=false;body.inert=false}}
   }
@@ -252,7 +297,7 @@
     if(closeConfirmation.open)closeConfirmation.close();
     confirmationReturnFocus=null;
     if(!playPreview.hidden)stopPreview();
-    session++;operation?.abort();operation=null;pendingImages=0;loading=false;draft=null;original=null;meta.replaceChildren();details.replaceChildren();list.replaceChildren();tabs.replaceChildren();stageFields.replaceChildren();imagePanel.replaceChildren();releaseImages(true);for(const img of activeImages)img.removeAttribute('src');activeImages.clear();imageChecks.clear();clearTimeout(statusTimer);
+    session++;operation?.abort();operation=null;pendingImages=0;loading=false;draft=null;original=null;meta.replaceChildren();details.replaceChildren();list.replaceChildren();tabs.replaceChildren();stageFields.replaceChildren();imagePanel.replaceChildren();releaseImages(true);for(const img of activeImages)img.removeAttribute('src');activeImages.clear();imageChecks.clear();clearTimeout(statusTimer);adapter?.dispose?.();
     document.body.style.overflow=pageOverflow;dialog.close();opener?.focus();
   }
   let confirmationReturnFocus=null,lastEditorFocus=null;
@@ -281,12 +326,13 @@
     confirmationReturnFocus=dialog.contains(focused)&&focused!==dialog?focused:lastEditorFocus;
     closeConfirmation.showModal();continueButton.focus({preventScroll:true});
   }
-  function restoreOriginal(){if(!draft||!confirm('ต้องการคืนค่าข้อมูลเกมต้นฉบับหรือไม่? การเปลี่ยนแปลงที่ยังไม่ได้ดาวน์โหลดจะหายไป'))return;operation?.abort();operation=null;draft=adapter.clone(original);releaseImages();imageChecks.clear();activeZone='shopping';activeId=draft.questions.find(q=>q.zone===activeZone).id;missionsMounted=false;imagesMounted=false;details.replaceChildren();list.replaceChildren();imagePanel.replaceChildren();workspace.dataset.details='false';renderMeta();selectSection(selectedSection);announce('คืนค่าข้อมูลต้นฉบับครบทุกส่วนแล้ว',false,true)}
+  function restoreOriginal(){if(!draft||!confirm('ต้องการคืนค่าข้อมูลเกมต้นฉบับหรือไม่? การเปลี่ยนแปลงที่ยังไม่ได้ดาวน์โหลดจะหายไป'))return;operation?.abort();operation=null;draft=adapter.clone(original);releaseImages();imageChecks.clear();initializeSelection();missionsMounted=false;imagesMounted=false;details.replaceChildren();list.replaceChildren();imagePanel.replaceChildren();workspace.dataset.details='false';renderMeta();selectSection(selectedSection);announce('คืนค่าข้อมูลต้นฉบับครบทุกส่วนแล้ว',false,true)}
 
   const closeButton=button('×',close,'editor-close');closeButton.id='editorCloseBtn';closeButton.setAttribute('aria-label','ปิดหน้าต่างปรับแต่งเกม');
-  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • MINI CITY • รุ่น 20261016-13'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้เนื้อหา แล้วทดลองเล่นด้วยระบบเกมเดิม'})]),closeButton]);
+  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • SHARED • รุ่น 20261017-15'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้เนื้อหา แล้วทดลองเล่นด้วยระบบเกมเดิม'})]),closeButton]);
   const fixedHeading=el('div',{class:'editor-fixed-heading'},[heading,status]);
-  const toolbar=el('div',{class:'editor-toolbar'},[el('h3',{text:'จัดการคำถามและคำตอบ'}),count,button('+ เพิ่มภารกิจ',()=>addQuestion(false))]);
+  const addQuestionButton=button('+ เพิ่มภารกิจ',()=>addQuestion(false));
+  const toolbar=el('div',{class:'editor-toolbar'},[el('h3',{text:'จัดการคำถามและคำตอบ'}),count,addQuestionButton]);
   const workspace=el('div',{class:'editor-workspace'},[list,details]);workspace.dataset.details='false';
   for(const [key,label,content] of [['info','📄 ข้อมูลเกม',[meta]],['missions','📋 ภารกิจ',[toolbar,tabs,stageFields,workspace]],['images','🖼️ รูปภาพ',[imagePanel,el('p',{class:'editor-note',text:'ภาพคำถามและตัวเลือกแก้ไขได้ในแท็บภารกิจ • JPG/PNG/WebP ภาพละไม่เกิน 750 KB'})]]]){
     const tab=button(label,()=>selectSection(key));tab.id='editorTab-'+key;tab.setAttribute('role','tab');tab.setAttribute('aria-controls','editorPanel-'+key);sectionTabs.append(tab);
@@ -324,8 +370,8 @@
     pageOverflow=document.body.style.overflow;document.body.style.overflow='hidden';body.hidden=true;footer.hidden=true;sectionTabs.hidden=true;playPreview.hidden=true;dialog.showModal();announce('กำลังอ่านข้อมูลต้นฉบับของเกม…');
     try{
       const source=await adapter.defaults({signal:controller.signal});if(token!==session)return;
-      original=freezeOriginal({...source,meta:{...source.meta,description:game.description||source.meta.description}});draft=adapter.clone(original);activeZone='shopping';activeId=draft.questions.find(q=>q.zone===activeZone).id;
-      missionsMounted=false;imagesMounted=false;workspace.dataset.details='false';body.hidden=false;body.inert=false;footer.hidden=false;sectionTabs.hidden=false;playButton.disabled=false;downloadButton.disabled=false;resetButton.disabled=false;renderMeta();selectSection('info');announce('เริ่มจากต้นฉบับ • ข้อมูลชั่วคราว ไม่บันทึกอัตโนมัติ');body.scrollTop=0;
+      original=freezeOriginal({...source,meta:{...source.meta,...(adapter.kind==='native'&&game.title?{title:game.title}:{}),description:game.description||source.meta.description}});draft=adapter.clone(original);initializeSelection();
+      missionsMounted=false;imagesMounted=false;workspace.dataset.details='false';body.hidden=false;body.inert=false;footer.hidden=false;sectionTabs.hidden=false;playButton.disabled=false;downloadButton.disabled=false;resetButton.disabled=false;addQuestionButton.hidden=adapter.kind==='native';document.getElementById('editorHeading').textContent=adapter.kind==='native'?'⚙️ ปรับแต่งเกม '+game.title:'⚙️ ปรับแต่งเกม AR Mini City';renderMeta();selectSection('info');announce('เริ่มจากต้นฉบับ • ข้อมูลชั่วคราว ไม่บันทึกอัตโนมัติ');body.scrollTop=0;
     }catch(error){if(token===session&&!controller.signal.aborted)announce('เปิดตัวแก้ไขไม่ได้: '+error.message+' • ปิดแล้วลองใหม่',true)}
     finally{if(token===session){loading=false;if(operation===controller)operation=null}}
   }};

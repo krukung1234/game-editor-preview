@@ -309,16 +309,17 @@ function render() {
 
       const editorReady = Boolean(window.GameAdapters && window.GameEditor);
       const editorAdapter = editorReady ? window.GameAdapters.find(game) : null;
+      const adapterStatus = window.SharedNativeGames?.statusFor(game);
       const editorNoteId = 'editor-status-' + encodeURIComponent(String(game.id));
       const editorStatus = editorAdapter
         ? ''
-        : editorReady ? 'ยังไม่รองรับการแก้ไขและทดลองเล่น' : 'โหลดตัวปรับแต่งไม่สำเร็จ กรุณารีเฟรชหน้า';
+        : editorReady ? (adapterStatus?.qualification==='problem'?'พบปัญหาต้นฉบับ • ยังไม่เปิดปรับแต่ง':'ยังไม่ผ่านการตรวจครบ • ปิดการปรับแต่ง') : 'โหลดตัวปรับแต่งไม่สำเร็จ กรุณารีเฟรชหน้า';
       const editorButton = editorAdapter
         ? `<button type="button" class="edit-game-button" data-edit-game-id="${safeText(game.id)}">⚙️ ปรับแต่งเกม</button>`
-        : `<button type="button" class="edit-game-button" disabled aria-describedby="${safeText(editorNoteId)}" title="${safeText(editorStatus)}">⚙️ ปรับแต่งเกม</button>`;
+        : `<button type="button" class="edit-game-button" disabled aria-describedby="${safeText(editorNoteId)}" title="${safeText(adapterStatus?.reason||editorStatus)}">⚙️ ปรับแต่งเกม</button>`;
       const editorNote = editorStatus
         ? `<p id="${safeText(editorNoteId)}" class="editor-unsupported">${safeText(editorStatus)}</p>`
-        : '<p class="editor-supported">ปรับข้อมูลและทดลองเล่นได้ • Mini City</p>';
+        : `<p class="editor-supported">${safeText(editorAdapter?.supportText||'ปรับข้อมูลและทดลองเล่นได้ • Mini City')}</p>`;
       const promptButton = hasPrompt(game)
         ? `<button type="button" class="prompt-button" data-game-id="${safeText(game.id)}">📋 Prompt</button>`
         : '<button type="button" class="prompt-button" disabled title="เกมนี้ยังไม่มี Prompt ต้นฉบับ">📋 Prompt</button>';

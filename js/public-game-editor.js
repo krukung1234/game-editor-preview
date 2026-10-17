@@ -10,9 +10,10 @@ window.APP_CONFIG={CATEGORIES:['สังคมศึกษา','ภาษาไ
       const card=document.createElement('article'),image=document.createElement('img'),heading=document.createElement('h2'),note=document.createElement('p'),button=document.createElement('button');
       image.src='games/'+encodeURIComponent(game.folder)+'/cover.png';image.alt=game.title;image.loading='lazy';image.addEventListener('error',()=>{image.hidden=true;note.textContent+=' • ภาพปกไม่พร้อมใช้งาน'},{once:true});
       heading.textContent=game.title;const adapter=GameAdapters.find(game);button.type='button';button.className='editor-button primary';button.disabled=!adapter;
-      button.textContent=adapter?'⚙️ ปรับแต่งเกม':'⚙️ ยังไม่รองรับ';note.textContent=adapter?'ปรับแต่ง ทดลองเล่น และดาวน์โหลด ZIP ด้วยระบบเกมเดิม':'ยังไม่มี Adapter ที่ทดสอบการแก้ไขและดาวน์โหลดจริง จึงยังไม่เปิดให้ปรับแต่ง';
+      const support=window.SharedNativeGames?.statusFor(game);
+      button.textContent=adapter?'⚙️ ปรับแต่งเกม':'⚙️ ยังไม่เปิดใช้งาน';note.textContent=adapter?(adapter.note||'ปรับแต่ง ทดลองเล่น และดาวน์โหลด ZIP ด้วยระบบเกมเดิม'):(support?.reason||'ยังไม่มี Adapter ที่ทดสอบการแก้ไขและดาวน์โหลดจริง จึงยังไม่เปิดให้ปรับแต่ง');
       button.addEventListener('click',()=>GameEditor.open(game,button));card.append(image,heading,note,button);container.append(card);
     }
-    status.textContent=catalogue.length+' เกม • รองรับการปรับแต่งและดาวน์โหลด AR Mini City';
+    status.textContent=catalogue.length+' เกม • เปิดใช้เฉพาะ Adapter ที่ผ่านการตรวจและทดสอบ';
   }catch(error){status.textContent=error.message}
 })();

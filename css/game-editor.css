@@ -37,3 +37,9 @@
 
 /* Preserve a usable native stage when the editor is short in landscape. */
 .editor-play-preview{overflow:auto}.editor-preview-frame{min-height:360px}
+
+/* Shared capability fields use the same three-tab Editor. */
+.editor-question-row>.editor-question-select{width:100%}.editor-field input[type=checkbox]{width:22px;height:22px;accent-color:#7850dc}.editor-zones>.editor-field{width:100%}.editor-image-actions{grid-column:1/-1}
+.game-editor-dialog[data-native-preview=true] .editor-play-preview{overflow:hidden}
+.game-editor-dialog[data-native-preview=true] .editor-preview-frame{min-height:0}
+@media(max-height:550px){.game-editor-dialog[data-native-preview=true]{width:100%;height:100dvh;max-height:100dvh;border-radius:0}.game-editor-dialog[data-native-preview=true] .editor-heading{align-items:center;padding:3px 10px}.game-editor-dialog[data-native-preview=true] .editor-heading h2{font-size:15px;margin:0}.game-editor-dialog[data-native-preview=true] .editor-heading p,.game-editor-dialog[data-native-preview=true] .prompt-version,.game-editor-dialog[data-native-preview=true] .editor-status{display:none}.game-editor-dialog[data-native-preview=true] .editor-preview-back{margin:3px 8px;min-height:30px;padding:3px 10px}}
