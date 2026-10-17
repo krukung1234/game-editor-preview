@@ -1,0 +1,43 @@
+{
+  "id": "native-18",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 79,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-mole-game",
+  "preview": {
+    "ar": {
+      "streams": 1,
+      "sdk": {
+        "constructors": {},
+        "frames": {}
+      }
+    },
+    "correctAndWrong": true,
+    "summary": true,
+    "scores": {
+      "score": 1
+    }
+  },
+  "zip": {
+    "ar": {
+      "streams": 1,
+      "sdk": {
+        "constructors": {},
+        "frames": {}
+      }
+    },
+    "correctAndWrong": true,
+    "summary": true,
+    "scores": {
+      "score": 1
+    }
+  },
+  "zipBytes": 2224518,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

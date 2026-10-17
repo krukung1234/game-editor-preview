@@ -1,0 +1,53 @@
+{
+  "id": "native-30",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 100,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "AR_Opposite",
+  "preview": {
+    "correctAndWrong": true,
+    "ar": {
+      "streams": 1,
+      "sdk": {
+        "constructors": {
+          "Hands": 1,
+          "Camera": 1
+        },
+        "frames": {
+          "Hands": 14
+        }
+      }
+    },
+    "summary": true,
+    "scores": {
+      "score": 19
+    }
+  },
+  "zip": {
+    "correctAndWrong": true,
+    "ar": {
+      "streams": 1,
+      "sdk": {
+        "constructors": {
+          "Hands": 1,
+          "Camera": 1
+        },
+        "frames": {
+          "Hands": 13
+        }
+      }
+    },
+    "summary": true,
+    "scores": {
+      "score": 19
+    }
+  },
+  "zipBytes": 31690849,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

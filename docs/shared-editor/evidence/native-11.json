@@ -1,0 +1,54 @@
+{
+  "id": "native-11",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 2,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-good-food-v1",
+  "preview": {
+    "ar": {
+      "streams": 1,
+      "sdk": {
+        "constructors": {
+          "Hands": 1,
+          "Camera": 1
+        },
+        "frames": {
+          "Hands": 24
+        }
+      }
+    },
+    "correctAndWrong": true,
+    "summary": true,
+    "scores": {
+      "score": 6
+    }
+  },
+  "zip": {
+    "ar": {
+      "streams": 1,
+      "sdk": {
+        "constructors": {
+          "Hands": 1,
+          "Camera": 1
+        },
+        "frames": {
+          "Hands": 19
+        }
+      }
+    },
+    "correctAndWrong": true,
+    "summary": true,
+    "scores": {
+      "score": 6
+    }
+  },
+  "zipBytes": 26708621,
+  "errors": [],
+  "outside": [],
+  "result": "PASS",
+  "provenance": "outputs/SHARED-EDITOR-CYCLE2-FOODS-THAI-FIXED.json"
+}

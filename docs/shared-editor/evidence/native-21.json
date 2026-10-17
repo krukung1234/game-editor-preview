@@ -1,0 +1,48 @@
+{
+  "id": "native-21",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 0,
+    "gridChanged": true,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-sudoku",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1,
+        "Camera": 1
+      },
+      "frames": {
+        "Hands": 16
+      }
+    },
+    "callbackInputs": true,
+    "gridSolved": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {}
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1,
+        "Camera": 1
+      },
+      "frames": {
+        "Hands": 16
+      }
+    },
+    "callbackInputs": true,
+    "gridSolved": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {}
+  },
+  "zipBytes": 28553268,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

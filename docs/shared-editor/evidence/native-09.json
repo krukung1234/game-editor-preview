@@ -1,0 +1,47 @@
+{
+  "id": "native-09",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 1,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-dressed",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1,
+        "Camera": 1
+      },
+      "frames": {
+        "Hands": 4
+      }
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "game.score": 4
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1,
+        "Camera": 1
+      },
+      "frames": {
+        "Hands": 4
+      }
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "game.score": 4
+    }
+  },
+  "zipBytes": 35335833,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "native-10",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 1,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-fishing-adventure",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 7
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "state.score": 1
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 6
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "state.score": 1
+    }
+  },
+  "zipBytes": 34547652,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

@@ -1,0 +1,43 @@
+{
+  "id": "native-19",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 1,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-Multiplication",
+  "preview": {
+    "ar": {
+      "constructors": {},
+      "frames": {
+        "HandLandmarker": 5
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 3800
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {},
+      "frames": {
+        "HandLandmarker": 5
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 3800
+    }
+  },
+  "zipBytes": 30701488,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

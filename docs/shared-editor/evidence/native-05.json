@@ -1,0 +1,37 @@
+{
+  "id": "native-05",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 1,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "AR หนูน้อยเก็บชีสแสนอร่อย",
+  "preview": {
+    "solvedLevels": 20,
+    "callbackInputs": true,
+    "ar": {
+      "supported": false,
+      "reason": "Original maze has no camera or Hand Tracking"
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {}
+  },
+  "zip": {
+    "solvedLevels": 20,
+    "callbackInputs": true,
+    "ar": {
+      "supported": false,
+      "reason": "Original maze has no camera or Hand Tracking"
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {}
+  },
+  "zipBytes": 2310017,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

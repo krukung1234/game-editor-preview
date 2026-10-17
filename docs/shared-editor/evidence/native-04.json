@@ -1,0 +1,45 @@
+{
+  "id": "native-04",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 3,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar พิชิตตัวเลข",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 1
+      }
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 19
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 1
+      }
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 19
+    }
+  },
+  "zipBytes": 27175046,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "native-28",
+    "checks": {
+      "editor": true,
+      "uiEditCount": 6
+    },
+    "folder": "AR_ANATOMY_LAB_A01",
+    "result": "FAIL",
+    "error": "locator.click: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.editor-preview-frame').contentFrame().locator('#nativeGameFrame').contentFrame().locator('#m3 .m3-inline-actions button').last()\u001b[22m\n\n    at play (C:\\Users\\Admin\\Documents\\Codex\\2026-10-16\\new-chat\\work\\new-game-drivers.cjs:37:341)\n    at async C:\\Users\\Admin\\Documents\\Codex\\2026-10-16\\new-chat\\work\\qualify-editor-pending.cjs:13:2928"
+  }
+]

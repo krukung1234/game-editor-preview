@@ -1,0 +1,47 @@
+{
+  "id": "native-06",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 6,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "AR-bakery-pastry",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 6
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "state.score": 12
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 8
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "state.score": 12
+    }
+  },
+  "zipBytes": 37690708,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

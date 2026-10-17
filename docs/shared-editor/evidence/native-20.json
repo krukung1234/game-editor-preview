@@ -1,0 +1,41 @@
+{
+  "id": "native-20",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 1,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "AR-Safety-Hero-Academy",
+  "preview": {
+    "ar": {
+      "constructors": {},
+      "frames": {
+        "HandLandmarker": 16
+      }
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 49
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {},
+      "frames": {
+        "HandLandmarker": 14
+      }
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 49
+    }
+  },
+  "zipBytes": 33768155,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

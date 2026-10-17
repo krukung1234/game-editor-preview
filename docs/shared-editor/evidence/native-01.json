@@ -1,0 +1,45 @@
+{
+  "id": "native-01",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 3,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "AR Career Quest ตามล่าหาอาชีพ",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 4
+      }
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "S.score": 29
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 3
+      }
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "S.score": 29
+    }
+  },
+  "zipBytes": 29242454,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

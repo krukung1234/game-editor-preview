@@ -16,10 +16,10 @@
  };
  async function load(entry,signal){
   if(loaded?.id===entry.id&&loaded.bundle)return loaded.bundle;
-  const response=await fetch(new URL('js/adapters/native/'+entry.id+'.json?v=shared-15',root),{credentials:'omit',cache:'force-cache',signal});
+  const response=await fetch(new URL('js/adapters/native/'+entry.id+'.json?v=shared-17',root),{credentials:'omit',cache:'force-cache',signal});
   if(!response.ok)throw Error('อ่าน Adapter ของเกมนี้ไม่สำเร็จ');const bundle=await response.json();if(bundle.id!==entry.id||bundle.version!==1)throw Error('Adapter ไม่ตรงกับเกม');
   // Defaults come from the immutable native blueprint; do not store a duplicate text bank in JSON.
-  bundle.values=Object.fromEntries(bundle.fields.map(field=>{const value=read(bundle.bindings[field.binding].data,field.path);return [field.id,field.kind==='grid'?value.map(row=>row.join(' ')).join('\n'):value]}));
+  bundle.values=Object.fromEntries(bundle.fields.map(field=>{const value=read(bundle.bindings[field.binding].data,field.path);return [field.id,field.kind==='boolean'?Boolean(value):field.kind==='grid'?value.map(row=>row.join(' ')).join('\n'):value]}));
   signal?.throwIfAborted();entry.bundle=bundle;entry.zones=Object.fromEntries(bundle.groups.map(g=>[g.id,g.label]));entry.supportText=bundle.note;
   loaded={id:entry.id,bundle};return bundle;
  }
@@ -42,6 +42,7 @@
    for(let col=0;col<4;col++)correct&&=valid(l.solution.map(r=>r[col]));for(let r=0;r<4;r+=2)for(let c=0;c<4;c+=2)correct&&=valid([l.solution[r][c],l.solution[r][c+1],l.solution[r+1][c],l.solution[r+1][c+1]]);
    if(!correct||l.puzzle.some((r,y)=>r.some((n,x)=>n&&n!==l.solution[y][x])))fail('โจทย์และเฉลย Sudoku ด่าน '+(i+1)+' ไม่สอดคล้องกัน',b.fields.find(f=>f.path[0]===i&&f.kind==='grid').id);
   }
+  if(b.type==='anatomy-missions')for(const q of native.M4Q)if(q.opts.filter(o=>o[2]).length!==1)fail('พฤติกรรมสุขภาพแต่ละข้อต้องมีคำตอบถูกเพียงข้อเดียว');
   if(b.type==='magnet-classification'&&native.objects.filter(o=>o.magnetic).length!==8)fail('เกมแม่เหล็กเดิมต้องมีวัตถุดูดติด 8 ชิ้นและไม่ติด 8 ชิ้น กรุณาสลับเฉลยเป็นคู่');
   if(b.type==='opposite-quiz')for(const stage of native.QUESTIONS)for(const q of stage)if(q[1]===q[2])fail('คำตอบถูกและตัวลวงต้องต่างกัน');
   if(b.type==='quiz'&&native.gameData)for(const level of native.gameData)for(const q of level.questions)if(new Set(q.choices).size!==q.choices.length)fail('ตัวเลือกคำถามต้องไม่ซ้ำกัน');
@@ -53,7 +54,7 @@
   if(native.ORDER_PHRASES){const normalize=s=>s.replace(/[\s,，.!?;:ฯ]+/g,'');for(const [id,parts]of Object.entries(native.ORDER_PHRASES)){const q=native.DATA.find(q=>String(q.id)===id);if(q&&normalize(parts.join(''))!==normalize(q.idiom))fail('คำย่อยของคำพังเพย '+id+' ต้องรวมเป็น '+q.idiom)}}
   if(JSON.stringify(data).length>16000000)throw Error('ข้อมูลใหญ่เกิน 16 MB');return data;
  }
- function bindings(entry,data){const result=Object.fromEntries(Object.entries(entry.bundle.bindings).map(([k,v])=>[k,clone(v.data)]));for(const f of entry.bundle.fields){let value=data.values[f.id];if(f.kind==='grid')value=value.split('\n').map(r=>r.trim().split(/[ ,]+/).map(Number));put(result[f.binding],f.path,value);for(const path of f.sync||[])put(result[f.binding],path,value)}if(result.ORDER_PHRASES)for(const q of result.DATA)if(q.words?.length===1)q.words=[q.idiom];return result}
+ function bindings(entry,data){const result=Object.fromEntries(Object.entries(entry.bundle.bindings).map(([k,v])=>[k,clone(v.data)]));for(const f of entry.bundle.fields){let value=data.values[f.id];if(f.kind==='boolean'&&f.numericBoolean)value=Number(value);if(f.kind==='grid')value=value.split('\n').map(r=>r.trim().split(/[ ,]+/).map(Number));put(result[f.binding],f.path,value);for(const path of f.sync||[])put(result[f.binding],path,value)}if(result.ORDER_PHRASES)for(const q of result.DATA)if(q.words?.length===1)q.words=[q.idiom];return result}
  function matchesFolder(entry,game){for(const value of [game.folder,game.link,game.gameUrl]){if(!value)continue;try{const candidate=decodeURIComponent(String(value)).trim().replace(/^games\//,'').replace(/\/index\.html(?:\?.*)?$/,'').replace(/\/$/,'');if(candidate===entry.folder)return true;const url=new URL(value,root);if(url.origin===root.origin&&decodeURIComponent(url.pathname).includes('/games/'+entry.folder+'/'))return true}catch{}}return false}
  const registry=[];
  for(const item of window.NativeAdapterCatalogue||[]){

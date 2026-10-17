@@ -1,0 +1,51 @@
+{
+  "id": "native-08",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 1,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-dino-fire-shooter",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1,
+        "SelfieSegmentation": 1
+      },
+      "frames": {
+        "Hands": 36,
+        "SelfieSegmentation": 12
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 5
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1,
+        "SelfieSegmentation": 1
+      },
+      "frames": {
+        "Hands": 26,
+        "SelfieSegmentation": 9
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 5
+    }
+  },
+  "zipBytes": 46488920,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

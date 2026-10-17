@@ -1,0 +1,49 @@
+{
+  "id": "native-07",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 1,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-computer",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1,
+        "Camera": 1
+      },
+      "frames": {
+        "Hands": 8
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "globalScore": 39
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1,
+        "Camera": 1
+      },
+      "frames": {
+        "Hands": 5
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "globalScore": 39
+    }
+  },
+  "zipBytes": 28129503,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

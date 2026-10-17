@@ -11,10 +11,12 @@
    const src=script.getAttribute('src'),id=src||'inline-'+index,descriptor=b.scripts.find(s=>s.id===id);if(!descriptor)continue;
    const code=src?(await(await get(new URL(src,sourceURL),signal)).text()).replaceAll('\r\n','\n'):script.textContent;
    if(await sha(code)!==descriptor.sha256)throw Error('โค้ดเกมเปลี่ยนจากรุ่นที่ Adapter ตรวจแล้ว กรุณาปรับ Adapter ก่อน: '+id);
-   const patches=[...(descriptor.titles||[]).map(p=>({...p,value:'window.__NativeGameConfig.data.meta.title'})),...(descriptor.events||[]).map(p=>({...p,value:'window.NativeGameSession.praise();'})),...descriptor.overrides.map(p=>({...p,value:'window.NativeGameSession.binding('+JSON.stringify(p.binding)+')'})),...(descriptor.network||[]).map(p=>({...p,value:'window.NativeGameSession.resource('+JSON.stringify(p.url)+')'})),...descriptor.scores.map(p=>({...p,value:'window.NativeGameSession.record('+JSON.stringify(p.expression)+',('+code.slice(p.start,p.end)+'),'+p.expression+')'}))].sort((a,b)=>b.start-a.start);
+   const patches=[...(descriptor.repairs||[]),...(descriptor.inference||[]).map(p=>({...p,value:"window.NativeGameSession.inference("+JSON.stringify(p.name)+",("+code.slice(p.start,p.end)+"))"})),...(descriptor.titles||[]).map(p=>({...p,value:'window.__NativeGameConfig.data.meta.title'})),...(descriptor.events||[]).map(p=>({...p,value:'window.NativeGameSession.praise();'})),...descriptor.overrides.map(p=>({...p,value:'window.NativeGameSession.binding('+JSON.stringify(p.binding)+')'})),...(descriptor.network||[]).map(p=>({...p,value:'window.NativeGameSession.resource('+JSON.stringify(b.libraryAliases?.[p.url]||p.url)+')'})),...descriptor.scores.map(p=>({...p,value:'window.NativeGameSession.record('+JSON.stringify(p.expression)+',('+code.slice(p.start,p.end)+'),'+p.expression+')'}))].sort((a,b)=>b.start-a.start);
    let compiled=code,last=code.length;for(const p of patches){if(p.end>last)throw Error('ตำแหน่ง Adapter ทับซ้อนกัน');compiled=compiled.slice(0,p.start)+p.value+compiled.slice(p.end);last=p.start}
    script.removeAttribute('src');script.textContent=compiled.replace(/<\/script/gi,'<\\/script');
   }
+  // Audited legacy scripts may depend on declarations in a later script. Reorder only declared IDs.
+  for(const [id,after] of Object.entries(b.executionOrder||{})){const node=scripts.find((s,i)=>(s.getAttribute('src')||'inline-'+i)===id),anchor=scripts.find((s,i)=>(s.getAttribute('src')||'inline-'+i)===after);if(!node||!anchor)throw Error('Legacy script dependency missing');anchor.after(node)}
   const assetByPath=new Map(),assetByHash=new Map();Object.entries(b.assets).forEach(([key,a],i)=>{if(a.path)assetByPath.set(new URL(a.path,sourceURL).href,{key,index:i});if(a.sourceHash)assetByHash.set(a.sourceHash,{key,index:i})});
   const assetRef=async(value,relative=sourceURL)=>{if(value.startsWith('data:image/'))return assetByHash.get(await sha(value));try{return assetByPath.get(new URL(value,relative).href)}catch{}};
   const cssImages=async(css,relative=sourceURL)=>{const edits=[];for(const m of css.matchAll(/url\(\s*(["']?)(.*?)\1\s*\)/g)){const ref=await assetRef(m[2],relative);if(ref)edits.push({start:m.index,end:m.index+m[0].length,value:'var(--ng-img-'+ref.index+')'})}for(const e of edits.reverse())css=css.slice(0,e.start)+e.value+css.slice(e.end);return css};
@@ -29,7 +31,7 @@
   const base=dom.createElement('base');base.href=packaged?'images/':sourceURL.href;dom.head.prepend(base);
   const config={data,bindings:bindingData,assetDefinitions:b.assets,packaged,projectRoot:root.href,arFiles,sdkBases,resourceURLs};
   const bootstrap=dom.createElement('script');bootstrap.textContent='window.__NativeGameConfig='+JSON.stringify(config).replaceAll('<','\\u003c')+';';base.after(bootstrap);
-  const runtime=dom.createElement('script');runtime.textContent=(await(await get(new URL('js/native-game-session.js?v=shared-15',root),signal)).text()).replace(/<\/script/gi,'<\\/script');bootstrap.after(runtime);dom.title=data.meta.title;
+  const runtime=dom.createElement('script');runtime.textContent=(await(await get(new URL('js/native-game-session.js?v=shared-17',root),signal)).text()).replace(/<\/script/gi,'<\\/script');bootstrap.after(runtime);dom.title=data.meta.title;
   return '<!DOCTYPE html>\n'+dom.documentElement.outerHTML;
  }
  function shell(nativeHTML,data,viewport={minWidth:320,minHeight:520}){

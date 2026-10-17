@@ -1,0 +1,45 @@
+{
+  "id": "native-02",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 1,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "AR Paint Academy",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 4
+      }
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "state.score": 10
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 4
+      }
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "state.score": 10
+    }
+  },
+  "zipBytes": 27362917,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

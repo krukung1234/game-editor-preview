@@ -1,0 +1,49 @@
+{
+  "id": "native-03",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 50,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "AR คำตรงข้ามไทย",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1,
+        "Camera": 1
+      },
+      "frames": {
+        "Hands": 1
+      }
+    },
+    "pointerFallback": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 29
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1,
+        "Camera": 1
+      },
+      "frames": {
+        "Hands": 1
+      }
+    },
+    "pointerFallback": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 29
+    }
+  },
+  "zipBytes": 31535631,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

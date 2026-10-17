@@ -1,0 +1,45 @@
+{
+  "id": "native-23",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 1,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-words-english",
+  "preview": {
+    "ar": {
+      "constructors": {},
+      "frames": {
+        "HandLandmarker": 2
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "coins": 76,
+      "correct": 19
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {},
+      "frames": {
+        "HandLandmarker": 3
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "coins": 68,
+      "correct": 19
+    }
+  },
+  "zipBytes": 29801949,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

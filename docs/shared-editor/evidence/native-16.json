@@ -1,0 +1,43 @@
+{
+  "id": "native-16",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 80,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-kok-game",
+  "preview": {
+    "ar": {
+      "streams": 1,
+      "sdk": {
+        "constructors": {},
+        "frames": {}
+      }
+    },
+    "correctAndWrong": true,
+    "summary": true,
+    "scores": {
+      "score": 1
+    }
+  },
+  "zip": {
+    "ar": {
+      "streams": 1,
+      "sdk": {
+        "constructors": {},
+        "frames": {}
+      }
+    },
+    "correctAndWrong": true,
+    "summary": true,
+    "scores": {
+      "score": 1
+    }
+  },
+  "zipBytes": 2570828,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

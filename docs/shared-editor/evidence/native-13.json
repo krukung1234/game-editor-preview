@@ -1,0 +1,49 @@
+{
+  "id": "native-13",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 2,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-good-food-v3",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1,
+        "Camera": 1
+      },
+      "frames": {
+        "Hands": 226
+      }
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "preservedItemCounts": true,
+    "scores": {
+      "score": 18
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1,
+        "Camera": 1
+      },
+      "frames": {
+        "Hands": 157
+      }
+    },
+    "summary": true,
+    "correctAndWrong": true,
+    "preservedItemCounts": true,
+    "scores": {
+      "score": 18
+    }
+  },
+  "zipBytes": 26891245,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

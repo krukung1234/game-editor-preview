@@ -1,0 +1,47 @@
+{
+  "id": "native-24",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 2,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-คำพังเพย",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 1
+      }
+    },
+    "orderedWords": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 10
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 1
+      }
+    },
+    "orderedWords": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 10
+    }
+  },
+  "zipBytes": 73093055,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}
