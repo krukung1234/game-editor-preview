@@ -104,3 +104,15 @@ footer{padding:36px;text-align:center;color:#60657e;font-weight:800}
 .game-buttons :focus-visible{outline:3px solid #8963ef;outline-offset:3px}
 .hub-build{display:block;margin-top:7px;font-size:11px;font-weight:400;color:#777181}
 @media(max-width:420px){.game-buttons{gap:5px}.game-buttons .prompt-button,.game-buttons .play,.game-buttons .edit-game-button{font-size:12px;padding:8px 3px}}
+
+/* VIP hub v20: scoped presentation; original category and Prompt logic retained. */
+.login-screen{min-height:100dvh;background:radial-gradient(circle at 20% 20%,#e7ddff,transparent 45%),linear-gradient(145deg,#faf8ff,#edf5ff)}
+.login-card{width:min(420px,100%);padding:32px 28px;border:1px solid #ece6fb;border-radius:26px;box-shadow:0 18px 60px #52329718}
+.login-card h1{font-size:30px;line-height:1.3}.login-card p{font-size:15px;line-height:1.7;margin:12px 0}.login-card input{border-radius:14px;font:inherit;min-height:50px}.login-card button{width:100%;min-height:48px;font:700 16px/1.4 'Sarabun',system-ui,sans-serif}.login-card small{font-size:14px;margin-top:10px}
+.game-card{min-height:0;border:1px solid #eeeaf6;border-radius:22px}.cover{height:auto;flex:0 0 auto;aspect-ratio:16/9}.game-info{padding:0 16px 16px}.game-info h3{font-size:20px;line-height:1.4;margin:12px 0 8px}.game-info p{font-size:15px;font-weight:400;min-height:46px}.game-labels{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:12px;min-width:0}.game-labels .subject-pill{margin:0}.grade-pill{padding:4px 9px;border-radius:999px;background:#f1eff6;color:#625977;font-size:12px;max-width:100%;overflow-wrap:anywhere}
+.game-buttons{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.game-buttons .prompt-button{background:#f0e8ff;color:#6b3fc5;box-shadow:none}.game-buttons .edit-game-button{background:#2866e8;color:white}.game-buttons .play{background:#22984e;color:white;box-shadow:none}.game-buttons button:disabled{background:#eeedf3;color:#837f91;box-shadow:inset 0 0 0 1px #ddd9e7}.card-bottom{padding-top:16px}
+@media(max-width:620px){.login-screen{padding:16px}.login-card{padding:28px 22px}.login-card h1{font-size:28px}.game-grid{gap:16px}.game-info h3{font-size:21px}.game-buttons{gap:6px}.game-buttons .prompt-button,.game-buttons .play,.game-buttons .edit-game-button{min-height:48px}}
+
+.game-info h3{min-height:56px}.game-info p{min-height:66px}
+
+.game-buttons{grid-template-columns:minmax(0,.9fr) minmax(0,1.25fr) minmax(0,1fr)}

@@ -1,0 +1,102 @@
+{
+  "passed": true,
+  "checks": [
+    "No VIP flag: login only, incorrect code rejected, direct editor redirects, preview hosts deny access",
+    "31 cards: 31 qualified buttons, 0 developing, no technical notes",
+    "31 actual card Editor clicks open the selected game; all Play URLs point to existing original game files"
+  ],
+  "visual": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "buttons": [
+        {
+          "width": 79.421875,
+          "color": "rgb(240, 232, 255)"
+        },
+        {
+          "width": 110.3125,
+          "color": "rgb(40, 102, 232)"
+        },
+        {
+          "width": 88.25,
+          "color": "rgb(34, 152, 78)"
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "buttons": [
+        {
+          "width": 87.703125,
+          "color": "rgb(240, 232, 255)"
+        },
+        {
+          "width": 121.828125,
+          "color": "rgb(40, 102, 232)"
+        },
+        {
+          "width": 97.453125,
+          "color": "rgb(34, 152, 78)"
+        }
+      ]
+    },
+    {
+      "width": 375,
+      "height": 812,
+      "buttons": [
+        {
+          "width": 84.28125,
+          "color": "rgb(240, 232, 255)"
+        },
+        {
+          "width": 117.0625,
+          "color": "rgb(40, 102, 232)"
+        },
+        {
+          "width": 93.640625,
+          "color": "rgb(34, 152, 78)"
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "buttons": [
+        {
+          "width": 68.5625,
+          "color": "rgb(240, 232, 255)"
+        },
+        {
+          "width": 95.234375,
+          "color": "rgb(40, 102, 232)"
+        },
+        {
+          "width": 76.203125,
+          "color": "rgb(34, 152, 78)"
+        }
+      ]
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "buttons": [
+        {
+          "width": 98.5625,
+          "color": "rgb(240, 232, 255)"
+        },
+        {
+          "width": 136.90625,
+          "color": "rgb(40, 102, 232)"
+        },
+        {
+          "width": 109.515625,
+          "color": "rgb(34, 152, 78)"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "writes": []
+}

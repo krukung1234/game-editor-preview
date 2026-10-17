@@ -1,6 +1,7 @@
-/* Public entry to the existing editor: local source catalogue, no account or database SDK. */
+/* VIP entry using the existing local source catalogue. */
 window.APP_CONFIG={CATEGORIES:['สังคมศึกษา','ภาษาไทย','คณิตศาสตร์','วิทยาศาสตร์','ภาษาอังกฤษ','สุขศึกษา','ศิลปะ','การงานอาชีพ','วิทยาการคำนวณ','อื่น ๆ']};
 (async()=>{
+  if(!window.VipAccess?.require())return;
   const status=document.getElementById('catalogueStatus');
   try{
     const response=await fetch('js/editor-catalogue.json?v=editor-20261016-8',{credentials:'omit',cache:'no-store'});
@@ -11,7 +12,7 @@ window.APP_CONFIG={CATEGORIES:['สังคมศึกษา','ภาษาไ
       image.src='games/'+encodeURIComponent(game.folder)+'/cover.png';image.alt=game.title;image.loading='lazy';image.addEventListener('error',()=>{image.hidden=true;note.textContent+=' • ภาพปกไม่พร้อมใช้งาน'},{once:true});
       heading.textContent=game.title;const adapter=GameAdapters.find(game);button.type='button';button.className='editor-button primary';button.disabled=!adapter;
       const support=window.SharedNativeGames?.statusFor(game);
-      button.textContent=adapter?'⚙️ ปรับแต่งเกม':'⚙️ ยังไม่เปิดใช้งาน';note.textContent=adapter?(adapter.note||'ปรับแต่ง ทดลองเล่น และดาวน์โหลด ZIP ด้วยระบบเกมเดิม'):(support?.reason||'ยังไม่มี Adapter ที่ทดสอบการแก้ไขและดาวน์โหลดจริง จึงยังไม่เปิดให้ปรับแต่ง');
+      button.textContent=adapter?'⚙️ ปรับแต่งเกม':'⚙️ ยังไม่เปิดใช้งาน';note.textContent=adapter?'แก้ไขเนื้อหา ทดลองเล่น และดาวน์โหลดเกมฉบับปรับแต่ง':'กำลังพัฒนา';
       button.addEventListener('click',()=>GameEditor.open(game,button));card.append(image,heading,note,button);container.append(card);
     }
     status.textContent=catalogue.length+' เกม • เปิดใช้เฉพาะ Adapter ที่ผ่านการตรวจและทดสอบ';

@@ -1,0 +1,26 @@
+{
+  "result": "PASS",
+  "closeConfirmationPreservesNativePreview": true,
+  "previewEscapeStillReturnsToEditor": true,
+  "changedDataWarnsAfterDownload": true,
+  "sourceCommit": "89469c1dfd44342924677ea66a445be44ccd0a16",
+  "twoIndependentBrowserContexts": true,
+  "noEditorStorageWrites": true,
+  "freshOriginalOnEveryOpen": true,
+  "sharedWriteRequests": [],
+  "offlineExternalRequests": [],
+  "jsErrors": [],
+  "zipFiles": 78,
+  "zipMB": 103.3,
+  "nativeInlineScriptUnchanged": true,
+  "realMediaPipeInferenceWithFakeCamera": true,
+  "offlineLocalhostAllFiveZones": true,
+  "fileSchemeClickPlay": true,
+  "limitations": [
+    "Physical camera/hand not tested; fake browser camera used",
+    "Firestore server rules not audited; public Editor uses local files only",
+    "Other game adapters are qualified separately in SHARED-EDITOR-FINAL reports"
+  ],
+  "authorizedEditorEntry": true,
+  "authenticationTest": "VIP-V20-CARDS-PROMPT.json covers wrong/correct code and unauthenticated routes separately"
+}

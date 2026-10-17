@@ -1,7 +1,8 @@
 (() => {
   'use strict';
+  const hubRoot=new URL('../',document.currentScript.src);
   const el=(tag,props={},children=[])=>{const n=document.createElement(tag);for(const [k,v] of Object.entries(props)){if(k==='class')n.className=v;else if(k.startsWith('on'))n.addEventListener(k.slice(2),v);else if(k==='text')n.textContent=v;else n[k]=v}n.append(...children);return n};
-  let adapter,draft,original,activeZone='shopping',activeId,opener,loading=false,downloadedSignature=null;
+  let sourceCover='',adapter,draft,original,activeZone='shopping',activeId,opener,loading=false,downloadedSignature=null;
   let optionOriginalImages=new WeakMap();
   const dialog=el('dialog',{id:'gameEditor',class:'game-editor-dialog'});
   const status=el('p',{id:'editorStatus',class:'editor-status',role:'status'});
@@ -26,7 +27,7 @@
   const uid=()=>crypto.randomUUID().replaceAll('-','');
   let statusTimer;
   const announce=(message,error=false,temporary=false)=>{clearTimeout(statusTimer);status.textContent=message;status.classList.toggle('error',error);if(temporary)statusTimer=setTimeout(()=>{status.textContent=''},6000)};
-  const mark=()=>{announce('กำลังแก้ไขสำเนาชั่วคราว • ทดลองเล่นแล้วดาวน์โหลดก่อนปิดหน้าต่าง')};
+  const mark=()=>{const host=document.getElementById('editorInfoCover'),value=editableCoverValue();if(selectedSection==='info'&&host&&value!==null&&host.dataset.coverValue!==value)renderInfoCover();announce('กำลังแก้ไขสำเนาชั่วคราว • ทดลองเล่นแล้วดาวน์โหลดก่อนปิดหน้าต่าง')};
   const button=(text,fn,className='editor-button')=>el('button',{type:'button',text,class:className,onclick:fn});
   function field(label,id,value,oninput,type='text'){
     const props={id,value,oninput:event=>oninput(event.target.value)};
@@ -86,17 +87,28 @@
   }
   const capabilityNote=()=>adapter.bundle.userNote||'แก้ไขข้อมูลและภาพที่แสดงในหน้าต่างนี้ได้ โดยคงจำนวนด่านและรูปแบบการเล่นเดิม ภาพที่มีข้อความฝังอยู่ต้องเปลี่ยนด้วยภาพใหม่';
   function renderMeta(){
-    meta.replaceChildren();
+    const fields=el('div',{class:'editor-meta-fields'});meta.replaceChildren(fields);meta.classList.add('editor-info-layout');
     for(const [key,label,type] of [['title','ชื่อเกมใหม่'],['topic','หัวข้อบทเรียน']]){
-      const f=field(label,'editor-'+key,draft.meta[key],value=>{draft.meta[key]=value;mark()},type);meta.append(f);
+      const f=field(label,'editor-'+key,draft.meta[key],value=>{draft.meta[key]=value;mark()},type);fields.append(f);
     }
-    const title=meta.children[0];title.classList.add('editor-field-wide');
+    for(const child of fields.children)child.classList.add('editor-field-wide');
     for(const [key,label]of [['subject','🔒 วิชาต้นฉบับ'],['grade','🔒 ระดับชั้นต้นฉบับ']]){
-      const box=field(label,'editor-'+key,original.meta[key]||'ต้นฉบับไม่ระบุ',()=>{});box.classList.add('editor-original-meta');box.querySelector('input').readOnly=true;meta.insertBefore(box,meta.children[1+(key==='grade'?1:0)]);
+      const box=field(label,'editor-'+key,original.meta[key]||'ต้นฉบับไม่ระบุ',()=>{});box.classList.add('editor-original-meta');box.querySelector('input').readOnly=true;fields.insertBefore(box,fields.children[1+(key==='grade'?1:0)]);
     }
     const textSettings=el('details',{class:'editor-text-settings editor-field-wide'},[el('summary',{text:'ตั้งค่าข้อความเพิ่มเติม'})]);
     for(const [key,label,type] of [['description','คำอธิบายเกม','textarea'],['instructions',adapter.kind==='native'?'คำแนะนำเพิ่มเติม (แถบข้อมูลบทเรียน)':'ข้อความคำแนะนำ','textarea'],['praise',adapter.kind==='native'?'คำชมเมื่อคะแนนเพิ่ม / ผ่านภารกิจ':'ข้อความคำชม']])textSettings.append(field(label,'editor-'+key,draft.meta[key],value=>{draft.meta[key]=value;mark()},type));
-    meta.append(textSettings);if(adapter.kind==='native')meta.append(el('p',{class:'editor-note editor-field-wide',text:capabilityNote()}));
+    fields.append(textSettings);if(adapter.kind==='native')fields.append(el('p',{class:'editor-note editor-field-wide',text:capabilityNote()}));
+    meta.append(el('aside',{id:'editorInfoCover',class:'editor-info-cover'}));renderInfoCover();
+  }
+
+  function editableCoverValue(){if(!draft||!adapter)return null;if(adapter.kind!=='native')return draft.meta.cover;const key=adapter.bundle?.presentation?.coverAsset;return key?draft.assets[key]:null}
+  function renderInfoCover(){
+    const host=document.getElementById('editorInfoCover');if(!host||!draft)return;
+    const key=adapter.kind==='native'?adapter.bundle.presentation?.coverAsset:null;
+    if(adapter.kind!=='native'||key){const get=()=>key?draft.assets[key]:draft.meta.cover,baseline=key?original.assets[key]:original.meta.cover;
+      const field=imageField('ภาพหน้าปกเกม',get(),value=>{if(key)draft.assets[key]=value;else draft.meta.cover=value;imagesMounted=false;if(field.isConnected)host.dataset.coverValue=value},baseline);host.dataset.coverValue=get();host.replaceChildren(field);
+      if(adapter.id==='native-06')host.append(el('p',{class:'editor-note',text:'ภาพนี้ใช้ร่วมกับขนมบางจุดในเกม ควรรักษาขนาดและการจัดวางเดิม'}));
+    }else{const img=el('img',{src:sourceCover,alt:'ภาพหน้าปกเกมต้นฉบับ',class:'editor-image',loading:'lazy'});img.addEventListener('error',()=>{img.onerror=null;if(img.src!==adapter.fallbackImage)img.src=adapter.fallbackImage},{once:true});host.replaceChildren(el('b',{text:'ภาพหน้าปกเกมต้นฉบับ'}),img,el('p',{class:'editor-note',text:'ภาพนี้เป็นปกในรายการเกม เกมนี้ยังไม่มีภาพปกแยกที่เปลี่ยนได้ ใช้ภาพหรือไอคอนที่รองรับในแท็บรูปภาพ'}));}
   }
 
   function renderImageGallery(entries,offset=0,filter='all'){
@@ -120,7 +132,7 @@
     for(const [key,label] of [['name','ชื่อเขต / ชื่อด่าน'],['description','ข้อความบนปุ่มเลือกด่าน'],['instructions','คำแนะนำประจำด่าน (ไม่บังคับ)']])stageFields.append(field(label,'editor-stage-'+key,stage[key],value=>{stage[key]=value;mark();renderTabs();imagesMounted=false},key==='instructions'?'textarea':'text'));
   }
   function selectSection(section){
-    selectedSection=section;
+    selectedSection=section;if(section==='info')renderInfoCover();
     for(const [key,panel] of Object.entries(panels)){panel.hidden=key!==section;const tab=document.getElementById('editorTab-'+key);tab.setAttribute('aria-selected',String(key===section));tab.tabIndex=key===section?0:-1}
     if(section==='missions'&&!missionsMounted){renderTabs();renderQuestions();missionsMounted=true}
     if(section==='images'&&!imagesMounted)renderImages();
@@ -324,7 +336,7 @@
 
 
   const closeButton=button('×',close,'editor-close');closeButton.id='editorCloseBtn';closeButton.setAttribute('aria-label','ปิดหน้าต่างปรับแต่งเกม');
-  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • SHARED • รุ่น 20261017-19'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้ไขเนื้อหาและคำถาม โดยคงรูปแบบการเล่นเดิม'})]),closeButton]);
+  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • SHARED • รุ่น 20261017-20'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้ไขเนื้อหาและคำถาม โดยคงรูปแบบการเล่นเดิม'})]),closeButton]);
   const fixedHeading=el('div',{class:'editor-fixed-heading'},[heading,el('p',{class:'editor-session-note',text:'ไม่ต้องมีปุ่มบันทึก แก้ไขแล้วทดลองเล่นและดาวน์โหลดได้ทันที'}),status]);
   const addQuestionButton=button('+ เพิ่มภารกิจ',()=>addQuestion(false));
   const toolbar=el('div',{class:'editor-toolbar'},[el('h3',{text:'จัดการคำถามและคำตอบ'}),count,addQuestionButton]);
@@ -361,7 +373,9 @@
   // Backdrop clicks can be window-activation clicks; only X/Escape request closing.
   document.body.append(dialog,closeConfirmation);
   window.GameEditor={async open(game,button){
+    if(!window.VipAccess?.require())return;
     if(loading||dialog.open)return;adapter=GameAdapters.find(game);if(!adapter)return;
+    sourceCover=game.cover||game.coverUrl||game.image||new URL('games/'+encodeURIComponent(adapter.folder||'AR mini city')+'/cover.png',hubRoot).href;
     loading=true;downloadedSignature=null;opener=button;session++;const token=session,controller=new AbortController();operation=controller;
     pageOverflow=document.body.style.overflow;document.body.style.overflow='hidden';body.hidden=true;footer.hidden=true;sectionTabs.hidden=true;playPreview.hidden=true;dialog.showModal();announce('กำลังอ่านข้อมูลต้นฉบับของเกม…');
     try{

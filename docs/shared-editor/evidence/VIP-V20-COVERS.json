@@ -1,0 +1,113 @@
+{
+  "rows": [
+    {
+      "id": "native-01",
+      "key": "embedded-228b733ab378ea7b73d0",
+      "preview": {
+        "width": 1,
+        "title": "IMG20 AR Career Quest ตามล่าหาอาชีพ",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG20 AR Career Quest ตามล่าหาอาชีพ",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-06",
+      "key": "file-cover.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG20 AR-bakery-pastry",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG20 AR-bakery-pastry",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-14",
+      "key": "file-assets/cover.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG20 AR-How-Do-You-Feel",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG20 AR-How-Do-You-Feel",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-22",
+      "key": "file-home-cover.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG20 ar-sushi-game",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG20 ar-sushi-game",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-25",
+      "key": "file-assets/home-cover.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG20 AR-สัตว์มีกระดูกสันหลัง",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG20 AR-สัตว์มีกระดูกสันหลัง",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-29",
+      "key": "file-assets/cover.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG20 AR_Magnet_Lab",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG20 AR_Magnet_Lab",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    }
+  ],
+  "writes": []
+}

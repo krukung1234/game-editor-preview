@@ -333,7 +333,7 @@ function render() {
           </div>
 
           <div class="game-info">
-            <span class="subject-pill">${safeText(category)}</span>
+            <div class="game-labels"><span class="subject-pill">${safeText(category)}</span><span class="grade-pill">${safeText(game.grade || game.gradeLevel || "ไม่ระบุระดับชั้น")}</span></div>
 
             <h3>${safeText(game.title || "ไม่มีชื่อเกม")}</h3>
 
@@ -452,6 +452,7 @@ function resetPromptDefaults() {
 }
 
 function openPrompt(gameId) {
+  if(!window.VipAccess?.require())return;
   const game = games.find(item => String(item.id) === String(gameId));
   if (!game || !hasPrompt(game)) { alert("เกมนี้ยังไม่มี Prompt"); return; }
   promptOpener = document.activeElement;

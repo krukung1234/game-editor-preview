@@ -16,7 +16,7 @@
  };
  async function load(entry,signal){
   if(loaded?.id===entry.id&&loaded.bundle)return loaded.bundle;
-  const response=await fetch(new URL('js/adapters/native/'+entry.id+'.json?v=shared-19',root),{credentials:'omit',cache:'force-cache',signal});
+  const response=await fetch(new URL('js/adapters/native/'+entry.id+'.json?v=shared-20',root),{credentials:'omit',cache:'force-cache',signal});
   if(!response.ok)throw Error('อ่าน Adapter ของเกมนี้ไม่สำเร็จ');const bundle=await response.json();if(bundle.id!==entry.id||bundle.version!==1)throw Error('Adapter ไม่ตรงกับเกม');
   // Defaults come from the immutable native blueprint; do not store a duplicate text bank in JSON.
   bundle.values=Object.fromEntries(bundle.fields.map(field=>{const value=read(bundle.bindings[field.binding].data,field.path);return [field.id,field.kind==='boolean'?Boolean(value):field.kind==='grid'?value.map(row=>row.join(' ')).join('\n'):value]}));

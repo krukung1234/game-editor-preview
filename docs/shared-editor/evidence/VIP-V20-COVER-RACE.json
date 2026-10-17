@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "checks": [
+    "mini-city: info cover upload/reset, 5 viewports, no horizontal overflow",
+    "native-01: info cover upload/reset, 5 viewports, no horizontal overflow",
+    "Unsupported start-cover is read-only with explanation; no fake upload button"
+  ],
+  "writes": [],
+  "physicalDevices": false
+}
