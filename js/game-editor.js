@@ -82,8 +82,9 @@
     const choose=button('🖼️ เปลี่ยนภาพ',event=>{event.stopPropagation();file.click()},'editor-button subtle editor-choose-file');
     const restore=button('↺ คืนภาพต้นฉบับ',()=>{change(baseline??'');releaseImages();img.hidden=false;showImage(baseline??'');mark()},'editor-button subtle');
     showImage(value);
-    return el('div',{class:'editor-image-field'},[caption,img,note,el('div',{class:'editor-image-actions'},[choose,restore]),el('small',{text:/หน้าปก|พื้นหลัง|ภาพฉาก/.test(label)?'แนะนำอัตราส่วน 16:9 โดยรักษาตำแหน่งปุ่มเดิม':'รักษาสัดส่วนรูปต้นฉบับ โดยเฉพาะภาพ Sprite Sheet'}),file]);
+    return el('div',{class:'editor-image-field'},[caption,img,note,el('div',{class:'editor-image-actions'},[choose,restore]),el('small',{text:/หน้าปก|พื้นหลัง|ภาพฉาก/.test(label)?'แนะนำอัตราส่วน 16:9 โดยรักษาตำแหน่งปุ่มเดิม':'ใช้สัดส่วนเดิม หากรูปมีหลายช่องต้องรักษาตำแหน่งแต่ละช่อง'}),file]);
   }
+  const capabilityNote=()=>adapter.bundle.userNote||'แก้ไขข้อมูลและภาพที่แสดงในหน้าต่างนี้ได้ โดยคงจำนวนด่านและรูปแบบการเล่นเดิม ภาพที่มีข้อความฝังอยู่ต้องเปลี่ยนด้วยภาพใหม่';
   function renderMeta(){
     meta.replaceChildren();
     for(const [key,label,type] of [['title','ชื่อเกมใหม่'],['topic','หัวข้อบทเรียน']]){
@@ -95,7 +96,7 @@
     }
     const textSettings=el('details',{class:'editor-text-settings editor-field-wide'},[el('summary',{text:'ตั้งค่าข้อความเพิ่มเติม'})]);
     for(const [key,label,type] of [['description','คำอธิบายเกม','textarea'],['instructions',adapter.kind==='native'?'คำแนะนำเพิ่มเติม (แถบข้อมูลบทเรียน)':'ข้อความคำแนะนำ','textarea'],['praise',adapter.kind==='native'?'คำชมเมื่อคะแนนเพิ่ม / ผ่านภารกิจ':'ข้อความคำชม']])textSettings.append(field(label,'editor-'+key,draft.meta[key],value=>{draft.meta[key]=value;mark()},type));
-    meta.append(textSettings);if(adapter.kind==='native')meta.append(el('p',{class:'editor-note editor-field-wide',text:'ขอบเขตของเกมนี้: '+adapter.bundle.note+' • กติกาและรูปแบบด่านเดิมยังคงอยู่ ข้อความที่ฝังในภาพต้องเปลี่ยนที่ตัวภาพ'}));
+    meta.append(textSettings);if(adapter.kind==='native')meta.append(el('p',{class:'editor-note editor-field-wide',text:capabilityNote()}));
   }
 
   function renderImageGallery(entries,offset=0,filter='all'){
@@ -103,7 +104,7 @@
     const filters=el('div',{class:'editor-image-filters'});for(const [key,label]of Object.entries(kinds)){const total=key==='all'?entries.length:entries.filter(item=>item.kind===key).length;if(!total)continue;const b=button(label+' ('+total+')',()=>renderImageGallery(entries,0,key));b.setAttribute('aria-pressed',String(key===filter));filters.append(b)}imagePanel.append(filters);
     const selected=entries.filter(item=>filter==='all'||item.kind===filter),page=selected.slice(offset,offset+12);
     for(const item of page){const card=el('section',{class:'editor-scene-card'});card.dataset.scene=item.key;card.append(imageField(item.label,item.get(),item.set,item.original));imagePanel.append(card)}
-    const controls=el('div',{class:'editor-image-actions'},[el('p',{class:'editor-note',text:(selected.length?offset+1:0)+'–'+Math.min(offset+12,selected.length)+' / '+selected.length+' ภาพ • ภาพที่มีข้อความฝังหรือ Sprite Sheet ต้องรักษาขนาดและช่องเดิม'})]);
+    const controls=el('div',{class:'editor-image-actions'},[el('p',{class:'editor-note',text:(selected.length?offset+1:0)+'–'+Math.min(offset+12,selected.length)+' / '+selected.length+' ภาพ • ภาพที่มีข้อความหรือหลายช่องต้องรักษาขนาดและตำแหน่งเดิม'})]);
     if(offset>0)controls.append(button('← ภาพก่อนหน้า',()=>renderImageGallery(entries,offset-12,filter)));if(offset+12<selected.length)controls.append(button('ภาพถัดไป →',()=>renderImageGallery(entries,offset+12,filter)));imagePanel.append(controls);imagesMounted=true;
   }
   function renderImages(){
@@ -207,7 +208,7 @@
     for(const group of groups){const b=button(group.label,()=>{activeZone=group.id;activeId=group.records[0]?.id;workspace.dataset.details='false';renderNativeQuestions()});b.classList.toggle('active',group.id===activeZone);b.setAttribute('aria-pressed',String(group.id===activeZone));tabs.append(b)}
   }
   function renderNativeQuestions(){
-    renderNativeTabs();const group=nativeGroup();list.replaceChildren();stageFields.replaceChildren(el('p',{class:'editor-note',text:adapter.bundle.note+' • จำนวนรายการและโครงสร้างคงเดิมตามกติกาเกม'}));
+    renderNativeTabs();const group=nativeGroup();list.replaceChildren();stageFields.replaceChildren(el('p',{class:'editor-note',text:capabilityNote()}));
     if(!group)return;count.textContent=group.records.length+' รายการในชุดนี้';
     for(const [index,row]of group.records.entries()){
       const f=adapter.bundle.fields.find(f=>f.id===row.fields[0]),label=String(draft.values[f?.id]??row.label).split('\n')[0].slice(0,80),select=button((index+1)+'. '+label,()=>{activeId=row.id;renderNativeQuestion();workspace.dataset.details='true';for(const item of list.children)item.classList.toggle('active',item.dataset.id===row.id)},'editor-question-select');
@@ -220,7 +221,7 @@
     details.append(button('← กลับรายการภารกิจ',()=>{workspace.dataset.details='false';body.scrollTop=0},'editor-button editor-back-list'));
     for(const id of row.fields){const f=adapter.bundle.fields.find(f=>f.id===id),value=draft.values[id],change=v=>{draft.values[id]=v;mark()};let node;
       if(f.kind==='boolean'){const checkbox=el('input',{id:'native-'+id,type:'checkbox',checked:value,onchange:e=>change(e.target.checked)});node=el('div',{class:'editor-field'},[el('label',{htmlFor:checkbox.id,text:f.label}),checkbox])}
-      else if(f.kind==='select')node=selectField(f.label,'native-'+id,f.choices,value,change);
+      else if(f.kind==='select')node=selectField(f.label,'native-'+id,f.choices.map(v=>f.choiceLabels?.[v]?[v,f.choiceLabels[v]]:v),value,change);
       else{node=field(f.label,'native-'+id,value,change,f.kind==='number'?'number':'textarea');const input=node.querySelector('input,textarea');if(f.kind==='grid'){input.rows=4;input.inputMode='numeric';input.placeholder='1 0 0 4\n0 4 1 0\n0 1 4 0\n4 0 0 1'}if(f.kind==='number'){input.min=f.min??0;input.max=f.max??100000}}
       node.dataset.nativeField=id;details.append(node);
     }
@@ -250,8 +251,8 @@
     else if(error.field==='ราคา')target=document.getElementById('editor-price-'+(error.optionIndex||0));
     else if(error.field==='ตัวเลือก')target=document.getElementById('editor-option-'+(error.optionIndex||0));
     else target=document.getElementById(fields[error.field]);
-    
-    
+
+
     target=target||panels[selectedSection].querySelector('input,textarea,button');target?.focus({preventScroll:true});target?.scrollIntoView({block:'center'});
   }
   async function ready(signal){
@@ -323,7 +324,7 @@
 
 
   const closeButton=button('×',close,'editor-close');closeButton.id='editorCloseBtn';closeButton.setAttribute('aria-label','ปิดหน้าต่างปรับแต่งเกม');
-  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • SHARED • รุ่น 20261017-17'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้ไขเนื้อหาและคำถาม โดยคงรูปแบบการเล่นเดิม'})]),closeButton]);
+  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • SHARED • รุ่น 20261017-18'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้ไขเนื้อหาและคำถาม โดยคงรูปแบบการเล่นเดิม'})]),closeButton]);
   const fixedHeading=el('div',{class:'editor-fixed-heading'},[heading,el('p',{class:'editor-session-note',text:'ไม่ต้องมีปุ่มบันทึก แก้ไขแล้วทดลองเล่นและดาวน์โหลดได้ทันที'}),status]);
   const addQuestionButton=button('+ เพิ่มภารกิจ',()=>addQuestion(false));
   const toolbar=el('div',{class:'editor-toolbar'},[el('h3',{text:'จัดการคำถามและคำตอบ'}),count,addQuestionButton]);

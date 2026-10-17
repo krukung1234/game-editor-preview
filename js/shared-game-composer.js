@@ -31,7 +31,7 @@
   const base=dom.createElement('base');base.href=packaged?'images/':sourceURL.href;dom.head.prepend(base);
   const config={data,bindings:bindingData,assetDefinitions:b.assets,packaged,projectRoot:root.href,arFiles,sdkBases,resourceURLs};
   const bootstrap=dom.createElement('script');bootstrap.textContent='window.__NativeGameConfig='+JSON.stringify(config).replaceAll('<','\\u003c')+';';base.after(bootstrap);
-  const runtime=dom.createElement('script');runtime.textContent=(await(await get(new URL('js/native-game-session.js?v=shared-17',root),signal)).text()).replace(/<\/script/gi,'<\\/script');bootstrap.after(runtime);dom.title=data.meta.title;
+  const runtime=dom.createElement('script');runtime.textContent=(await(await get(new URL('js/native-game-session.js?v=shared-18',root),signal)).text()).replace(/<\/script/gi,'<\\/script');bootstrap.after(runtime);dom.title=data.meta.title;
   return '<!DOCTYPE html>\n'+dom.documentElement.outerHTML;
  }
  function shell(nativeHTML,data,viewport={minWidth:320,minHeight:520}){

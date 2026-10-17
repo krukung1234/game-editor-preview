@@ -30,6 +30,6 @@ git push -u origin development/shared-editor-adapters
 
 GitHub Pages จะแสดงโค้ดต่อเมื่อ source ของ Pages ใช้ branch ที่ถูก deploy หรือมี workflow ที่เผยแพร่ branch ทดลองนี้ การ Push branch ทดลองอย่างเดียวอาจไม่เปลี่ยนหน้า Pages ที่ตั้ง source เป็น main ห้าม merge เข้า main อัตโนมัติ ใช้ deployment สำหรับ preview branch ตามที่ผู้ใช้ตรวจอนุมัติก่อน และตรวจ Settings > Pages ของ game-editor-preview เท่านั้น
 
-ไฟล์ CSS/JS ของ Editor ใช้ version shared-17 เพื่อเปลี่ยน cache key หลังอัปโหลดครบ ใช้ Ctrl+F5 และตรวจ Network ว่าโหลด shared-17 ไม่ใช่รุ่นเก่า ห้ามอ้างว่าเว็บไซต์ออนไลน์เปลี่ยนแล้วหากยังไม่ได้ deploy
+ไฟล์ CSS/JS ของ Editor ใช้ version shared-18 เพื่อเปลี่ยน cache key หลังอัปโหลดครบ ใช้ Ctrl+F5 และตรวจ Network ว่าโหลด shared-18 ไม่ใช่รุ่นเก่า ห้ามอ้างว่าเว็บไซต์ออนไลน์เปลี่ยนแล้วหากยังไม่ได้ deploy
 
 อ่าน docs/shared-editor/REPORT.md สำหรับตาราง 31 เกมและข้อจำกัดทั้งหมด
