@@ -2,13 +2,27 @@
   "passed": true,
   "games": 31,
   "checks": [
-    "31 games: exact per-game reference, standalone delivery, reference-conflict precedence, original defaults, reset and reopen isolation",
-    "Custom subject, AI off, actual system clipboard",
+    "31 games: per-game mechanics preserved, legacy file-gates rewritten, standalone delivery, reference-conflict precedence, original defaults, reset and reopen isolation",
+    "Acceptance: AR Word Quest to Thai opposites P3 retains 3x10, two choices, pinch, AR, scoring and pointer fallback",
+    "Custom subject, AI off, user-detail file-gate rewritten without mutating form, actual clipboard",
     "Clipboard fallback success and failure",
     "Desktop, tablet, mobile 320/375px and landscape: no horizontal overflow, fixed header/footer, 180px output",
     "Focus trap, Escape/X/backdrop, unchanged catalogue and zero network writes"
   ],
   "errors": [],
   "writes": [],
-  "limitation": "Firestore is mocked with 31 distinct fixtures from actual game directories. This tests the Prompt generator, not live Firestore records or an external AI producing games. Physical AR and touch devices are not tested."
+  "limitation": "Firestore is mocked with 31 distinct fixtures from actual game directories. This tests the Prompt generator, not live Firestore records or an external AI producing games. Physical AR and touch devices are not tested.",
+  "formatsCovered": [
+    "Quiz / Word Quest",
+    "Programming maze",
+    "Sudoku",
+    "Drag-sort trash",
+    "Word fishing"
+  ],
+  "unit": {
+    "passed": true,
+    "legacyVariants": 20,
+    "preservedNegativesAndDelivery": 9,
+    "mechanicsBeforeAndAfterPreserved": true
+  }
 }
