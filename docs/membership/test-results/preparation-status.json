@@ -1,0 +1,25 @@
+{
+  "phase": "preparation only",
+  "date": "2026-10-17",
+  "unitTests": {
+    "passed": 8,
+    "failed": 0,
+    "evidence": "unit-tests.tap"
+  },
+  "syntaxFiles": [
+    "membership-backend/functions/index.cjs",
+    "membership-backend/functions/policy.cjs",
+    "membership-backend/test/emulator.test.cjs",
+    "membership-backend/functions/test/client.test.cjs",
+    "membership-backend/functions/test/policy.test.cjs",
+    "js/membership-client.mjs",
+    "js/membership-config.example.js"
+  ],
+  "legacyStaticVerification": "PASS 31; no full gameplay repeated",
+  "emulatorIntegration": "NOT RUN: Firebase CLI/npm/dependencies unavailable",
+  "production": "NOT CONNECTED; no deploy, billing, rules change or writes",
+  "existingSiteIntegration": "NOT ENABLED; existing HTML unchanged in this task",
+  "emailDelivery": "NOT IMPLEMENTED: outbox only",
+  "protectedFilesGitDiff": [],
+  "configSHA256": "19fb0e3d92747449ee6d98efd42c48bff83f85eced7ea61c1613c5a0cfc04b9d"
+}

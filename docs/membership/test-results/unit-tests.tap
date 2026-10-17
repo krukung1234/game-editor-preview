@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: client rejects legacy project, remote emulator, unknown mode and unreviewed production before use
+ok 1 - client rejects legacy project, remote emulator, unknown mode and unreviewed production before use
+  ---
+  duration_ms: 3.3594
+  type: 'test'
+  ...
+# Subtest: late approved response cannot reopen disabled session; subscriptions dispose once
+ok 2 - late approved response cannot reopen disabled session; subscriptions dispose once
+  ---
+  duration_ms: 1.2477
+  type: 'test'
+  ...
+# Subtest: sign out invalidates an in-flight access request without using persistent membership flags
+ok 3 - sign out invalidates an in-flight access request without using persistent membership flags
+  ---
+  duration_ms: 0.9029
+  type: 'test'
+  ...
+# Subtest: never accepts old, unset, mismatched or non-demo emulator project
+ok 4 - never accepts old, unset, mismatched or non-demo emulator project
+  ---
+  duration_ms: 1.0391
+  type: 'test'
+  ...
+# Subtest: registration only accepts bounded Facebook name; cannot smuggle status/password/role
+ok 5 - registration only accepts bounded Facebook name; cannot smuggle status/password/role
+  ---
+  duration_ms: 0.3592
+  type: 'test'
+  ...
+# Subtest: pending, rejected, disabled and missing membership cannot enter; verified lifetime has no expiry
+ok 6 - pending, rejected, disabled and missing membership cannot enter; verified lifetime has no expiry
+  ---
+  duration_ms: 0.295
+  type: 'test'
+  ...
+# Subtest: admin must be verified and server claims current; client claims/admin_ok do not grant role
+ok 7 - admin must be verified and server claims current; client claims/admin_ok do not grant role
+  ---
+  duration_ms: 0.2564
+  type: 'test'
+  ...
+# Subtest: status transition matrix and revision checks prevent stale approvals and self approval
+ok 8 - status transition matrix and revision checks prevent stale approvals and self approval
+  ---
+  duration_ms: 1.6254
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 88.809

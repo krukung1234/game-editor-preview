@@ -1,0 +1,8 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Staging only: no game migration or public download tokens yet.
+    // Fail closed until a protected resource delivery design is tested.
+    match /{path=**} { allow read, write: if false; }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name":"game-editor-membership-preparation","private":true,"version":"0.1.0",
+  "engines":{"node":"22"},
+  "scripts":{
+    "test":"node --test functions/test/*.test.cjs",
+    "emulators":"firebase emulators:start --project demo-game-editor-membership",
+    "test:emulator":"firebase emulators:exec --project demo-game-editor-membership --only auth,firestore,functions,storage \"node --test test/emulator.test.cjs\""
+  },
+  "devDependencies":{"firebase-tools":"^14.0.0","@firebase/rules-unit-testing":"^4.0.0","firebase":"^11.0.0"}
+}
