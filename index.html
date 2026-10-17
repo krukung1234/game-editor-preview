@@ -72,10 +72,10 @@
     <footer>© ครูกุ้งสอนไอที | Educational Game Hub<span class="hub-build">Preview • Game Editor รุ่น 20261016-11</span></footer>
   </div>
 
-  <div id="promptModal" data-prompt-version="20261016-7" class="prompt-modal" aria-hidden="true">
+  <div id="promptModal" data-prompt-version="20261017-standalone" class="prompt-modal" aria-hidden="true">
     <div class="prompt-modal-box" role="dialog" aria-modal="true" aria-labelledby="promptTitle">
       <header class="prompt-modal-heading">
-        <div><span class="prompt-version">Prompt · รุ่น 20261016-7</span><h2 id="promptTitle">📋 ปรับแต่ง Prompt</h2><p>เลือกบทเรียนใหม่ แล้วนำ Prompt ไปใช้กับ AI พร้อมโค้ดเกมต้นฉบับ</p></div>
+        <div><span class="prompt-version">Prompt · รุ่น 20261017-standalone</span><h2 id="promptTitle">📋 ปรับแต่ง Prompt</h2><p>เลือกบทเรียนใหม่ แล้วคัดลอก Prompt ไปวางใน AI โดยไม่ต้องแนบโค้ดเพิ่ม</p></div>
         <button type="button" class="prompt-close" id="promptCloseBtn" aria-label="ปิดหน้าต่าง Prompt">×</button>
       </header>
       <div class="prompt-body" id="promptBody">
@@ -89,7 +89,7 @@
           <label>รายละเอียดเนื้อหา คำถาม และคำตอบที่ต้องการ <small>ไม่บังคับ</small><textarea id="promptDetails" rows="3" maxlength="20000" placeholder="เช่น 5 ข้อ ข้อละ 3 ตัวเลือก: ปลาอาศัยอยู่ที่ไหน? เฉลย: ในน้ำ พร้อมอธิบายสั้น ๆ"></textarea></label>
           <p id="promptValidation" role="alert" hidden></p>
         </form>
-        <p id="promptHint">เริ่มจากข้อมูลต้นฉบับทุกครั้ง การปรับ Prompt ไม่เปลี่ยนข้อมูลเกมบนเว็บไซต์</p>
+        <p id="promptHint">ใช้รายละเอียด Prompt ต้นฉบับของเกมที่เลือก ความใกล้เคียงขึ้นกับข้อมูลอ้างอิง การปรับนี้ไม่เปลี่ยนเกมบนเว็บไซต์</p>
         <label class="prompt-result-label" for="promptText">Prompt ที่สร้าง</label>
         <textarea id="promptText" readonly placeholder="เลือกวิชา ระดับชั้น และหัวข้อ แล้วกด ✨ สร้าง Prompt" aria-label="ข้อความ Prompt"></textarea>
       </div>
@@ -111,6 +111,6 @@
   <script src="js/personal-game-download.js?v=shared-15"></script>
   <script src="js/learning-options.js?v=choices-20261016-10"></script>
   <script src="js/game-editor.js?v=shared-15"></script>
-  <script src="js/app.js?v=shared-15"></script>
+  <script src="js/app.js?v=prompt-20261017-standalone"></script>
 </body>
 </html>

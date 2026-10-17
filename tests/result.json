@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "games": 31,
+  "checks": [
+    "31 games: exact per-game reference, standalone delivery, reference-conflict precedence, original defaults, reset and reopen isolation",
+    "Custom subject, AI off, actual system clipboard",
+    "Clipboard fallback success and failure",
+    "Desktop, tablet, mobile 320/375px and landscape: no horizontal overflow, fixed header/footer, 180px output",
+    "Focus trap, Escape/X/backdrop, unchanged catalogue and zero network writes"
+  ],
+  "errors": [],
+  "writes": [],
+  "limitation": "Firestore is mocked with 31 distinct fixtures from actual game directories. This tests the Prompt generator, not live Firestore records or an external AI producing games. Physical AR and touch devices are not tested."
+}
