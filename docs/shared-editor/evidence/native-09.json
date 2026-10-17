@@ -15,7 +15,7 @@
         "Camera": 1
       },
       "frames": {
-        "Hands": 4
+        "Hands": 10
       }
     },
     "summary": true,
@@ -31,7 +31,7 @@
         "Camera": 1
       },
       "frames": {
-        "Hands": 4
+        "Hands": 10
       }
     },
     "summary": true,
@@ -40,7 +40,7 @@
       "game.score": 4
     }
   },
-  "zipBytes": 35335833,
+  "zipBytes": 35334708,
   "errors": [],
   "outside": [],
   "result": "PASS"

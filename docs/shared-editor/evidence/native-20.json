@@ -12,7 +12,7 @@
     "ar": {
       "constructors": {},
       "frames": {
-        "HandLandmarker": 16
+        "HandLandmarker": 1
       }
     },
     "summary": true,
@@ -25,7 +25,7 @@
     "ar": {
       "constructors": {},
       "frames": {
-        "HandLandmarker": 14
+        "HandLandmarker": 1
       }
     },
     "summary": true,
@@ -34,7 +34,7 @@
       "score": 49
     }
   },
-  "zipBytes": 33768155,
+  "zipBytes": 33766982,
   "errors": [],
   "outside": [],
   "result": "PASS"

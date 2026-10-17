@@ -15,8 +15,8 @@
         "SelfieSegmentation": 1
       },
       "frames": {
-        "Hands": 36,
-        "SelfieSegmentation": 12
+        "Hands": 29,
+        "SelfieSegmentation": 10
       }
     },
     "callbackInputs": true,
@@ -33,8 +33,8 @@
         "SelfieSegmentation": 1
       },
       "frames": {
-        "Hands": 26,
-        "SelfieSegmentation": 9
+        "Hands": 34,
+        "SelfieSegmentation": 12
       }
     },
     "callbackInputs": true,
@@ -44,7 +44,7 @@
       "score": 5
     }
   },
-  "zipBytes": 46488920,
+  "zipBytes": 46487749,
   "errors": [],
   "outside": [],
   "result": "PASS"

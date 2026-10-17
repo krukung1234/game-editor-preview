@@ -4,7 +4,7 @@
 
 1. native-adapter-catalogue.js เก็บเฉพาะ metadata และสถานะรับรอง enabled=true ใช้ได้เฉพาะ qualification=complete
 2. เปิด Editor แล้วโหลด Blueprint เฉพาะเกมนั้นผ่าน load() รายการ values เริ่มต้นคำนวณจาก binding paths ลดคลังข้อความซ้ำ จากนั้น clone เป็น Working Copy แยกจากต้นฉบับ
-3. ฟอร์มสร้างจาก field capabilities จริง ไม่เปิดจำนวนด่าน/ID/ฟิสิกส์/ตำแหน่งที่ยังไม่มี validator รูปแบ่งหน้า 12 รายการ รายการวิชา/ชั้นจาก learning-options.js เดิม แต่แต่ละหน้าต่างมี state ของตนเอง
+3. ฟอร์มสร้างจาก field capabilities จริง ไม่เปิดจำนวนด่าน/ID/ฟิสิกส์/ตำแหน่งที่ยังไม่มี validator รูปแบ่งหน้า 12 รายการ วิชาและระดับชั้นอ่านจากต้นฉบับและแสดงแบบอ่านอย่างเดียว ไม่มี state ร่วมกับ Prompt
 4. Preview ใช้ต้นฉบับ games/<folder>/index.html และสคริปต์จริง ผ่าน composer ที่ตรวจ SHA-256 ของ HTML และแต่ละสคริปต์ก่อนแทนเฉพาะตำแหน่ง AST ของ data initializer ที่อนุญาต พร้อม score observation และตำแหน่งชื่อเกมที่ประกาศชัดใน manifest ไม่สุ่มค้นหาแล้วแทนข้อความ HTML
 5. shared-game-player เป็นกรอบข้อมูลบทเรียนและ iframe ของ engine จริง การเปลี่ยนคำถาม/คำตอบเกิดใน data initializer ของ engine ไม่ใช่ iframe แสดงตัวอย่างข้อมูลเฉย ๆ ขนาด viewport ขั้นต่ำระบุได้ตามประเภทเกมเพื่อรักษาพิกัด/สัดส่วนในจอสั้น ไม่มีการเปลี่ยนกติกาเพื่อให้พอดีจอ
 6. native-game-session อยู่ภายในเกมส่วนตัวเท่านั้น เชื่อมรูปที่แก้กับ path เดิม และเก็บ native progress ใน memory จัดการ stream/model/observer ตอน dispose ไม่แก้ parent Storage prototype ไม่ปิด Editor จาก blur/focus/visibilitychange
@@ -21,3 +21,5 @@
 - ข้อมูลแก้ไขไม่ใช่ draft ถาวร ไม่เพิ่ม localStorage/IndexedDB มาแก้การสลับแท็บ
 
 ตรวจโครงสร้างด้วย node tools/verify-shared-editor.cjs ก่อนทดสอบจริง คำสั่งนี้ไม่ใช่ตัวรับรอง gameplay แทนการเล่นเกมและ ZIP
+
+รุ่น19: answerTextRule เป็นความสัมพันธ์ในBlueprintระหว่างตัวเลือก ตำแหน่งคำตอบ และข้อความเฉลย จัดการผ่าน input handler กลางเพียงจุดเดียว ไม่มีการเปลี่ยนengineตามเกม

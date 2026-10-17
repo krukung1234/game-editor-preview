@@ -1,0 +1,55 @@
+{
+  "id": "native-15",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 80,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-kob-game",
+  "preview": {
+    "ar": {
+      "streams": 1,
+      "sdk": {
+        "constructors": {
+          "Hands": 1
+        },
+        "frames": {
+          "Hands": 20
+        }
+      }
+    },
+    "syntheticLandmarksThroughNativeCallback": true,
+    "physicalHandTested": false,
+    "correctAndWrong": true,
+    "summary": true,
+    "scores": {
+      "score": 1
+    }
+  },
+  "zip": {
+    "ar": {
+      "streams": 1,
+      "sdk": {
+        "constructors": {
+          "Hands": 1
+        },
+        "frames": {
+          "Hands": 20
+        }
+      }
+    },
+    "syntheticLandmarksThroughNativeCallback": true,
+    "physicalHandTested": false,
+    "correctAndWrong": true,
+    "summary": true,
+    "scores": {
+      "score": 1
+    }
+  },
+  "zipBytes": 29422361,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

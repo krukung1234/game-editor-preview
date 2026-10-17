@@ -10,45 +10,40 @@
   "folder": "ar-good-food-v1",
   "preview": {
     "ar": {
-      "streams": 1,
-      "sdk": {
-        "constructors": {
-          "Hands": 1,
-          "Camera": 1
-        },
-        "frames": {
-          "Hands": 24
-        }
+      "constructors": {
+        "Hands": 1,
+        "Camera": 1
+      },
+      "frames": {
+        "Hands": 1
       }
     },
-    "correctAndWrong": true,
+    "allNativeLevels": true,
     "summary": true,
+    "correctAndWrong": true,
     "scores": {
-      "score": 6
+      "score": 7
     }
   },
   "zip": {
     "ar": {
-      "streams": 1,
-      "sdk": {
-        "constructors": {
-          "Hands": 1,
-          "Camera": 1
-        },
-        "frames": {
-          "Hands": 19
-        }
+      "constructors": {
+        "Hands": 1,
+        "Camera": 1
+      },
+      "frames": {
+        "Hands": 1
       }
     },
-    "correctAndWrong": true,
+    "allNativeLevels": true,
     "summary": true,
+    "correctAndWrong": true,
     "scores": {
-      "score": 6
+      "score": 7
     }
   },
-  "zipBytes": 26708621,
+  "zipBytes": 26708169,
   "errors": [],
   "outside": [],
-  "result": "PASS",
-  "provenance": "outputs/SHARED-EDITOR-CYCLE2-FOODS-THAI-FIXED.json"
+  "result": "PASS"
 }

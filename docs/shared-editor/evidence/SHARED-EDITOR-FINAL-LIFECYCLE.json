@@ -1,0 +1,18 @@
+{
+  "result": "PASS",
+  "lazyNoGameDataAtStartup": true,
+  "noZipModuleUntilDownload": true,
+  "onlySelectedAdapterLoaded": [
+    "/js/adapters/native/native-16.json"
+  ],
+  "tabSwitches": 10,
+  "twoBrowserContextsIsolated": true,
+  "freshOriginalAfterClose": true,
+  "noStorageWrites": true,
+  "mediaTracksStoppedBeforeFrameRemoval": true,
+  "bundleReleasedOnClose": true,
+  "sourceFingerprintFailsClosed": true,
+  "workingCopySurvivesSourceError": true,
+  "errors": [],
+  "writes": []
+}

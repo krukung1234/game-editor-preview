@@ -1,0 +1,30 @@
+{
+  "id": "native-07",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 1,
+    "answerAndExplanationSynchronized": true,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "ar-computer",
+  "preview": {
+    "changedAnswerAndFeedback": true,
+    "correctAndWrong": true,
+    "scores": {
+      "globalScore": 1
+    }
+  },
+  "zip": {
+    "changedAnswerAndFeedback": true,
+    "correctAndWrong": true,
+    "scores": {
+      "globalScore": 1
+    }
+  },
+  "zipBytes": 28128473,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

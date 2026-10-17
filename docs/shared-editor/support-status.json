@@ -1,568 +1,1309 @@
 {
-  "version": "20261017-18",
+  "version": "20261017-19",
   "repository": "https://github.com/krukung1234/game-editor-preview.git",
   "branch": "development/shared-editor-adapters",
   "sourceCommit": "89469c1dfd44342924677ea66a445be44ccd0a16",
-  "reviewedRemote": "4337b94618d6105b4618e477c39ab22637a34dd8",
   "summary": {
     "total": 31,
-    "complete": 29,
-    "partial": 2,
+    "complete": 31,
+    "partial": 0,
     "unsupported": 0,
     "problem": 0,
-    "enabled": 29
+    "enabled": 31
   },
-  "testEnvironment": {
-    "browser": "Chrome / Playwright",
-    "camera": "MediaPipe จริง + กล้องจำลอง; อินพุตบางเกมเรียก callback เดิมของเกมด้วยวัตถุจริง ไม่เขียนคะแนนหรือเปลี่ยนสถานะผ่านด่านโดยตรง",
-    "physicalDevices": "ยังไม่ได้ทดสอบกล้องจริง มือจริง ใบหน้าจริง และอุปกรณ์มือถือจริงครบทุกเกม",
-    "offline": "ZIP เล่นบน localhost โดยบล็อกทรัพยากรภายนอกและเส้นทางเกมต้นฉบับ"
-  },
+  "qualificationMeaning": "ผ่านอัตโนมัติสำหรับช่องที่เปิดแก้ ไม่หมายถึงทดสอบกล้อง/มือ/อุปกรณ์จริงครบ100%",
   "games": [
     {
       "id": "mini-city",
       "folder": "AR mini city",
       "title": "AR Mini City สินค้าและบริการ",
-      "status": "รองรับสมบูรณ์",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
       "type": "five-zone-mixed",
       "scope": "ชื่อ วิชา ชั้น หัวข้อ ข้อความ ชื่อเขต/ด่าน คำถาม ตัวเลือก เฉลย ภาพฉากและภาพประกอบ; เพิ่ม/ลบ/เรียงภารกิจตามโครงสร้างเดิม",
-      "reason": "ทดสอบครบ 5 ด่านใน Preview และ ZIP รวมโมเดล AR ออฟไลน์"
+      "reason": "ทดสอบครบ 5 ด่านใน Preview และ ZIP รวมโมเดล AR ออฟไลน์",
+      "questionEditing": true,
+      "imageEditing": true,
+      "evidence": "docs/shared-editor/evidence/EDITOR-COMPLETE-MINI-CITY.json"
     },
     {
       "id": "native-01",
-      "folder": "AR Career Quest ตามล่าหาอาชีพ",
       "title": "AR Career Quest ตามล่าหาอาชีพ",
+      "folder": "AR Career Quest ตามล่าหาอาชีพ",
       "type": "matching",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 59,
+      "imageEditing": true,
       "editableImages": 42,
       "scope": "คำตอบเลือกจากอาชีพเดิม รูป/อุปกรณ์/สถานที่เปลี่ยนได้; โครงสร้าง 3 ด่านและรหัสอาชีพเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-01.json",
-      "manifest": "js/adapters/native/native-01.json"
+      "uiProof": {
+        "id": "native-01",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 59
+      },
+      "imageProof": {
+        "id": "native-01",
+        "key": "embedded-15575964555de9ff9ca1",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 AR Career Quest ตามล่าหาอาชีพ",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 AR Career Quest ตามล่าหาอาชีพ",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-02",
-      "folder": "AR Paint Academy",
       "title": "AR Paint Academy",
+      "folder": "AR Paint Academy",
       "type": "quiz",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 325,
+      "imageEditing": true,
       "editableImages": 1,
       "scope": "เฉลยเลือกจากรหัสเครื่องมือเดิม การสาธิตและคำสั่ง Paint เดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [
         "Resolve original lazy Hands script URL when packaging; retain exact SDK version and native camera loader"
       ],
       "evidence": "docs/shared-editor/evidence/native-02.json",
-      "manifest": "js/adapters/native/native-02.json"
+      "uiProof": {
+        "id": "native-02",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 325
+      },
+      "imageProof": {
+        "id": "native-02",
+        "key": "embedded-c11dc4acc4d5b700ccea",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 AR Paint Academy",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 AR Paint Academy",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-03",
-      "folder": "AR คำตรงข้ามไทย",
       "title": "AR คำตรงข้ามไทย",
+      "folder": "AR คำตรงข้ามไทย",
       "type": "opposite-quiz",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 200,
+      "imageEditing": true,
       "editableImages": 1,
       "scope": "เกมรุ่นนี้สุ่มเล่นต่อเนื่อง 30 ข้อจากคลัง 50 ข้อ; แก้คำถาม คำตอบถูก ตัวลวง และคำอธิบายได้",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [
         "Add pointer and keyboard fallback to original selectAnswer; keep native pinch tracking and all scoring rules"
       ],
       "evidence": "docs/shared-editor/evidence/native-03.json",
-      "manifest": "js/adapters/native/native-03.json"
+      "uiProof": {
+        "id": "native-03",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 200
+      },
+      "imageProof": {
+        "id": "native-03",
+        "key": "embedded-929429bfc69dd81f8b4b",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 AR คำตรงข้ามไทย",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 AR คำตรงข้ามไทย",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-04",
-      "folder": "ar พิชิตตัวเลข",
       "title": "ar พิชิตตัวเลข",
+      "folder": "ar พิชิตตัวเลข",
       "type": "generated-math",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 78,
+      "imageEditing": false,
       "editableImages": 0,
       "scope": "โจทย์นับ/บวก/เงาสร้างจากกติกา ไม่เปิดแก้สมการหรือเฉลยอิสระ",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-04.json",
-      "manifest": "js/adapters/native/native-04.json"
+      "uiProof": {
+        "id": "native-04",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": false,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 78
+      },
+      "imageProof": {
+        "id": "native-04",
+        "images": "none supported"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-05",
-      "folder": "AR หนูน้อยเก็บชีสแสนอร่อย",
       "title": "AR หนูน้อยเก็บชีสแสนอร่อย",
+      "folder": "AR หนูน้อยเก็บชีสแสนอร่อย",
       "type": "programming-maze",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 40,
+      "imageEditing": false,
       "editableImages": 0,
       "scope": "แก้ข้อความด่านได้; พิกัดเขาวงกตและเส้นทางยังไม่เปิดแก้จนกว่าจะมีตัวตรวจหาทางออก",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-05.json",
-      "manifest": "js/adapters/native/native-05.json"
+      "uiProof": {
+        "id": "native-05",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": false,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 40
+      },
+      "imageProof": {
+        "id": "native-05",
+        "images": "none supported"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-06",
-      "folder": "AR-bakery-pastry",
       "title": "AR-bakery-pastry",
+      "folder": "AR-bakery-pastry",
       "type": "word-classification",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 268,
+      "imageEditing": true,
       "editableImages": 4,
       "scope": "คงชุดอักษร ตัวกรอง โหมด และจำนวนคำตามสูตรเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-06.json",
-      "manifest": "js/adapters/native/native-06.json"
+      "uiProof": {
+        "id": "native-06",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 268
+      },
+      "imageProof": {
+        "id": "native-06",
+        "key": "file-assets/bakery-pastry-sprite.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 AR-bakery-pastry",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 AR-bakery-pastry",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-07",
-      "folder": "ar-computer",
       "title": "ar-computer",
+      "folder": "ar-computer",
       "type": "quiz",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 296,
+      "imageEditing": false,
       "editableImages": 0,
       "scope": "คง 8 กลไกมือเดิม ตัวเลือกและตำแหน่งเฉลยเปลี่ยนตามโจทย์",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [
         "Normalize UTF-8 BOM before source verification, matching browser Response.text"
       ],
       "evidence": "docs/shared-editor/evidence/native-07.json",
-      "manifest": "js/adapters/native/native-07.json"
+      "uiProof": {
+        "id": "native-07",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": false,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 256
+      },
+      "imageProof": {
+        "id": "native-07",
+        "images": "none supported"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-08",
-      "folder": "ar-dino-fire-shooter",
       "title": "ar-dino-fire-shooter",
+      "folder": "ar-dino-fire-shooter",
       "type": "word-pools",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 111,
+      "imageEditing": true,
       "editableImages": 4,
       "scope": "แก้คำเป้าหมายและคำลวงในแต่ละมาตรา; กลไกยิงไข่/ไฟยังเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [
         "Initialize both native models before starting the original 60-second timer"
       ],
       "evidence": "docs/shared-editor/evidence/native-08.json",
-      "manifest": "js/adapters/native/native-08.json"
+      "uiProof": {
+        "id": "native-08",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 111
+      },
+      "imageProof": {
+        "id": "native-08",
+        "key": "file-assets/cannon.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 ar-dino-fire-shooter",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 ar-dino-fire-shooter",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-09",
-      "folder": "ar-dressed",
       "title": "ar-dressed",
+      "folder": "ar-dressed",
       "type": "ordered-dressing",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 11,
+      "imageEditing": true,
       "editableImages": 23,
       "scope": "เปลี่ยนชื่อและภาพเสื้อผ้าได้; รหัสชั้นเสื้อผ้าและลำดับการแต่งตัวยังคงเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-09.json",
-      "manifest": "js/adapters/native/native-09.json"
+      "uiProof": {
+        "id": "native-09",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 11
+      },
+      "imageProof": {
+        "id": "native-09",
+        "key": "file-assets/boy_belt.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 ar-dressed",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 ar-dressed",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-10",
-      "folder": "ar-fishing-adventure",
       "title": "ar-fishing-adventure",
+      "folder": "ar-fishing-adventure",
       "type": "word-classification",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 60,
+      "imageEditing": true,
       "editableImages": 2,
       "scope": "ประเภทคำเป็น/คำตายกำหนดได้จากตัวเลือกที่เกมรองรับ กลไกตกปลาเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-10.json",
-      "manifest": "js/adapters/native/native-10.json"
+      "uiProof": {
+        "id": "native-10",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 60
+      },
+      "imageProof": {
+        "id": "native-10",
+        "key": "file-assets/fish-coral.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 ar-fishing-adventure",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 ar-fishing-adventure",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-11",
-      "folder": "ar-good-food-v1",
       "title": "ar-good-food-v1",
+      "folder": "ar-good-food-v1",
       "type": "collection-pools",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 14,
+      "imageEditing": false,
       "editableImages": 0,
       "scope": "ปรับชุดวัตถุที่เก็บถูก/ผิดโดยคงกติกาเวลาและคะแนน",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [
         "Deterministic non-overlapping grid preserves every food item and original minimum distance"
       ],
       "evidence": "docs/shared-editor/evidence/native-11.json",
-      "manifest": "js/adapters/native/native-11.json"
+      "uiProof": {
+        "id": "native-11",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": false,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 14
+      },
+      "imageProof": {
+        "id": "native-11",
+        "images": "none supported"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-12",
-      "folder": "ar-good-food-v2",
       "title": "ar-good-food-v2",
+      "folder": "ar-good-food-v2",
       "type": "collection-pools",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 22,
+      "imageEditing": false,
       "editableImages": 0,
       "scope": "คง 3 ด่าน เวลา ระยะเก็บ และจำนวนวัตถุเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [
         "Deterministic non-overlapping grid preserves every food item and original minimum distance"
       ],
       "evidence": "docs/shared-editor/evidence/native-12.json",
-      "manifest": "js/adapters/native/native-12.json"
+      "uiProof": {
+        "id": "native-12",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": false,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 22
+      },
+      "imageProof": {
+        "id": "native-12",
+        "images": "none supported"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-13",
-      "folder": "ar-good-food-v3",
       "title": "ar-good-food-v3",
+      "folder": "ar-good-food-v3",
       "type": "collection-pools",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 16,
+      "imageEditing": false,
       "editableImages": 0,
       "scope": "คง 3 ด่านและการเก็บอาหารเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [
         "Deterministic non-overlapping grid preserves every food item and original minimum distance"
       ],
       "evidence": "docs/shared-editor/evidence/native-13.json",
-      "manifest": "js/adapters/native/native-13.json"
+      "uiProof": {
+        "id": "native-13",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": false,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 16
+      },
+      "imageProof": {
+        "id": "native-13",
+        "images": "none supported"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-14",
-      "folder": "AR-How-Do-You-Feel",
       "title": "AR-How-Do-You-Feel",
+      "folder": "AR-How-Do-You-Feel",
       "type": "sprite-quiz",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 12,
+      "imageEditing": true,
       "editableImages": 3,
       "scope": "คง 12 ช่อง sprite และกลไกชนกล่องรางวัล ต้องเปลี่ยนแผ่นภาพทั้งแผ่นตามช่องเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-14.json",
-      "manifest": "js/adapters/native/native-14.json"
+      "uiProof": {
+        "id": "native-14",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 12
+      },
+      "imageProof": {
+        "id": "native-14",
+        "key": "file-assets/cover.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 AR-How-Do-You-Feel",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 AR-How-Do-You-Feel",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-15",
-      "folder": "ar-kob-game",
       "title": "ar-kob-game",
+      "folder": "ar-kob-game",
       "type": "word-pools",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 80,
+      "imageEditing": true,
       "editableImages": 2,
       "scope": "คำเป้าหมาย/คำลวงแก้ได้ จำนวนและจังหวะวัตถุคงเดิม",
-      "reason": "ผ่านการแก้เนื้อหา เล่นจนจบ และ ZIP ในขอบเขตที่เปิดให้แก้",
       "repairs": [],
-      "evidence": null,
-      "manifest": "js/adapters/native/native-15.json"
+      "evidence": "docs/shared-editor/evidence/native-15.json",
+      "uiProof": {
+        "id": "native-15",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 80
+      },
+      "imageProof": {
+        "id": "native-15",
+        "key": "file-assets/frog.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 ar-kob-game",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 ar-kob-game",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-16",
-      "folder": "ar-kok-game",
       "title": "ar-kok-game",
+      "folder": "ar-kok-game",
       "type": "word-pools",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 80,
+      "imageEditing": true,
       "editableImages": 1,
       "scope": "คำเป้าหมาย/คำลวงแก้ได้ กลไกตีคำคงเดิม",
-      "reason": "ผ่านการแก้เนื้อหา เล่นจนจบ และ ZIP ในขอบเขตที่เปิดให้แก้",
       "repairs": [],
-      "evidence": null,
-      "manifest": "js/adapters/native/native-16.json"
+      "evidence": "docs/shared-editor/evidence/native-16.json",
+      "uiProof": {
+        "id": "native-16",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 80
+      },
+      "imageProof": {
+        "id": "native-16",
+        "key": "file-assets/rabbit.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 ar-kok-game",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 ar-kok-game",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-17",
-      "folder": "ar-living-things-game-updated",
       "title": "ar-living-things-game-updated",
+      "folder": "ar-living-things-game-updated",
       "type": "drag-classification",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 93,
+      "imageEditing": true,
       "editableImages": 45,
       "scope": "แก้ชื่อ/กลุ่มคำตอบได้ รหัสกลุ่มและตำแหน่งภาพยังเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-17.json",
-      "manifest": "js/adapters/native/native-17.json"
+      "uiProof": {
+        "id": "native-17",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 93
+      },
+      "imageProof": {
+        "id": "native-17",
+        "key": "file-assets/hero-garden.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 ar-living-things-game-updated",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 ar-living-things-game-updated",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-18",
-      "folder": "ar-mole-game",
       "title": "ar-mole-game",
+      "folder": "ar-mole-game",
       "type": "word-pools",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 79,
+      "imageEditing": false,
       "editableImages": 0,
       "scope": "ชุดคำตอบถูกและตัวลวงแยกกัน จำนวนคำและกลไกตีตุ่นเดิม",
-      "reason": "ผ่านการแก้เนื้อหา เล่นจนจบ และ ZIP ในขอบเขตที่เปิดให้แก้",
       "repairs": [],
-      "evidence": null,
-      "manifest": "js/adapters/native/native-18.json"
+      "evidence": "docs/shared-editor/evidence/native-18.json",
+      "uiProof": {
+        "id": "native-18",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": false,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 79
+      },
+      "imageProof": {
+        "id": "native-18",
+        "images": "none supported"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-19",
-      "folder": "ar-Multiplication",
       "title": "ar-Multiplication",
+      "folder": "ar-Multiplication",
       "type": "generated-math",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 20,
+      "imageEditing": false,
       "editableImages": 0,
       "scope": "แก้ชื่อภารกิจได้; สมการและเฉลยยังคำนวณจากสูตรคูณ ไม่รองรับโจทย์อิสระ",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [
         "Pin tasks-vision imports and WASM to verified matching 0.10.21 (0.10.22 does not exist)"
       ],
       "evidence": "docs/shared-editor/evidence/native-19.json",
-      "manifest": "js/adapters/native/native-19.json"
+      "uiProof": {
+        "id": "native-19",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": false,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 20
+      },
+      "imageProof": {
+        "id": "native-19",
+        "images": "none supported"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-20",
-      "folder": "AR-Safety-Hero-Academy",
       "title": "AR-Safety-Hero-Academy",
+      "folder": "AR-Safety-Hero-Academy",
       "type": "pair-classification",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 80,
+      "imageEditing": true,
       "editableImages": 43,
       "scope": "เฉลยปลอดภัย/อันตรายใช้รหัสวัตถุเดิม รูปและชื่อเปลี่ยนได้แต่ภาพวาด procedural ยังคงเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-20.json",
-      "manifest": "js/adapters/native/native-20.json"
+      "uiProof": {
+        "id": "native-20",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 80
+      },
+      "imageProof": {
+        "id": "native-20",
+        "key": "file-ar-safety-assets/ball.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 AR-Safety-Hero-Academy",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 AR-Safety-Hero-Academy",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-21",
-      "folder": "ar-sudoku",
       "title": "ar-sudoku",
+      "folder": "ar-sudoku",
       "type": "sudoku-grid",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 8,
+      "imageEditing": false,
       "editableImages": 0,
       "scope": "ตรวจตารางโจทย์/เฉลย 4×4 แถว คอลัมน์ และบล็อก 2×2 ก่อนเล่น",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [
         "Correct contradictory given at level 3 row 4 column 4 from 2 to 4 in personal copy"
       ],
       "evidence": "docs/shared-editor/evidence/native-21.json",
-      "manifest": "js/adapters/native/native-21.json"
+      "uiProof": {
+        "id": "native-21",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": false,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 0
+      },
+      "imageProof": {
+        "id": "native-21",
+        "images": "none supported"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-22",
-      "folder": "ar-sushi-game",
       "title": "ar-sushi-game",
+      "folder": "ar-sushi-game",
       "type": "word-pools",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 70,
+      "imageEditing": true,
       "editableImages": 10,
       "scope": "แก้คำควบกล้ำแท้/ไม่แท้ในคลังเดิม รหัสชนิดคำและกลุ่มพยัญชนะคงเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-22.json",
-      "manifest": "js/adapters/native/native-22.json"
+      "uiProof": {
+        "id": "native-22",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 70
+      },
+      "imageProof": {
+        "id": "native-22",
+        "key": "file-assets/sushi/crab.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 ar-sushi-game",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 ar-sushi-game",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-23",
-      "folder": "ar-words-english",
       "title": "ar-words-english",
+      "folder": "ar-words-english",
       "type": "sprite-quiz",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 36,
+      "imageEditing": true,
       "editableImages": 2,
       "scope": "ภาพเป็น sprite sheet ตำแหน่งช่องเดิม เปลี่ยนคำและทั้งแผ่นภาพได้",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [
         "Pin tasks-vision imports and WASM to verified matching 0.10.21 (0.10.22 does not exist)"
       ],
       "evidence": "docs/shared-editor/evidence/native-23.json",
-      "manifest": "js/adapters/native/native-23.json"
+      "uiProof": {
+        "id": "native-23",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 36
+      },
+      "imageProof": {
+        "id": "native-23",
+        "key": "embedded-a564754c2bae838ba85d",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 ar-words-english",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 ar-words-english",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-24",
-      "folder": "ar-คำพังเพย",
       "title": "ar-คำพังเพย",
+      "folder": "ar-คำพังเพย",
       "type": "idiom-quiz",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 301,
+      "imageEditing": true,
       "editableImages": 51,
       "scope": "ภาพและข้อความคำพังเพยเปลี่ยนได้ ด่านเรียงคำต้องแก้คำย่อยให้รวมเป็นคำพังเพยเดียวกัน จำนวนคำย่อยคงเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-24.json",
-      "manifest": "js/adapters/native/native-24.json"
+      "uiProof": {
+        "id": "native-24",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 301
+      },
+      "imageProof": {
+        "id": "native-24",
+        "key": "embedded-17d4f3c3f5039693fe58",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 ar-คำพังเพย",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 ar-คำพังเพย",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-25",
-      "folder": "AR-สัตว์มีกระดูกสันหลัง",
       "title": "AR-สัตว์มีกระดูกสันหลัง",
+      "folder": "AR-สัตว์มีกระดูกสันหลัง",
       "type": "animal-classification",
-      "status": "รองรับบางส่วน — ยังปิดปุ่ม",
-      "enabled": false,
-      "preview": "ยังไม่ผ่านครบ",
-      "zip": "ยังไม่ผ่านครบ",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
+      "enabled": true,
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 327,
+      "imageEditing": true,
       "editableImages": 50,
       "scope": "เฉลยจำแนกตรวจชนิดสัตว์กับกลุ่มให้สอดคล้องกัน รหัสและตำแหน่งภาพเดิม",
-      "reason": "Preview ครบห้าระดับผ่าน แต่ ZIP รอเฟรม Hand Tracking แล้ว timeout ยังไม่เปิดใช้",
       "repairs": [],
-      "evidence": null,
-      "manifest": "js/adapters/native/native-25.json"
+      "evidence": "docs/shared-editor/evidence/native-25.json",
+      "uiProof": {
+        "id": "native-25",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 327
+      },
+      "imageProof": {
+        "id": "native-25",
+        "key": "file-assets/animals/anemone.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 AR-สัตว์มีกระดูกสันหลัง",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 AR-สัตว์มีกระดูกสันหลัง",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-26",
-      "folder": "ar-เก็บผลไม้",
       "title": "ar-เก็บผลไม้",
+      "folder": "ar-เก็บผลไม้",
       "type": "face-collection",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 19,
+      "imageEditing": false,
       "editableImages": 0,
       "scope": "คงการใช้ใบหน้า/ตะกร้าและโหมดเมาส์เดิม ชุดของถูก/ผิดเปลี่ยนได้",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-26.json",
-      "manifest": "js/adapters/native/native-26.json"
+      "uiProof": {
+        "id": "native-26",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": false,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 19
+      },
+      "imageProof": {
+        "id": "native-26",
+        "images": "none supported"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-27",
-      "folder": "AR-แยกขยะด้วยมือ",
       "title": "AR-แยกขยะด้วยมือ",
+      "folder": "AR-แยกขยะด้วยมือ",
       "type": "drag-classification",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 66,
+      "imageEditing": true,
       "editableImages": 4,
       "scope": "เฉลยเลือกจากถังเดิม 4 กลุ่ม รักษาการลาก/ชี้มือ",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [],
       "evidence": "docs/shared-editor/evidence/native-27.json",
-      "manifest": "js/adapters/native/native-27.json"
+      "uiProof": {
+        "id": "native-27",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 66
+      },
+      "imageProof": {
+        "id": "native-27",
+        "key": "embedded-63578f66e3a91661e10b",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 AR-แยกขยะด้วยมือ",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 AR-แยกขยะด้วยมือ",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-28",
-      "folder": "AR_ANATOMY_LAB_A01",
       "title": "AR_ANATOMY_LAB_A01",
+      "folder": "AR_ANATOMY_LAB_A01",
       "type": "anatomy-missions",
-      "status": "รองรับบางส่วน — ยังปิดปุ่ม",
-      "enabled": false,
-      "preview": "ยังไม่ผ่านครบ",
-      "zip": "ยังไม่ผ่านครบ",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
+      "enabled": true,
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 177,
+      "imageEditing": true,
       "editableImages": 88,
       "scope": "ยังไม่เปิดใช้งาน ป้องกันรับรองเกมที่ต้นฉบับมีข้อผิดพลาด",
-      "reason": "แก้ลำดับสคริปต์และชนิดเฉลย 0/1 แล้ว แต่การทดสอบหยุดที่ปุ่มไปด่านถัดไปหลังสแกน ยังไม่ผ่านครบห้าภารกิจและ ZIP",
       "repairs": [
         "Run legacy override after ASSET_FILES and scanMissions initialization",
-        "Connect legacy scanMissions mutation to editable data"
+        "Connect legacy scanMissions mutation to editable data",
+        "รักษาหน้าสรุปสแกนฉบับสุดท้าย ป้องกันสคริปต์เก่าทับปุ่มไปภารกิจถัดไป"
       ],
-      "evidence": null,
-      "manifest": "js/adapters/native/native-28.json"
+      "evidence": "docs/shared-editor/evidence/native-28.json",
+      "uiProof": {
+        "id": "native-28",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 177
+      },
+      "imageProof": {
+        "id": "native-28",
+        "key": "file-assets/01_brain.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 AR_ANATOMY_LAB_A01",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 AR_ANATOMY_LAB_A01",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-29",
-      "folder": "AR_Magnet_Lab",
       "title": "AR_Magnet_Lab",
+      "folder": "AR_Magnet_Lab",
       "type": "magnet-classification",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 48,
+      "imageEditing": true,
       "editableImages": 19,
       "scope": "แก้ชื่อ คำอธิบาย ภาพ และเฉลยดูดติด/ไม่ติดได้ แรงแม่เหล็กและระยะเดิม",
-      "reason": "ผ่านแก้ข้อมูล ทดลองเล่นจนจบ ตรวจคะแนน และแตก ZIP เล่นซ้ำโดยปิดเครือข่ายภายนอก ในขอบเขตช่องที่รองรับ (กล้องจำลอง)",
       "repairs": [
         "Do not reset active mouse/touch dwell when a camera frame contains no hand"
       ],
       "evidence": "docs/shared-editor/evidence/native-29.json",
-      "manifest": "js/adapters/native/native-29.json"
+      "uiProof": {
+        "id": "native-29",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 48
+      },
+      "imageProof": {
+        "id": "native-29",
+        "key": "file-assets/bottle_cap.png",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 AR_Magnet_Lab",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 AR_Magnet_Lab",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     },
     {
       "id": "native-30",
-      "folder": "AR_Opposite",
       "title": "AR_Opposite",
+      "folder": "AR_Opposite",
       "type": "matching-pairs",
-      "status": "รองรับสมบูรณ์ในขอบเขตที่เปิดแก้",
+      "status": "ผ่านการทดสอบอัตโนมัติในขอบเขตที่เปิดแก้",
       "enabled": true,
-      "preview": "ผ่านครบตามหลักฐาน",
-      "zip": "ผ่านแตก ZIP และเล่นซ้ำแบบปิดเครือข่ายภายนอก",
+      "preview": "ผ่าน",
+      "zip": "ผ่าน CRC และเล่นบน localhost โดยบล็อกทรัพยากรภายนอก",
+      "questionEditing": true,
       "editableFields": 100,
+      "imageEditing": true,
       "editableImages": 41,
       "scope": "คงคู่คำและรหัส sprite/คู่เดิม เปลี่ยนข้อความและภาพประจำคู่ได้",
-      "reason": "ผ่านการแก้เนื้อหา เล่นจนจบ และ ZIP ในขอบเขตที่เปิดให้แก้",
       "repairs": [],
-      "evidence": null,
-      "manifest": "js/adapters/native/native-30.json"
+      "evidence": "docs/shared-editor/evidence/native-30.json",
+      "uiProof": {
+        "id": "native-30",
+        "editor": true,
+        "tabs": true,
+        "imageUploadRestore": true,
+        "resetCancelConfirm": true,
+        "closeCancelConfirm": true,
+        "freshOriginal": true,
+        "fieldBindingRoundTrips": 100
+      },
+      "imageProof": {
+        "id": "native-30",
+        "key": "embedded-43a309417ce1bd88de2f",
+        "preview": {
+          "width": 1,
+          "title": "IMG19 AR_Opposite",
+          "temporary": true
+        },
+        "packaged": {
+          "width": 1,
+          "title": "IMG19 AR_Opposite",
+          "temporary": false
+        },
+        "zipCRC": true,
+        "noExternalRequests": true,
+        "errors": [],
+        "result": "PASS"
+      },
+      "remaining": "กล้อง มือหรือใบหน้าจริง และอุปกรณ์มือถือจริงยังไม่ได้ทดสอบ; ข้อความฝังในภาพต้องอัปโหลดภาพใหม่"
     }
+  ],
+  "originalLoadIssues": [
+    {
+      "id": "native-28",
+      "error": "ASSET_FILES is not defined",
+      "originalFilesModified": false,
+      "personalAdapterRepaired": true
+    }
+  ],
+  "manualPending": [
+    "กล้อง/มือ/ใบหน้าจริง",
+    "มือถือและแท็บเล็ตจริง",
+    "Deploy และตรวจGitHubPagesจริง"
   ]
 }

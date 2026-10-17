@@ -1,0 +1,307 @@
+{
+  "passed": true,
+  "rows": [
+    {
+      "id": "native-01",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 59
+    },
+    {
+      "id": "native-02",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 325
+    },
+    {
+      "id": "native-03",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 200
+    },
+    {
+      "id": "native-04",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": false,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 78
+    },
+    {
+      "id": "native-05",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": false,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 40
+    },
+    {
+      "id": "native-06",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 268
+    },
+    {
+      "id": "native-07",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": false,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 256
+    },
+    {
+      "id": "native-08",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 111
+    },
+    {
+      "id": "native-09",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 11
+    },
+    {
+      "id": "native-10",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 60
+    },
+    {
+      "id": "native-11",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": false,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 14
+    },
+    {
+      "id": "native-12",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": false,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 22
+    },
+    {
+      "id": "native-13",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": false,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 16
+    },
+    {
+      "id": "native-14",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 12
+    },
+    {
+      "id": "native-15",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 80
+    },
+    {
+      "id": "native-16",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 80
+    },
+    {
+      "id": "native-17",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 93
+    },
+    {
+      "id": "native-18",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": false,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 79
+    },
+    {
+      "id": "native-19",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": false,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 20
+    },
+    {
+      "id": "native-20",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 80
+    },
+    {
+      "id": "native-21",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": false,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 0
+    },
+    {
+      "id": "native-22",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 70
+    },
+    {
+      "id": "native-23",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 36
+    },
+    {
+      "id": "native-24",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 301
+    },
+    {
+      "id": "native-25",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 327
+    },
+    {
+      "id": "native-26",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": false,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 19
+    },
+    {
+      "id": "native-27",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 66
+    },
+    {
+      "id": "native-28",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 177
+    },
+    {
+      "id": "native-29",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 48
+    },
+    {
+      "id": "native-30",
+      "editor": true,
+      "tabs": true,
+      "imageUploadRestore": true,
+      "resetCancelConfirm": true,
+      "closeCancelConfirm": true,
+      "freshOriginal": true,
+      "fieldBindingRoundTrips": 100
+    }
+  ],
+  "errors": [],
+  "writes": []
+}

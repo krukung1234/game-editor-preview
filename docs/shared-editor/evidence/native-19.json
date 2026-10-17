@@ -12,7 +12,7 @@
     "ar": {
       "constructors": {},
       "frames": {
-        "HandLandmarker": 5
+        "HandLandmarker": 1
       }
     },
     "callbackInputs": true,
@@ -26,7 +26,7 @@
     "ar": {
       "constructors": {},
       "frames": {
-        "HandLandmarker": 5
+        "HandLandmarker": 1
       }
     },
     "callbackInputs": true,
@@ -36,7 +36,7 @@
       "score": 3800
     }
   },
-  "zipBytes": 30701488,
+  "zipBytes": 30700303,
   "errors": [],
   "outside": [],
   "result": "PASS"

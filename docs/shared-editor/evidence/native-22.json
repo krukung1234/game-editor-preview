@@ -14,7 +14,23 @@
         "Hands": 1
       },
       "frames": {
-        "Hands": 16
+        "Hands": 6
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "state.score": 40
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 1
       }
     },
     "callbackInputs": true,
@@ -24,23 +40,7 @@
       "state.score": 42
     }
   },
-  "zip": {
-    "ar": {
-      "constructors": {
-        "Hands": 1
-      },
-      "frames": {
-        "Hands": 13
-      }
-    },
-    "callbackInputs": true,
-    "summary": true,
-    "correctAndWrong": true,
-    "scores": {
-      "state.score": 37
-    }
-  },
-  "zipBytes": 34950420,
+  "zipBytes": 34949277,
   "errors": [],
   "outside": [],
   "result": "PASS"

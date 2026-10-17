@@ -14,14 +14,14 @@
         "FaceDetection": 1
       },
       "frames": {
-        "FaceDetection": 4
+        "FaceDetection": 1
       }
     },
     "callbackInputs": true,
     "summary": true,
     "correctAndWrong": true,
     "scores": {
-      "score": 4
+      "score": 0
     }
   },
   "zip": {
@@ -40,7 +40,7 @@
       "score": 1
     }
   },
-  "zipBytes": 15928483,
+  "zipBytes": 15927278,
   "errors": [],
   "outside": [],
   "result": "PASS"

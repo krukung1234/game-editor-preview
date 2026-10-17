@@ -14,7 +14,7 @@
         "Hands": 2
       },
       "frames": {
-        "Hands": 9
+        "Hands": 3
       }
     },
     "callbackInputs": true,
@@ -30,7 +30,7 @@
         "Hands": 2
       },
       "frames": {
-        "Hands": 4
+        "Hands": 21
       }
     },
     "callbackInputs": true,
@@ -40,9 +40,8 @@
       "S.score": 11
     }
   },
-  "zipBytes": 37522925,
+  "zipBytes": 37520897,
   "errors": [],
   "outside": [],
-  "result": "PASS",
-  "provenance": "outputs/SHARED-EDITOR-CYCLE2-CALLBACK-GAMES.json"
+  "result": "PASS"
 }

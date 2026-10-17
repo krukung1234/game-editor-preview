@@ -1,0 +1,47 @@
+{
+  "id": "native-25",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 4,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "AR-สัตว์มีกระดูกสันหลัง",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 29
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "state.score": 9
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 26
+      }
+    },
+    "callbackInputs": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "state.score": 9
+    }
+  },
+  "zipBytes": 37777133,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

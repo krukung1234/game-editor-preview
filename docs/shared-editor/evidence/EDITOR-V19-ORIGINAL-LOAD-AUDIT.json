@@ -1,0 +1,162 @@
+{
+  "rows": [
+    {
+      "folder": "AR Career Quest ตามล่าหาอาชีพ",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "AR mini city",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "AR Paint Academy",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "AR คำตรงข้ามไทย",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar พิชิตตัวเลข",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "AR หนูน้อยเก็บชีสแสนอร่อย",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "AR-bakery-pastry",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-computer",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-dino-fire-shooter",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-dressed",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-fishing-adventure",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-good-food-v1",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-good-food-v2",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-good-food-v3",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "AR-How-Do-You-Feel",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-kob-game",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-kok-game",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-living-things-game-updated",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-mole-game",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-Multiplication",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "AR-Safety-Hero-Academy",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-sudoku",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-sushi-game",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-words-english",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-คำพังเพย",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "AR-สัตว์มีกระดูกสันหลัง",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "ar-เก็บผลไม้",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "AR-แยกขยะด้วยมือ",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "AR_ANATOMY_LAB_A01",
+      "status": 200,
+      "errors": [
+        "ASSET_FILES is not defined"
+      ]
+    },
+    {
+      "folder": "AR_Magnet_Lab",
+      "status": 200,
+      "errors": []
+    },
+    {
+      "folder": "AR_Opposite",
+      "status": 200,
+      "errors": []
+    }
+  ],
+  "note": "Read-only cold-load audit only; no camera permission/input gameplay test"
+}

@@ -1,0 +1,405 @@
+{
+  "rows": [
+    {
+      "id": "native-01",
+      "key": "embedded-15575964555de9ff9ca1",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 AR Career Quest ตามล่าหาอาชีพ",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 AR Career Quest ตามล่าหาอาชีพ",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-02",
+      "key": "embedded-c11dc4acc4d5b700ccea",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 AR Paint Academy",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 AR Paint Academy",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-03",
+      "key": "embedded-929429bfc69dd81f8b4b",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 AR คำตรงข้ามไทย",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 AR คำตรงข้ามไทย",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-04",
+      "images": "none supported"
+    },
+    {
+      "id": "native-05",
+      "images": "none supported"
+    },
+    {
+      "id": "native-06",
+      "key": "file-assets/bakery-pastry-sprite.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 AR-bakery-pastry",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 AR-bakery-pastry",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-07",
+      "images": "none supported"
+    },
+    {
+      "id": "native-08",
+      "key": "file-assets/cannon.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 ar-dino-fire-shooter",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 ar-dino-fire-shooter",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-09",
+      "key": "file-assets/boy_belt.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 ar-dressed",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 ar-dressed",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-10",
+      "key": "file-assets/fish-coral.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 ar-fishing-adventure",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 ar-fishing-adventure",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-11",
+      "images": "none supported"
+    },
+    {
+      "id": "native-12",
+      "images": "none supported"
+    },
+    {
+      "id": "native-13",
+      "images": "none supported"
+    },
+    {
+      "id": "native-14",
+      "key": "file-assets/cover.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 AR-How-Do-You-Feel",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 AR-How-Do-You-Feel",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-15",
+      "key": "file-assets/frog.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 ar-kob-game",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 ar-kob-game",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-16",
+      "key": "file-assets/rabbit.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 ar-kok-game",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 ar-kok-game",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-17",
+      "key": "file-assets/hero-garden.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 ar-living-things-game-updated",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 ar-living-things-game-updated",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-18",
+      "images": "none supported"
+    },
+    {
+      "id": "native-19",
+      "images": "none supported"
+    },
+    {
+      "id": "native-20",
+      "key": "file-ar-safety-assets/ball.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 AR-Safety-Hero-Academy",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 AR-Safety-Hero-Academy",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-21",
+      "images": "none supported"
+    },
+    {
+      "id": "native-22",
+      "key": "file-assets/sushi/crab.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 ar-sushi-game",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 ar-sushi-game",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-23",
+      "key": "embedded-a564754c2bae838ba85d",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 ar-words-english",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 ar-words-english",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-24",
+      "key": "embedded-17d4f3c3f5039693fe58",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 ar-คำพังเพย",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 ar-คำพังเพย",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-25",
+      "key": "file-assets/animals/anemone.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 AR-สัตว์มีกระดูกสันหลัง",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 AR-สัตว์มีกระดูกสันหลัง",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-26",
+      "images": "none supported"
+    },
+    {
+      "id": "native-27",
+      "key": "embedded-63578f66e3a91661e10b",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 AR-แยกขยะด้วยมือ",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 AR-แยกขยะด้วยมือ",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-28",
+      "key": "file-assets/01_brain.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 AR_ANATOMY_LAB_A01",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 AR_ANATOMY_LAB_A01",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-29",
+      "key": "file-assets/bottle_cap.png",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 AR_Magnet_Lab",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 AR_Magnet_Lab",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    },
+    {
+      "id": "native-30",
+      "key": "embedded-43a309417ce1bd88de2f",
+      "preview": {
+        "width": 1,
+        "title": "IMG19 AR_Opposite",
+        "temporary": true
+      },
+      "packaged": {
+        "width": 1,
+        "title": "IMG19 AR_Opposite",
+        "temporary": false
+      },
+      "zipCRC": true,
+      "noExternalRequests": true,
+      "errors": [],
+      "result": "PASS"
+    }
+  ],
+  "writes": []
+}

@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "games": 31,
+  "checks": [
+    "31 cards: 31 qualified buttons, 0 developing, no technical notes",
+    "31 actual card Editor clicks open the selected game; all Play URLs point to existing original game files",
+    "31 games: per-game mechanics preserved, legacy file-gates rewritten, standalone delivery, reference-conflict precedence, original defaults, reset and reopen isolation",
+    "Acceptance: AR Word Quest to Thai opposites P3 retains 3x10, two choices, pinch, AR, scoring and pointer fallback",
+    "Custom subject, AI off, user-detail file-gate rewritten without mutating form, actual clipboard",
+    "Clipboard fallback success and failure",
+    "Desktop, tablet, mobile 320/375px and landscape: no horizontal overflow, fixed header/footer, 180px output",
+    "Focus trap, Escape/X/backdrop, unchanged catalogue and zero network writes"
+  ],
+  "errors": [],
+  "writes": [],
+  "limitation": "Firestore is mocked with 31 distinct fixtures from actual game directories. This tests the Prompt generator, not live Firestore records or an external AI producing games. Physical AR and touch devices are not tested."
+}

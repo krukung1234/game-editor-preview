@@ -16,7 +16,7 @@
         "Camera": 1
       },
       "frames": {
-        "Hands": 16
+        "Hands": 5
       }
     },
     "callbackInputs": true,
@@ -32,7 +32,7 @@
         "Camera": 1
       },
       "frames": {
-        "Hands": 16
+        "Hands": 4
       }
     },
     "callbackInputs": true,
@@ -41,7 +41,7 @@
     "correctAndWrong": true,
     "scores": {}
   },
-  "zipBytes": 28553268,
+  "zipBytes": 28552159,
   "errors": [],
   "outside": [],
   "result": "PASS"

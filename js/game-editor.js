@@ -219,7 +219,7 @@
   function renderNativeQuestion(){
     details.replaceChildren();const row=nativeGroup()?.records.find(r=>r.id===activeId);if(!row)return;renderNavigator();
     details.append(button('← กลับรายการภารกิจ',()=>{workspace.dataset.details='false';body.scrollTop=0},'editor-button editor-back-list'));
-    for(const id of row.fields){const f=adapter.bundle.fields.find(f=>f.id===id),value=draft.values[id],change=v=>{draft.values[id]=v;mark()};let node;
+    for(const id of row.fields){const f=adapter.bundle.fields.find(f=>f.id===id),value=draft.values[id],change=v=>{draft.values[id]=v;const rule=f.answerTextRule;if(rule){const index=Number(draft.values[rule.index]);if(Number.isInteger(index)&&index>=0&&index<rule.options.length){const answer=draft.values[rule.options[index]];draft.values[rule.target]=answer;const input=document.getElementById('native-'+rule.target);if(input)input.value=answer;}}mark()};let node;
       if(f.kind==='boolean'){const checkbox=el('input',{id:'native-'+id,type:'checkbox',checked:value,onchange:e=>change(e.target.checked)});node=el('div',{class:'editor-field'},[el('label',{htmlFor:checkbox.id,text:f.label}),checkbox])}
       else if(f.kind==='select')node=selectField(f.label,'native-'+id,f.choices.map(v=>f.choiceLabels?.[v]?[v,f.choiceLabels[v]]:v),value,change);
       else{node=field(f.label,'native-'+id,value,change,f.kind==='number'?'number':'textarea');const input=node.querySelector('input,textarea');if(f.kind==='grid'){input.rows=4;input.inputMode='numeric';input.placeholder='1 0 0 4\n0 4 1 0\n0 1 4 0\n4 0 0 1'}if(f.kind==='number'){input.min=f.min??0;input.max=f.max??100000}}
@@ -324,7 +324,7 @@
 
 
   const closeButton=button('×',close,'editor-close');closeButton.id='editorCloseBtn';closeButton.setAttribute('aria-label','ปิดหน้าต่างปรับแต่งเกม');
-  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • SHARED • รุ่น 20261017-18'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้ไขเนื้อหาและคำถาม โดยคงรูปแบบการเล่นเดิม'})]),closeButton]);
+  const heading=el('header',{class:'editor-heading'},[el('div',{},[el('span',{class:'prompt-version',text:'GAME EDITOR • SHARED • รุ่น 20261017-19'}),el('h2',{id:'editorHeading',text:'⚙️ ปรับแต่งเกม AR Mini City'}),el('p',{text:'แก้ไขเนื้อหาและคำถาม โดยคงรูปแบบการเล่นเดิม'})]),closeButton]);
   const fixedHeading=el('div',{class:'editor-fixed-heading'},[heading,el('p',{class:'editor-session-note',text:'ไม่ต้องมีปุ่มบันทึก แก้ไขแล้วทดลองเล่นและดาวน์โหลดได้ทันที'}),status]);
   const addQuestionButton=button('+ เพิ่มภารกิจ',()=>addQuestion(false));
   const toolbar=el('div',{class:'editor-toolbar'},[el('h3',{text:'จัดการคำถามและคำตอบ'}),count,addQuestionButton]);

@@ -2,7 +2,7 @@
   "id": "native-03",
   "checks": {
     "editor": true,
-    "uiEditCount": 50,
+    "uiEditCount": 150,
     "preview": true,
     "zipCRC": true,
     "zipOfflinePlay": true
@@ -42,7 +42,7 @@
       "score": 29
     }
   },
-  "zipBytes": 31535631,
+  "zipBytes": 31537578,
   "errors": [],
   "outside": [],
   "result": "PASS"

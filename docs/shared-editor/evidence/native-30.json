@@ -18,7 +18,7 @@
           "Camera": 1
         },
         "frames": {
-          "Hands": 14
+          "Hands": 15
         }
       }
     },
@@ -37,7 +37,7 @@
           "Camera": 1
         },
         "frames": {
-          "Hands": 13
+          "Hands": 18
         }
       }
     },
@@ -46,7 +46,7 @@
       "score": 19
     }
   },
-  "zipBytes": 31690849,
+  "zipBytes": 31691121,
   "errors": [],
   "outside": [],
   "result": "PASS"

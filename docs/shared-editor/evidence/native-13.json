@@ -15,12 +15,12 @@
         "Camera": 1
       },
       "frames": {
-        "Hands": 226
+        "Hands": 1
       }
     },
+    "allNativeLevels": true,
     "summary": true,
     "correctAndWrong": true,
-    "preservedItemCounts": true,
     "scores": {
       "score": 18
     }
@@ -32,17 +32,17 @@
         "Camera": 1
       },
       "frames": {
-        "Hands": 157
+        "Hands": 1
       }
     },
+    "allNativeLevels": true,
     "summary": true,
     "correctAndWrong": true,
-    "preservedItemCounts": true,
     "scores": {
       "score": 18
     }
   },
-  "zipBytes": 26891245,
+  "zipBytes": 26890177,
   "errors": [],
   "outside": [],
   "result": "PASS"

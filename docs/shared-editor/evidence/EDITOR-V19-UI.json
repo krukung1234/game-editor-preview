@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "opened": 31,
+  "checks": [
+    "Original subject/grade read-only; 3 tabs, 3 footer controls; clean close",
+    "Question jump/previous/next preserves edits; radio answers exclusive",
+    "Safe add/delete with shared custom confirmation and cancel",
+    "Explicit file chooser only; image upload/preview/original restore and Blob release",
+    "Full reset without native confirm or reload restores questions, options, metadata and images",
+    "Two browser contexts isolated; 10 tab changes preserve Working Copy",
+    "Five desktop/tablet/mobile/landscape viewports: fixed header/footer, no horizontal overflow",
+    "Current enabled adapters open with real defaults, capability fields and image gallery: 31/31"
+  ],
+  "errors": [],
+  "nativeDialogs": [],
+  "writes": [],
+  "physicalDevicesTested": false
+}

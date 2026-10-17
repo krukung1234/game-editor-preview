@@ -30,7 +30,7 @@
         "Hands": 1
       },
       "frames": {
-        "Hands": 1
+        "Hands": 2
       }
     },
     "callbackInputs": true,
@@ -40,7 +40,7 @@
       "score": 100
     }
   },
-  "zipBytes": 29344519,
+  "zipBytes": 29343284,
   "errors": [],
   "outside": [],
   "result": "PASS"

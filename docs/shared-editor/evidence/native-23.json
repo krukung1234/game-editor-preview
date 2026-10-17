@@ -12,7 +12,7 @@
     "ar": {
       "constructors": {},
       "frames": {
-        "HandLandmarker": 2
+        "HandLandmarker": 1
       }
     },
     "callbackInputs": true,
@@ -27,18 +27,18 @@
     "ar": {
       "constructors": {},
       "frames": {
-        "HandLandmarker": 3
+        "HandLandmarker": 1
       }
     },
     "callbackInputs": true,
     "summary": true,
     "correctAndWrong": true,
     "scores": {
-      "coins": 68,
+      "coins": 76,
       "correct": 19
     }
   },
-  "zipBytes": 29801949,
+  "zipBytes": 29801078,
   "errors": [],
   "outside": [],
   "result": "PASS"

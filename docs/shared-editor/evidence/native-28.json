@@ -1,0 +1,49 @@
+{
+  "id": "native-28",
+  "checks": {
+    "editor": true,
+    "uiEditCount": 6,
+    "preview": true,
+    "zipCRC": true,
+    "zipOfflinePlay": true
+  },
+  "folder": "AR_ANATOMY_LAB_A01",
+  "preview": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 8
+      }
+    },
+    "callbackInputs": true,
+    "allFiveMissions": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 26
+    }
+  },
+  "zip": {
+    "ar": {
+      "constructors": {
+        "Hands": 1
+      },
+      "frames": {
+        "Hands": 6
+      }
+    },
+    "callbackInputs": true,
+    "allFiveMissions": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "score": 26
+    }
+  },
+  "zipBytes": 76388716,
+  "errors": [],
+  "outside": [],
+  "result": "PASS"
+}

@@ -3,6 +3,7 @@
   "checks": {
     "editor": true,
     "uiEditCount": 1,
+    "classificationAnswersSwapped": true,
     "preview": true,
     "zipCRC": true,
     "zipOfflinePlay": true
@@ -40,7 +41,7 @@
       "score": 13
     }
   },
-  "zipBytes": 33414544,
+  "zipBytes": 33413457,
   "errors": [],
   "outside": [],
   "result": "PASS"

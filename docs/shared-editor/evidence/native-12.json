@@ -15,14 +15,14 @@
         "Camera": 1
       },
       "frames": {
-        "Hands": 113
+        "Hands": 1
       }
     },
+    "allNativeLevels": true,
     "summary": true,
     "correctAndWrong": true,
-    "preservedItemCounts": true,
     "scores": {
-      "score": 20
+      "score": 21
     }
   },
   "zip": {
@@ -32,17 +32,17 @@
         "Camera": 1
       },
       "frames": {
-        "Hands": 186
+        "Hands": 1
       }
     },
+    "allNativeLevels": true,
     "summary": true,
     "correctAndWrong": true,
-    "preservedItemCounts": true,
     "scores": {
-      "score": 20
+      "score": 21
     }
   },
-  "zipBytes": 26881248,
+  "zipBytes": 26880446,
   "errors": [],
   "outside": [],
   "result": "PASS"

@@ -14,7 +14,7 @@
         "Hands": 1
       },
       "frames": {
-        "Hands": 4
+        "Hands": 3
       }
     },
     "summary": true,
@@ -38,7 +38,7 @@
       "state.score": 10
     }
   },
-  "zipBytes": 27362917,
+  "zipBytes": 27361798,
   "errors": [],
   "outside": [],
   "result": "PASS"
