@@ -1,0 +1,52 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const {initializeTestEnvironment,assertFails,assertSucceeds}=require('@firebase/rules-unit-testing');
+const {doc,getDoc,setDoc,updateDoc,deleteDoc,collection,getDocs,query,limit,serverTimestamp,writeBatch}=require('firebase/firestore');
+const project='demo-game-editor-membership';
+if(process.env.GCLOUD_PROJECT!==project||process.env.FIRESTORE_EMULATOR_HOST!=='127.0.0.1:8080'||process.env.FIREBASE_AUTH_EMULATOR_HOST!=='127.0.0.1:9099')throw Error('Demo emulators only');
+const profile=(uid,verified=true)=>({uid,email:uid+'@example.test',emailKey:uid+'@example.test',facebookName:'Teacher '+uid,facebookKey:'teacher '+uid,status:'pending',entitlement:null,revision:0,createdAt:serverTimestamp(),updatedAt:serverTimestamp(),approvedAt:null,approvedBy:null,verifiedEmail:verified?uid+'@example.test':null});
+test('Spark Rules enforce verified lifetime approval and immutable Console-only admin roles',async()=>{
+ const env=await initializeTestEnvironment({projectId:project,firestore:{host:'127.0.0.1',port:8080,rules:fs.readFileSync(path.resolve(__dirname,'../firestore.rules'),'utf8')}});const checks=[];
+ const context=(uid,verified=true,claims={})=>env.authenticatedContext(uid,{email:uid+'@example.test',email_verified:verified,...claims}).firestore();
+ try{
+  await env.clearFirestore();await env.withSecurityRulesDisabled(async c=>{const db=c.firestore();await setDoc(doc(db,'editorAdmins/owner'),{enabled:true});await setDoc(doc(db,'editorAccess/status'),{enabled:true});});
+  const anon=env.unauthenticatedContext().firestore(),member=context('member'),unverified=context('unverified',false),admin=context('owner');
+  await assertFails(getDoc(doc(anon,'editorAccess/status')));await assertFails(getDocs(query(collection(anon,'editorMembers'),limit(50))));
+  await assertFails(setDoc(doc(context('self-approved'),'editorMembers/self-approved'),{...profile('self-approved'),status:'approved',entitlement:'lifetime'}));await assertFails(setDoc(doc(context('extra-role'),'editorMembers/extra-role'),{...profile('extra-role'),editorAdmin:true}));await assertSucceeds(setDoc(doc(member,'editorMembers/member'),profile('member')));
+  await assertSucceeds(setDoc(doc(unverified,'editorMembers/unverified'),profile('unverified',false)));
+  await assertFails(setDoc(doc(unverified,'editorMembers/forged'),{...profile('forged'),uid:'unverified'}));
+  await assertFails(updateDoc(doc(unverified,'editorMembers/unverified'),{verifiedEmail:'unverified@example.test',updatedAt:serverTimestamp()}));
+  await assertFails(setDoc(doc(member,'editorAdmins/member'),{enabled:true}));
+  await assertFails(setDoc(doc(admin,'editorAdmins/second'),{enabled:true}));
+  await assertFails(updateDoc(doc(member,'editorMembers/member'),{status:'approved',entitlement:'lifetime'}));
+  await assertFails(updateDoc(doc(member,'editorMembers/member'),{email:'owner@example.test'}));
+  await assertFails(deleteDoc(doc(member,'editorMembers/member')));
+  await assertFails(getDoc(doc(member,'editorMembers/unverified')));
+  await assertFails(getDocs(query(collection(member,'editorMembers'),limit(50))));
+  await assertFails(getDoc(doc(member,'editorAccess/status')));
+  checks.push('anonymous/pending denied; self approval, role grant, email tampering, forged verification, listing and deletion rejected');
+  await assertFails(transition(admin,'unverified','pending','approved',1,'unverified-operation-001'));await assertFails(getDocs(query(collection(context('owner',false),'editorMembers'),limit(50))));const verified=context('unverified');await assertSucceeds(updateDoc(doc(verified,'editorMembers/unverified'),{verifiedEmail:'unverified@example.test',updatedAt:serverTimestamp()}));
+  await assertSucceeds(getDocs(query(collection(admin,'editorMembers'),limit(50))));await assertFails(getDocs(collection(admin,'editorMembers')));
+  async function transition(db,uid,from,to,revision,id){const batch=writeBatch(db);const patch={status:to,entitlement:to==='approved'?'lifetime':null,revision,updatedAt:serverTimestamp(),lastOperationId:id};if(to==='approved')Object.assign(patch,{approvedAt:serverTimestamp(),approvedBy:'owner'});batch.update(doc(db,'editorMembers/'+uid),patch);batch.set(doc(db,'editorMemberAudit/'+id),{actor:'owner',uid,from,to,revision,createdAt:serverTimestamp()});return batch.commit();}
+  await assertFails(updateDoc(doc(admin,'editorMembers/member'),{status:'approved',entitlement:'lifetime',revision:1,updatedAt:serverTimestamp(),approvedAt:serverTimestamp(),approvedBy:'owner',lastOperationId:'missing-audit-0001'}));
+  await assertSucceeds(transition(admin,'member','pending','approved',1,'approval-operation-0001'));
+  await assertSucceeds(getDoc(doc(member,'editorAccess/status')));
+  await assertFails(getDoc(doc(context('member',false),'editorAccess/status')));
+  await assertFails(getDoc(doc(env.authenticatedContext('member',{email:'changed@example.test',email_verified:true}).firestore(),'editorAccess/status')));
+  await assertFails(transition(admin,'member','approved','disabled',1,'stale-operation-00001'));
+  await assertSucceeds(transition(admin,'member','approved','disabled',2,'disable-operation-0001'));await assertFails(getDoc(doc(member,'editorAccess/status')));
+  await assertSucceeds(transition(admin,'member','disabled','approved',3,'restore-operation-0001'));await assertSucceeds(getDoc(doc(member,'editorAccess/status')));
+  await assertSucceeds(transition(admin,'unverified','pending','rejected',1,'reject-operation-00001'));await assertFails(getDoc(doc(verified,'editorAccess/status')));
+  await assertSucceeds(transition(admin,'unverified','rejected','approved',2,'reapprove-operation-001'));
+  await assertFails(updateDoc(doc(admin,'editorMemberAudit/approval-operation-0001'),{to:'disabled'}));
+  checks.push('verified JWT attestation; approve/reject/disable/restore; atomic append-only audit; stale revisions; changed email and unverified tokens denied');
+  await assertSucceeds(setDoc(doc(admin,'editorMembers/owner'),profile('owner')));await assertFails(transition(admin,'owner','pending','approved',1,'self-operation-000001'));
+  await assertFails(setDoc(doc(context('pretender',true,{editorAdmin:true}),'editorAdmins/pretender'),{enabled:true}));
+  await assertFails(getDocs(query(collection(context('pretender',true,{editorAdmin:true}),'editorMembers'),limit(50))));
+  await env.withSecurityRulesDisabled(c=>updateDoc(doc(c.firestore(),'editorAdmins/owner'),{enabled:false}));
+  await assertFails(getDocs(query(collection(admin,'editorMembers'),limit(50))));
+  await assertFails(setDoc(doc(member,'games/new'),{title:'overwrite'}));await assertFails(setDoc(doc(member,'editorAccess/status'),{enabled:true}));
+  checks.push('self-admin approval and forged claims denied; registry revocation immediate with same token; central game writes and access sentinel writes denied');
+  const result={result:'PASS',project,services:['Authentication emulator','Firestore emulator'],checks,production:'NOT CONNECTED',billing:'No Functions/Storage/Gateway configured'};
+  fs.mkdirSync(path.resolve(__dirname,'../../docs/membership/test-results'),{recursive:true});fs.writeFileSync(path.resolve(__dirname,'../../docs/membership/test-results/spark-rules.json'),JSON.stringify(result,null,2));
+ }finally{await env.cleanup();}
+});

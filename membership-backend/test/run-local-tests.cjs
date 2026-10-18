@@ -1,0 +1,1 @@
+const cp=require('node:child_process');for(const args of [['test/browser-ui.cjs'],['--test','test/spark-emulator.test.cjs']]){const p=cp.spawnSync(process.execPath,args,{stdio:'inherit',env:process.env});if(p.status!==0)process.exit(p.status||1);}

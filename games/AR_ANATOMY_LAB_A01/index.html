@@ -232,139 +232,7 @@
 }
 
 </style>
-<script>
-/* ===== A-01 PATCH 2026-09-01: final mission 3 + mission 4 overrides ===== */
-ASSET_FILES.push('scan_brain.png','scan_lungs.png','scan_heart.png','scan_liver.png','scan_stomach.png','scan_intestines.png','health_wash_hands.svg');
-scanMissions.length=0;scanMissions.push(
-{id:'brain',th:'สมอง',en:'BRAIN',icon:'🧠',img:'scan_brain.png',place:'ภายในกะโหลกศีรษะ',cx:.50,cy:.095,rx:.16,ry:.095,overlay:'zone-head'},
-{id:'lungs',th:'ปอด',en:'LUNGS',icon:'🫁',img:'scan_lungs.png',place:'ทรวงอกซ้ายและขวา',cx:.50,cy:.305,rx:.18,ry:.12,overlay:'zone-lungs'},
-{id:'heart',th:'หัวใจ',en:'HEART',icon:'❤️',img:'scan_heart.png',place:'ระหว่างปอด ค่อนไปทางซ้ายของร่างกายเล็กน้อย',cx:.518,cy:.34,rx:.12,ry:.09,overlay:'zone-heart'},
-{id:'liver',th:'ตับ',en:'LIVER',icon:'🟤',img:'scan_liver.png',place:'ช่องท้องส่วนบนด้านขวาของร่างกาย',cx:.47,cy:.415,rx:.15,ry:.09,overlay:'zone-liver'},
-{id:'stomach',th:'กระเพาะอาหาร',en:'STOMACH',icon:'🥣',img:'scan_stomach.png',place:'ช่องท้องส่วนบนด้านซ้าย ใต้ปอด',cx:.555,cy:.433,rx:.13,ry:.09,overlay:'zone-stomach'},
-{id:'intestines',th:'ลำไส้',en:'INTESTINES',icon:'🧬',img:'scan_intestines.png',place:'ช่องท้องกลางถึงล่าง',cx:.50,cy:.522,rx:.17,ry:.13,overlay:'zone-intestine'}
-);
-function startM3(){m3pool=shuffle(scanMissions);m3Found=[];scanIndex=0;m3Correct=0;m3Wrong=0;m3locked=false;m3Started=Date.now();m3FinalMode=false;m3ScannerPoint={x:.5,y:.38};clearM3HandHold();const a=document.getElementById('m3A01');a.src=A+'16_A01_normal.png';a.classList.remove('body-map-complete');document.getElementById('m3BodyStage').classList.remove('complete');document.getElementById('m3result').classList.remove('show');document.getElementById('m3result').innerHTML='';document.getElementById('m3Scanner').style.display='';document.getElementById('m3OrganLayers').innerHTML='';document.getElementById('m3discoveredLabel').style.display='';document.getElementById('m3discovered').style.display='';document.getElementById('m3proximityLabel').textContent='PROXIMITY';renderM3Dots();renderScan();bindM3Pointer();if(camStream)startHandTracking()}
-function addM3Overlay(m){if(m3Found.includes(m.id))return;m3Found.push(m.id);const img=document.createElement('img');img.src=A+m.img;img.alt=m.th;img.className=`m3-organ-overlay recent ${m.overlay}`;img.style.pointerEvents='none';document.getElementById('m3OrganLayers').appendChild(img);setTimeout(()=>img.classList.remove('recent'),800)}
-function evaluateM3(x,y){const m=m3pool[scanIndex],ok=m3Assess(m,x,y).hit,f=document.getElementById('m3feedback'),s=document.getElementById('m3Scanner');if(ok){m3Correct++;s.classList.add('correct','snap');f.innerHTML=`<b>✓ ถูกต้อง! SCAN COMPLETE</b><br>${m.th} อยู่บริเวณ${m.place}`;f.className='m3-feedback show good';setM3Status('FOUND ✓','found');say('สแกนสำเร็จ '+m.th)}else{m3Wrong++;s.classList.add('wrong');showM3TargetHint(m);f.innerHTML=`<b>✗ ยังไม่ถูก</b><br>ตำแหน่งที่ถูกคือ ${m.place}`;f.className='m3-feedback show bad';setM3Status('ANSWER REVEALED','retry');say('ตำแหน่งที่ถูกคือ '+m.place)}s.style.left=(m.cx*100)+'%';s.style.top=(m.cy*100)+'%';addM3Overlay(m);scanIndex++;renderM3Dots();document.getElementById('m3discovered').textContent=`${scanIndex} / 6`;document.getElementById('m3score').textContent=`คะแนน ${m3Correct}/6 • BODY MAP ${scanIndex}/6`;setTimeout(renderScan,ok?900:1500)}
-function finishM3BodyMap(){m3locked=true;m3FinalMode=false;clearM3HandHold();const stage=document.getElementById('m3BodyStage');stage.classList.add('complete');document.getElementById('m3Scanner').style.display='none';document.getElementById('m3target').textContent='BODY MAP COMPLETE!';document.getElementById('m3instruction').textContent='ดู BODY MAP ที่ประกอบครบแล้วได้นานเท่าที่ต้องการ';document.getElementById('m3statusTarget').textContent='BODY MAP';setM3Status('COMPLETE ✓','found');document.getElementById('m3proximity').textContent='6 / 6';document.getElementById('m3score').textContent=`คะแนน ${m3Correct}/6 • BODY MAP 6/6`;document.getElementById('m3feedback').innerHTML='<b>BODY MAP COMPLETE!</b><br>ค้นพบอวัยวะครบ 6 / 6';document.getElementById('m3feedback').className='m3-feedback show good';missionScores[2]={score:m3Correct,total:6,correct:m3Correct,wrong:m3Wrong,answered:6,stars:starText(m3Correct,6)};completed[2]=true;missionVisited[2]=true;saveGameProgress();const r=document.getElementById('m3result');r.innerHTML=`<div><h2>BODY MAP COMPLETE!</h2><div class="m3-summary"><span>คะแนน ${m3Correct} / 6</span><span>ตอบถูก ${m3Correct} ข้อ</span><span>ตอบผิด ${m3Wrong} ข้อ</span><span>ค้นพบอวัยวะ 6 / 6</span></div><div class="m3-result-actions"><button class="btn ghost" onclick="startM3()">🔄 เล่นด่านนี้อีกครั้ง</button><button class="btn green" onclick="go('m4')">➡ ไปด่านถัดไป</button></div></div>`;r.classList.add('show');say('บอดี้แมปสมบูรณ์ ค้นพบอวัยวะครบแล้ว')}
 
-const healthQ2=[
-{key:'eye',q:'อะไรช่วยดูแลดวงตา?',highlight:'eye',fx:'👁️',opts:[['26_carrot.png','กินผัก/อาหารที่มีวิตามินเอ',1],['38_too_much_screen.png','เล่นหน้าจอเป็นเวลานาน',0],['37_late_sleep.png','นอนดึก',0],['36_phone_dark.png','เล่นมือถือในที่มืด',0]]},
-{key:'lungs',q:'อะไรช่วยให้ปอดแข็งแรง?',highlight:'lungs',fx:'🫁',opts:[['27_exercise.png','ออกกำลังกาย / อยู่ห่างจากควัน',1],['32_fastfood.png','กินฟาสต์ฟู้ดบ่อย',0],['33_soda.png','ดื่มน้ำอัดลมมาก',0],['35_chips.png','กินขนมขบเคี้ยวบ่อย',0]]},
-{key:'heart',q:'อะไรช่วยให้หัวใจแข็งแรง?',highlight:'heart',fx:'❤️',opts:[['27_exercise.png','ออกกำลังกาย',1],['32_fastfood.png','กินอาหารมันมาก',0],['33_soda.png','ดื่มน้ำอัดลมมาก',0],['37_late_sleep.png','นอนดึกเป็นประจำ',0]]},
-{key:'food',q:'อาหารแบบไหนช่วยให้ร่างกายแข็งแรง?',highlight:'',fx:'🥦',opts:[['23_broccoli.png','ผัก ผลไม้ และอาหารครบ 5 หมู่',1],['31_candy.png','ลูกอมและขนมหวาน',0],['32_fastfood.png','ฟาสต์ฟู้ด',0],['35_chips.png','ขนมขบเคี้ยว',0]]},
-{key:'sleep',q:'อะไรช่วยให้ร่างกายได้พักผ่อน?',highlight:'',fx:'😴',opts:[['28_sleep.png','นอนหลับให้เพียงพอ',1],['37_late_sleep.png','นอนดึก',0],['36_phone_dark.png','เล่นมือถือก่อนนอนนาน ๆ',0],['33_soda.png','ดื่มน้ำอัดลมก่อนนอน',0]]},
-{key:'hygiene',q:'อะไรช่วยลดเชื้อโรคเข้าสู่ร่างกาย?',highlight:'',fx:'🧼',opts:[['health_wash_hands.svg','ล้างมือให้สะอาด',1],['31_candy.png','กินขนมโดยไม่ล้างมือ',0],['36_phone_dark.png','จับมือถือแล้วจับหน้า',0],['35_chips.png','กินขนมด้วยมือที่สกปรก',0]]}
-];
-let m4HandTarget=null,m4HandTimer=null,m4HandStart=0;
-function updateHealthProgress(){
-  const answered=Math.min(hIndex,6);
-  document.getElementById('m4score').textContent=`❤️ สุขภาพ ${hCorrect}/6`;
-  const qc=document.getElementById('m4QuestionCount');
-  if(qc)qc.textContent=hIndex<6?`ข้อ ${hIndex+1}/6`:'ครบ 6/6';
-  document.getElementById('healthProgress').textContent=Array.from({length:6},(_,i)=>i<answered?'●':'○').join(' ');
-}
-function setHealthHighlight(q){
-  const hi=document.getElementById('healthHighlight'),fx=document.getElementById('healthIconFx');
-  hi.className='health-highlight';hi.style.display='none';fx.className='health-icon-fx';fx.textContent='';
-  const labels={eye:['👁️','ดวงตา'],lungs:['🫁','ปอด'],heart:['❤️','หัวใจ'],food:['🥦','โภชนาการ'],sleep:['😴','การพักผ่อน'],hygiene:['🧼','ความสะอาด']};
-  const lab=labels[q.key]||['💚','สุขภาพ'];
-  const ti=document.getElementById('m4TargetIcon'),tn=document.getElementById('m4TargetName');
-  if(ti)ti.textContent=lab[0]; if(tn)tn.textContent=lab[1];
-  if(q.highlight){
-    hi.src=A+(q.highlight==='eye'?'06_eye.png':q.highlight==='lungs'?'scan_lungs.png':'scan_heart.png');
-    hi.className='health-highlight '+q.highlight;hi.style.display='block';
-  }else{
-    fx.textContent=q.fx;fx.classList.add('show');
-  }
-}
-function startM4(){
-  hPool=shuffle(healthQ2.map(q=>({...q,opts:shuffle(q.opts)})));
-  hIndex=0;hCorrect=0;hWrong=0;hLocked=false;clearM4HandHold();
-  const complete=document.getElementById('m4complete'),options=document.getElementById('healthOptions');
-  complete.classList.remove('show');
-  options.style.display='grid';
-  document.querySelector('.m4-choices-head').style.display='flex';
-  document.getElementById('healthyA01').classList.remove('healthy-win');
-  document.getElementById('healthClue').style.display='block';
-  document.getElementById('m4feedback').className='feedback m4-feedback';
-  updateHealthProgress();renderHealth();
-  if(camStream)startHandTracking();
-}
-function renderHealth(){
-  if(hIndex>=hPool.length)return finishM4Healthy();
-  hLocked=false;clearM4HandHold();
-  const q=hPool[hIndex];
-  document.getElementById('healthClue').textContent=q.q;
-  setHealthHighlight(q);updateHealthProgress();
-  const box=document.getElementById('healthOptions');
-  box.innerHTML='';
-  q.opts.forEach(opt=>{
-    const d=document.createElement('button');
-    d.type='button';d.className='health-card';d.dataset.correct=String(!!opt[2]);
-    d.innerHTML=`<img src="${A+opt[0]}" alt=""><div>${opt[1]}</div><span class="hold-ring"></span>`;
-    d.onclick=()=>checkHealth(!!opt[2],d);
-    box.appendChild(d);
-  });
-}
-function checkHealth(ok,d){
-  if(hLocked)return;
-  hLocked=true;clearM4HandHold();
-  const f=document.getElementById('m4feedback');
-  const cards=[...document.querySelectorAll('#healthOptions .health-card')];
-  cards.forEach(x=>x.disabled=true);
-  if(ok){
-    hCorrect++;d.classList.add('correct');
-    f.textContent='✓ ถูกต้อง! เก่งมาก';
-        burstConfetti();
-    f.className='feedback m4-feedback show good';
-    document.getElementById('healthyA01').classList.add('healthy-win');
-    say('ถูกต้อง เป็นทางเลือกที่ดีต่อสุขภาพ');
-  }else{
-    hWrong++;d.classList.add('wrong');
-    const correct=cards.find(x=>x.dataset.correct==='true');
-    if(correct)correct.classList.add('correct');
-    f.textContent='✕ ยังไม่ถูก — ดูคำตอบที่ถูกไฮไลต์สีเขียว';
-    f.className='feedback m4-feedback show bad';
-    say('ยังไม่ถูก ดูคำตอบที่ถูก');
-  }
-  updateHealthProgress();
-  setTimeout(()=>{
-    document.getElementById('healthyA01').classList.remove('healthy-win');
-    f.className='feedback m4-feedback';
-    hIndex++;
-    renderHealth();
-  }, ok?1300:1900);
-}
-function finishM4Healthy(){
-  hLocked=true;clearM4HandHold();
-  completed[3]=true;missionVisited[3]=true;
-  missionScores[3]={score:hCorrect,total:6,correct:hCorrect,wrong:hWrong,answered:6,stars:starText(hCorrect,6)};
-  saveGameProgress();
-  const options=document.getElementById('healthOptions');
-  options.style.display='none';
-  document.querySelector('.m4-choices-head').style.display='none';
-  document.getElementById('healthHighlight').style.display='none';
-  const fx=document.getElementById('healthIconFx');
-  fx.textContent='💚 ✨';fx.className='health-icon-fx show';
-  document.getElementById('healthyA01').classList.add('healthy-win');
-  document.getElementById('m4QuestionCount').textContent='ครบ 6/6';
-  document.getElementById('m4score').textContent=`❤️ สุขภาพ ${hCorrect}/6`;
-  document.getElementById('healthProgress').textContent='● ● ● ● ● ●';
-  document.getElementById('healthClue').textContent='ภารกิจดูแลสุขภาพสำเร็จ!';
-  document.getElementById('m4FinalScore').textContent=`${hCorrect}/6`;
-  document.getElementById('m4FinalCorrect').textContent=hCorrect;
-  document.getElementById('m4FinalWrong').textContent=hWrong;
-  document.getElementById('m4Stars').textContent=starText(hCorrect,6);
-  document.getElementById('m4complete').classList.add('show');
-  say('เฮลท์ตี้ บอดี้ คอมพลีต');
-}
-function clearM4HandHold(){if(m4HandTimer)clearTimeout(m4HandTimer);m4HandTimer=null;m4HandTarget=null;m4HandStart=0;document.querySelectorAll('#healthOptions .health-card').forEach(x=>x.classList.remove('holding','hand-target'));const tip=document.getElementById('handTip4');if(tip){tip.style.setProperty('--hold','0deg');tip.classList.remove('holding')}}
-function drawHandM4(res){const stage=document.querySelector('#m4 .game-stage'),canvas=document.getElementById('handCanvas4'),tip=document.getElementById('handTip4');if(!stage||!canvas||!tip)return;const r=stage.getBoundingClientRect();canvas.width=Math.max(1,Math.round(r.width));canvas.height=Math.max(1,Math.round(r.height));const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);const lm=res.multiHandLandmarks&&res.multiHandLandmarks[0];if(!lm){tip.classList.remove('detected');clearM4HandHold();return}const mx=facing==='user',pts=lm.map(p=>({x:(mx?1-p.x:p.x)*canvas.width,y:p.y*canvas.height})),links=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];ctx.strokeStyle='rgba(105,240,255,.96)';ctx.lineWidth=4;ctx.beginPath();links.forEach(([a,b])=>{ctx.moveTo(pts[a].x,pts[a].y);ctx.lineTo(pts[b].x,pts[b].y)});ctx.stroke();const p=pts[8];tip.style.left=p.x+'px';tip.style.top=p.y+'px';tip.classList.add('detected');const sx=r.left+p.x,sy=r.top+p.y;let hit=null;document.querySelectorAll('#healthOptions .health-card').forEach(el=>{const b=el.getBoundingClientRect();if(sx>=b.left&&sx<=b.right&&sy>=b.top&&sy<=b.bottom)hit=el});if(hit&&!hLocked){if(m4HandTarget!==hit){clearM4HandHold();m4HandTarget=hit;m4HandStart=performance.now();hit.classList.add('holding','hand-target');tip.classList.add('holding');m4HandTimer=setTimeout(()=>checkHealth(hit.dataset.correct==='true',hit),3000)}else{const elapsed=performance.now()-m4HandStart;tip.style.setProperty('--hold',Math.min(360,elapsed/3000*360)+'deg')}}else if(m4HandTarget)clearM4HandHold()}
-const _startHandTracking=startHandTracking;startHandTracking=async function(){if(!window.Hands||!camStream)return;const isM4=document.getElementById('m4')?.classList.contains('active');if(!isM4)return _startHandTracking();const video=document.getElementById('camera4');if(!video)return;if(!mpHands){mpHands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});mpHands.setOptions({maxNumHands:1,modelComplexity:1,minDetectionConfidence:.55,minTrackingConfidence:.55})}mpHands.onResults(drawHandM4);cancelAnimationFrame(handLoop);let busy=false;const loop=async()=>{if(camStream&&video.readyState>=2&&!busy){busy=true;try{await mpHands.send({image:video})}catch(e){console.error('[HAND TRACKING M4]',e)}busy=false}handLoop=requestAnimationFrame(loop)};loop()};
-const _stopHandTracking=stopHandTracking;stopHandTracking=function(){_stopHandTracking();clearM4HandHold();document.getElementById('handTip4')?.classList.remove('detected');const c=document.getElementById('handCanvas4');if(c)c.getContext('2d').clearRect(0,0,c.width,c.height)};
-
-</script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
 <style id="m3-final-fix">
@@ -2237,6 +2105,138 @@ startM3=function(){
   if(layers) layers.style.display='';
   _startM3BodyMapFixed();
 };
+
+</script><script>
+/* ===== A-01 PATCH 2026-09-01: final mission 3 + mission 4 overrides ===== */
+ASSET_FILES.push('scan_brain.png','scan_lungs.png','scan_heart.png','scan_liver.png','scan_stomach.png','scan_intestines.png','health_wash_hands.svg');
+scanMissions.length=0;scanMissions.push(
+{id:'brain',th:'สมอง',en:'BRAIN',icon:'🧠',img:'scan_brain.png',place:'ภายในกะโหลกศีรษะ',cx:.50,cy:.095,rx:.16,ry:.095,overlay:'zone-head'},
+{id:'lungs',th:'ปอด',en:'LUNGS',icon:'🫁',img:'scan_lungs.png',place:'ทรวงอกซ้ายและขวา',cx:.50,cy:.305,rx:.18,ry:.12,overlay:'zone-lungs'},
+{id:'heart',th:'หัวใจ',en:'HEART',icon:'❤️',img:'scan_heart.png',place:'ระหว่างปอด ค่อนไปทางซ้ายของร่างกายเล็กน้อย',cx:.518,cy:.34,rx:.12,ry:.09,overlay:'zone-heart'},
+{id:'liver',th:'ตับ',en:'LIVER',icon:'🟤',img:'scan_liver.png',place:'ช่องท้องส่วนบนด้านขวาของร่างกาย',cx:.47,cy:.415,rx:.15,ry:.09,overlay:'zone-liver'},
+{id:'stomach',th:'กระเพาะอาหาร',en:'STOMACH',icon:'🥣',img:'scan_stomach.png',place:'ช่องท้องส่วนบนด้านซ้าย ใต้ปอด',cx:.555,cy:.433,rx:.13,ry:.09,overlay:'zone-stomach'},
+{id:'intestines',th:'ลำไส้',en:'INTESTINES',icon:'🧬',img:'scan_intestines.png',place:'ช่องท้องกลางถึงล่าง',cx:.50,cy:.522,rx:.17,ry:.13,overlay:'zone-intestine'}
+);
+function startM3(){m3pool=shuffle(scanMissions);m3Found=[];scanIndex=0;m3Correct=0;m3Wrong=0;m3locked=false;m3Started=Date.now();m3FinalMode=false;m3ScannerPoint={x:.5,y:.38};clearM3HandHold();const a=document.getElementById('m3A01');a.src=A+'16_A01_normal.png';a.classList.remove('body-map-complete');document.getElementById('m3BodyStage').classList.remove('complete');document.getElementById('m3result').classList.remove('show');document.getElementById('m3result').innerHTML='';document.getElementById('m3Scanner').style.display='';document.getElementById('m3OrganLayers').innerHTML='';document.getElementById('m3discoveredLabel').style.display='';document.getElementById('m3discovered').style.display='';document.getElementById('m3proximityLabel').textContent='PROXIMITY';renderM3Dots();renderScan();bindM3Pointer();if(camStream)startHandTracking()}
+function addM3Overlay(m){if(m3Found.includes(m.id))return;m3Found.push(m.id);const img=document.createElement('img');img.src=A+m.img;img.alt=m.th;img.className=`m3-organ-overlay recent ${m.overlay}`;img.style.pointerEvents='none';document.getElementById('m3OrganLayers').appendChild(img);setTimeout(()=>img.classList.remove('recent'),800)}
+function evaluateM3(x,y){const m=m3pool[scanIndex],ok=m3Assess(m,x,y).hit,f=document.getElementById('m3feedback'),s=document.getElementById('m3Scanner');if(ok){m3Correct++;s.classList.add('correct','snap');f.innerHTML=`<b>✓ ถูกต้อง! SCAN COMPLETE</b><br>${m.th} อยู่บริเวณ${m.place}`;f.className='m3-feedback show good';setM3Status('FOUND ✓','found');say('สแกนสำเร็จ '+m.th)}else{m3Wrong++;s.classList.add('wrong');showM3TargetHint(m);f.innerHTML=`<b>✗ ยังไม่ถูก</b><br>ตำแหน่งที่ถูกคือ ${m.place}`;f.className='m3-feedback show bad';setM3Status('ANSWER REVEALED','retry');say('ตำแหน่งที่ถูกคือ '+m.place)}s.style.left=(m.cx*100)+'%';s.style.top=(m.cy*100)+'%';addM3Overlay(m);scanIndex++;renderM3Dots();document.getElementById('m3discovered').textContent=`${scanIndex} / 6`;document.getElementById('m3score').textContent=`คะแนน ${m3Correct}/6 • BODY MAP ${scanIndex}/6`;setTimeout(renderScan,ok?900:1500)}
+function finishM3BodyMap(){m3locked=true;m3FinalMode=false;clearM3HandHold();const stage=document.getElementById('m3BodyStage');stage.classList.add('complete');document.getElementById('m3Scanner').style.display='none';document.getElementById('m3target').textContent='BODY MAP COMPLETE!';document.getElementById('m3instruction').textContent='ดู BODY MAP ที่ประกอบครบแล้วได้นานเท่าที่ต้องการ';document.getElementById('m3statusTarget').textContent='BODY MAP';setM3Status('COMPLETE ✓','found');document.getElementById('m3proximity').textContent='6 / 6';document.getElementById('m3score').textContent=`คะแนน ${m3Correct}/6 • BODY MAP 6/6`;document.getElementById('m3feedback').innerHTML='<b>BODY MAP COMPLETE!</b><br>ค้นพบอวัยวะครบ 6 / 6';document.getElementById('m3feedback').className='m3-feedback show good';missionScores[2]={score:m3Correct,total:6,correct:m3Correct,wrong:m3Wrong,answered:6,stars:starText(m3Correct,6)};completed[2]=true;missionVisited[2]=true;saveGameProgress();const r=document.getElementById('m3result');r.innerHTML=`<div><h2>BODY MAP COMPLETE!</h2><div class="m3-summary"><span>คะแนน ${m3Correct} / 6</span><span>ตอบถูก ${m3Correct} ข้อ</span><span>ตอบผิด ${m3Wrong} ข้อ</span><span>ค้นพบอวัยวะ 6 / 6</span></div><div class="m3-result-actions"><button class="btn ghost" onclick="startM3()">🔄 เล่นด่านนี้อีกครั้ง</button><button class="btn green" onclick="go('m4')">➡ ไปด่านถัดไป</button></div></div>`;r.classList.add('show');say('บอดี้แมปสมบูรณ์ ค้นพบอวัยวะครบแล้ว')}
+
+const healthQ2=[
+{key:'eye',q:'อะไรช่วยดูแลดวงตา?',highlight:'eye',fx:'👁️',opts:[['26_carrot.png','กินผัก/อาหารที่มีวิตามินเอ',1],['38_too_much_screen.png','เล่นหน้าจอเป็นเวลานาน',0],['37_late_sleep.png','นอนดึก',0],['36_phone_dark.png','เล่นมือถือในที่มืด',0]]},
+{key:'lungs',q:'อะไรช่วยให้ปอดแข็งแรง?',highlight:'lungs',fx:'🫁',opts:[['27_exercise.png','ออกกำลังกาย / อยู่ห่างจากควัน',1],['32_fastfood.png','กินฟาสต์ฟู้ดบ่อย',0],['33_soda.png','ดื่มน้ำอัดลมมาก',0],['35_chips.png','กินขนมขบเคี้ยวบ่อย',0]]},
+{key:'heart',q:'อะไรช่วยให้หัวใจแข็งแรง?',highlight:'heart',fx:'❤️',opts:[['27_exercise.png','ออกกำลังกาย',1],['32_fastfood.png','กินอาหารมันมาก',0],['33_soda.png','ดื่มน้ำอัดลมมาก',0],['37_late_sleep.png','นอนดึกเป็นประจำ',0]]},
+{key:'food',q:'อาหารแบบไหนช่วยให้ร่างกายแข็งแรง?',highlight:'',fx:'🥦',opts:[['23_broccoli.png','ผัก ผลไม้ และอาหารครบ 5 หมู่',1],['31_candy.png','ลูกอมและขนมหวาน',0],['32_fastfood.png','ฟาสต์ฟู้ด',0],['35_chips.png','ขนมขบเคี้ยว',0]]},
+{key:'sleep',q:'อะไรช่วยให้ร่างกายได้พักผ่อน?',highlight:'',fx:'😴',opts:[['28_sleep.png','นอนหลับให้เพียงพอ',1],['37_late_sleep.png','นอนดึก',0],['36_phone_dark.png','เล่นมือถือก่อนนอนนาน ๆ',0],['33_soda.png','ดื่มน้ำอัดลมก่อนนอน',0]]},
+{key:'hygiene',q:'อะไรช่วยลดเชื้อโรคเข้าสู่ร่างกาย?',highlight:'',fx:'🧼',opts:[['health_wash_hands.svg','ล้างมือให้สะอาด',1],['31_candy.png','กินขนมโดยไม่ล้างมือ',0],['36_phone_dark.png','จับมือถือแล้วจับหน้า',0],['35_chips.png','กินขนมด้วยมือที่สกปรก',0]]}
+];
+let m4HandTarget=null,m4HandTimer=null,m4HandStart=0;
+function updateHealthProgress(){
+  const answered=Math.min(hIndex,6);
+  document.getElementById('m4score').textContent=`❤️ สุขภาพ ${hCorrect}/6`;
+  const qc=document.getElementById('m4QuestionCount');
+  if(qc)qc.textContent=hIndex<6?`ข้อ ${hIndex+1}/6`:'ครบ 6/6';
+  document.getElementById('healthProgress').textContent=Array.from({length:6},(_,i)=>i<answered?'●':'○').join(' ');
+}
+function setHealthHighlight(q){
+  const hi=document.getElementById('healthHighlight'),fx=document.getElementById('healthIconFx');
+  hi.className='health-highlight';hi.style.display='none';fx.className='health-icon-fx';fx.textContent='';
+  const labels={eye:['👁️','ดวงตา'],lungs:['🫁','ปอด'],heart:['❤️','หัวใจ'],food:['🥦','โภชนาการ'],sleep:['😴','การพักผ่อน'],hygiene:['🧼','ความสะอาด']};
+  const lab=labels[q.key]||['💚','สุขภาพ'];
+  const ti=document.getElementById('m4TargetIcon'),tn=document.getElementById('m4TargetName');
+  if(ti)ti.textContent=lab[0]; if(tn)tn.textContent=lab[1];
+  if(q.highlight){
+    hi.src=A+(q.highlight==='eye'?'06_eye.png':q.highlight==='lungs'?'scan_lungs.png':'scan_heart.png');
+    hi.className='health-highlight '+q.highlight;hi.style.display='block';
+  }else{
+    fx.textContent=q.fx;fx.classList.add('show');
+  }
+}
+function startM4(){
+  hPool=shuffle(healthQ2.map(q=>({...q,opts:shuffle(q.opts)})));
+  hIndex=0;hCorrect=0;hWrong=0;hLocked=false;clearM4HandHold();
+  const complete=document.getElementById('m4complete'),options=document.getElementById('healthOptions');
+  complete.classList.remove('show');
+  options.style.display='grid';
+  document.querySelector('.m4-choices-head').style.display='flex';
+  document.getElementById('healthyA01').classList.remove('healthy-win');
+  document.getElementById('healthClue').style.display='block';
+  document.getElementById('m4feedback').className='feedback m4-feedback';
+  updateHealthProgress();renderHealth();
+  if(camStream)startHandTracking();
+}
+function renderHealth(){
+  if(hIndex>=hPool.length)return finishM4Healthy();
+  hLocked=false;clearM4HandHold();
+  const q=hPool[hIndex];
+  document.getElementById('healthClue').textContent=q.q;
+  setHealthHighlight(q);updateHealthProgress();
+  const box=document.getElementById('healthOptions');
+  box.innerHTML='';
+  q.opts.forEach(opt=>{
+    const d=document.createElement('button');
+    d.type='button';d.className='health-card';d.dataset.correct=String(!!opt[2]);
+    d.innerHTML=`<img src="${A+opt[0]}" alt=""><div>${opt[1]}</div><span class="hold-ring"></span>`;
+    d.onclick=()=>checkHealth(!!opt[2],d);
+    box.appendChild(d);
+  });
+}
+function checkHealth(ok,d){
+  if(hLocked)return;
+  hLocked=true;clearM4HandHold();
+  const f=document.getElementById('m4feedback');
+  const cards=[...document.querySelectorAll('#healthOptions .health-card')];
+  cards.forEach(x=>x.disabled=true);
+  if(ok){
+    hCorrect++;d.classList.add('correct');
+    f.textContent='✓ ถูกต้อง! เก่งมาก';
+        burstConfetti();
+    f.className='feedback m4-feedback show good';
+    document.getElementById('healthyA01').classList.add('healthy-win');
+    say('ถูกต้อง เป็นทางเลือกที่ดีต่อสุขภาพ');
+  }else{
+    hWrong++;d.classList.add('wrong');
+    const correct=cards.find(x=>x.dataset.correct==='true');
+    if(correct)correct.classList.add('correct');
+    f.textContent='✕ ยังไม่ถูก — ดูคำตอบที่ถูกไฮไลต์สีเขียว';
+    f.className='feedback m4-feedback show bad';
+    say('ยังไม่ถูก ดูคำตอบที่ถูก');
+  }
+  updateHealthProgress();
+  setTimeout(()=>{
+    document.getElementById('healthyA01').classList.remove('healthy-win');
+    f.className='feedback m4-feedback';
+    hIndex++;
+    renderHealth();
+  }, ok?1300:1900);
+}
+function finishM4Healthy(){
+  hLocked=true;clearM4HandHold();
+  completed[3]=true;missionVisited[3]=true;
+  missionScores[3]={score:hCorrect,total:6,correct:hCorrect,wrong:hWrong,answered:6,stars:starText(hCorrect,6)};
+  saveGameProgress();
+  const options=document.getElementById('healthOptions');
+  options.style.display='none';
+  document.querySelector('.m4-choices-head').style.display='none';
+  document.getElementById('healthHighlight').style.display='none';
+  const fx=document.getElementById('healthIconFx');
+  fx.textContent='💚 ✨';fx.className='health-icon-fx show';
+  document.getElementById('healthyA01').classList.add('healthy-win');
+  document.getElementById('m4QuestionCount').textContent='ครบ 6/6';
+  document.getElementById('m4score').textContent=`❤️ สุขภาพ ${hCorrect}/6`;
+  document.getElementById('healthProgress').textContent='● ● ● ● ● ●';
+  document.getElementById('healthClue').textContent='ภารกิจดูแลสุขภาพสำเร็จ!';
+  document.getElementById('m4FinalScore').textContent=`${hCorrect}/6`;
+  document.getElementById('m4FinalCorrect').textContent=hCorrect;
+  document.getElementById('m4FinalWrong').textContent=hWrong;
+  document.getElementById('m4Stars').textContent=starText(hCorrect,6);
+  document.getElementById('m4complete').classList.add('show');
+  say('เฮลท์ตี้ บอดี้ คอมพลีต');
+}
+function clearM4HandHold(){if(m4HandTimer)clearTimeout(m4HandTimer);m4HandTimer=null;m4HandTarget=null;m4HandStart=0;document.querySelectorAll('#healthOptions .health-card').forEach(x=>x.classList.remove('holding','hand-target'));const tip=document.getElementById('handTip4');if(tip){tip.style.setProperty('--hold','0deg');tip.classList.remove('holding')}}
+function drawHandM4(res){const stage=document.querySelector('#m4 .game-stage'),canvas=document.getElementById('handCanvas4'),tip=document.getElementById('handTip4');if(!stage||!canvas||!tip)return;const r=stage.getBoundingClientRect();canvas.width=Math.max(1,Math.round(r.width));canvas.height=Math.max(1,Math.round(r.height));const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);const lm=res.multiHandLandmarks&&res.multiHandLandmarks[0];if(!lm){tip.classList.remove('detected');clearM4HandHold();return}const mx=facing==='user',pts=lm.map(p=>({x:(mx?1-p.x:p.x)*canvas.width,y:p.y*canvas.height})),links=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];ctx.strokeStyle='rgba(105,240,255,.96)';ctx.lineWidth=4;ctx.beginPath();links.forEach(([a,b])=>{ctx.moveTo(pts[a].x,pts[a].y);ctx.lineTo(pts[b].x,pts[b].y)});ctx.stroke();const p=pts[8];tip.style.left=p.x+'px';tip.style.top=p.y+'px';tip.classList.add('detected');const sx=r.left+p.x,sy=r.top+p.y;let hit=null;document.querySelectorAll('#healthOptions .health-card').forEach(el=>{const b=el.getBoundingClientRect();if(sx>=b.left&&sx<=b.right&&sy>=b.top&&sy<=b.bottom)hit=el});if(hit&&!hLocked){if(m4HandTarget!==hit){clearM4HandHold();m4HandTarget=hit;m4HandStart=performance.now();hit.classList.add('holding','hand-target');tip.classList.add('holding');m4HandTimer=setTimeout(()=>checkHealth(hit.dataset.correct==='true',hit),3000)}else{const elapsed=performance.now()-m4HandStart;tip.style.setProperty('--hold',Math.min(360,elapsed/3000*360)+'deg')}}else if(m4HandTarget)clearM4HandHold()}
+const _startHandTracking=startHandTracking;startHandTracking=async function(){if(!window.Hands||!camStream)return;const isM4=document.getElementById('m4')?.classList.contains('active');if(!isM4)return _startHandTracking();const video=document.getElementById('camera4');if(!video)return;if(!mpHands){mpHands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});mpHands.setOptions({maxNumHands:1,modelComplexity:1,minDetectionConfidence:.55,minTrackingConfidence:.55})}mpHands.onResults(drawHandM4);cancelAnimationFrame(handLoop);let busy=false;const loop=async()=>{if(camStream&&video.readyState>=2&&!busy){busy=true;try{await mpHands.send({image:video})}catch(e){console.error('[HAND TRACKING M4]',e)}busy=false}handLoop=requestAnimationFrame(loop)};loop()};
+const _stopHandTracking=stopHandTracking;stopHandTracking=function(){_stopHandTracking();clearM4HandHold();document.getElementById('handTip4')?.classList.remove('detected');const c=document.getElementById('handCanvas4');if(c)c.getContext('2d').clearRect(0,0,c.width,c.height)};
 
 </script>
 

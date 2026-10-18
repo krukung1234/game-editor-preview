@@ -1,0 +1,9 @@
+{
+  "reason": "Owner authorized removing obsolete password-based entry points from experimental Spark branch; backups outside publish root",
+  "files": {
+    "admin.html": "4d47023d900d64a37ad54af5cb0648ab16db4d15a7013a8a1b223085eae81ecb",
+    "js/admin.js": "0c1e9ecbdab86157f53e16d2553a18978d887f54343e981e6cf355c1f0d835c8",
+    "js/config.js": "0f747b69591e056b910395612d0250b7130843149ed61f223e588f2fcd577a4a",
+    "games/ar-dressed/netlify-upload.zip": "1d6b6c8b25555178ffa5a6f9503c10a59ea06b4810b5234715695cd71f9156bb"
+  }
+}

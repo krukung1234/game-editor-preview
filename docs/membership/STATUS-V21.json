@@ -1,0 +1,70 @@
+{
+  "version": "membership-20261018-21-spark",
+  "project": "krukung-game-editor-vip",
+  "branch": "development/shared-editor-adapters",
+  "services": [
+    "GitHub Pages",
+    "Firebase Authentication Email/Password",
+    "Cloud Firestore Standard (default)"
+  ],
+  "requiredPlan": "Spark",
+  "billingRequired": false,
+  "actualConsolePlanVerified": false,
+  "unitTestsPassed": 8,
+  "emulatorRules": "PASS",
+  "browserUI": "PASS; actual Auth/Firestore emulators and SDK; fixture catalogue",
+  "editors": 31,
+  "preview": 31,
+  "zipCRC": 31,
+  "extractedPackagesLoadedOffline": 31,
+  "pendingDirectCallsDenied": 31,
+  "promptRegression": 31,
+  "physicalCamera": "NOT TESTED",
+  "fullGameplayEveryStageThisRun": "NOT REPEATED; engine source SHA unchanged; previous evidence retained",
+  "productionEnabled": false,
+  "productionRulesChanged": false,
+  "productionAdminAssigned": false,
+  "oldFirebaseChanged": false,
+  "originalGamesChanged": false,
+  "productionDeployed": false,
+  "commitOrPush": false,
+  "publicFileProtection": "NOT PROVIDED; direct GitHub Pages URLs remain public by accepted design",
+  "remaining": [
+    "Owner approval before publishing Rules/indexes/Console role/access document",
+    "Production config remains disabled until approval",
+    "Verify actual Spark plan in Console",
+    "Real email delivery and physical camera/Hand Tracking/device checks after activation"
+  ],
+  "latestPreflight": {
+    "report": "PREFLIGHT-V21-REPORT.md",
+    "acceptedForFullProduction": false,
+    "nativeGameplayProbesPassed": 30,
+    "nativeGameplayUnresolved": 1,
+    "originalJavaScriptErrorGames": 1,
+    "physicalHandsDevices": "NOT TESTED",
+    "memberUIAndRulesRetested": "PASS"
+  },
+  "latestAnatomyFix": {
+    "report": "../shared-editor/ANATOMY-FIX.md",
+    "raw": "PASS",
+    "editor": "PASS",
+    "zip": "PASS",
+    "fiveMissionScores": [
+      7,
+      5,
+      5,
+      5,
+      4
+    ],
+    "physicalHand": "NOT TESTED",
+    "originalChange": "Authorized script-order-only fix in Anatomy; other 30 games unchanged"
+  },
+  "latestRelease": {
+    "date": "2026-10-18",
+    "report": "RELEASE-V21-REPORT.md",
+    "editorNativeContentPreviewZip": 31,
+    "physicalDevices": "NOT TESTED",
+    "productionReady": false,
+    "readyForDeviceTesting": true
+  }
+}

@@ -2,7 +2,7 @@
 (async()=>{
   'use strict';
   try{
-    if(!window.VipAccess?.allowed())throw Error('กรุณาเข้าสู่ระบบ VIP ก่อนทดลองเล่น');
+    if(!await window.VipAccess?.authorize())throw Error('กรุณาเข้าสู่ระบบ VIP ก่อนทดลองเล่น');
     const token=new URLSearchParams(location.search).get('preview');
     if(!token||parent===window)throw Error('กรุณาเปิดทดลองเล่นจากหน้าปรับแต่งเกม ข้อมูลทดลองเล่นไม่เก็บไว้ในลิงก์');
     const data=await new Promise((resolve,reject)=>{

@@ -1,0 +1,42 @@
+{
+  "result": "PASS",
+  "mode": "Unmodified served game after script-order fix; callback inputs; camera not exercised in raw test",
+  "assets": {
+    "count": 87,
+    "missing": []
+  },
+  "layouts": [
+    {
+      "width": 1440,
+      "height": 900,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "overflow": false
+    }
+  ],
+  "gameplay": {
+    "callbackInputs": true,
+    "allFiveMissions": true,
+    "summary": true,
+    "correctAndWrong": true,
+    "scores": {
+      "mission1": 7,
+      "mission2": 5,
+      "mission3": 5,
+      "mission4": 5,
+      "mission5": 4
+    }
+  },
+  "errors": [],
+  "missing": [],
+  "originalScriptBytesPreserved": true,
+  "physicalCamera": "NOT TESTED"
+}

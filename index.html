@@ -6,20 +6,27 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="krukung-build" content="vip-20261017-20">
+  <meta name="krukung-build" content="membership-20261018-21">
   <title>ครูกุ้งสอนไอที | รวมเกมการศึกษา AR</title>
   <link rel="stylesheet" href="css/style.css?v=vip-20">
 <link rel="stylesheet" href="css/game-editor.css?v=shared-20">
-<script src="js/vip-access.js?v=vip-20"></script></head>
+<script src="js/vip-access.js?v=member-21-spark"></script><link rel="stylesheet" href="css/membership.css?v=member-21-spark"><script src="js/firebase-sdk-loader.js?v=member-21-spark"></script><script src="js/membership-config.js?v=member-21-spark"></script><script type="module" src="js/membership-boot.mjs?v=member-21-spark"></script></head>
 <body>
   <div id="vipLogin" class="login-screen">
-    <div class="login-card">
-      <div class="login-logo">🎮</div>
-      <h1>ครูกุ้งสอนไอที</h1>
-      <p>เข้าสู่ระบบสมาชิก VIP เพื่อเล่นเกมการศึกษา</p>
-      <input id="vipPassword" aria-label="รหัส VIP" type="password" placeholder="กรอกรหัส VIP" autocomplete="current-password">
-      <button id="vipLoginBtn" type="button">เข้าสู่เว็บไซต์</button>
-      <small id="vipError" role="alert" aria-live="polite"></small>
+    <div class="login-card membership-card">
+      <div class="login-logo">🎮</div><h1>ครูกุ้งสอนไอที</h1>
+      <p>ระบบปรับแต่งและดาวน์โหลดเกมการศึกษา สำหรับสมาชิก VIP</p>
+      <div id="authModes" class="membership-tabs"><button type="button" class="link-button" data-auth-mode="login">เข้าสู่ระบบ</button><button type="button" class="link-button" data-auth-mode="signup">สมัครสมาชิก</button><button type="button" class="link-button" data-auth-mode="reset">ลืมรหัสผ่าน</button></div>
+      <form id="membershipForm">
+        <div id="facebookRow" hidden><label for="memberFacebook">ชื่อ Facebook ที่เป็นสมาชิก VIP เดิม</label><input id="memberFacebook" maxlength="120" autocomplete="name"></div>
+        <label for="memberEmail">อีเมล</label><input id="memberEmail" type="email" autocomplete="username" required maxlength="254">
+        <div id="passwordRow"><label for="memberPassword">รหัสผ่าน</label><input id="memberPassword" type="password" autocomplete="current-password" required maxlength="128"><small>สมัครใหม่: อย่างน้อย 12 ตัวอักษร มีตัวอักษรอังกฤษและตัวเลข</small></div>
+        <div id="confirmationRow" hidden><label for="memberConfirmation">ยืนยันรหัสผ่าน</label><input id="memberConfirmation" type="password" autocomplete="new-password" maxlength="128"></div>
+        <button id="memberSubmit" type="submit" class="primary">เข้าสู่ระบบ</button>
+      </form>
+      <div id="membershipAccount" hidden><p id="membershipIdentity"></p><div id="retryProfile" hidden><label for="retryFacebook">ชื่อ Facebook</label><input id="retryFacebook" maxlength="120"><button id="completeProfile" type="button" class="link-button">ส่งคำขอสมาชิกต่อ</button></div><div class="membership-actions"><button id="resendVerification" type="button" class="link-button" hidden>ส่งอีเมลยืนยันอีกครั้ง</button><button id="refreshMembership" type="button" class="link-button">ตรวจสอบสถานะอีกครั้ง</button><button id="memberSignOut" type="button" class="link-button">ออกจากระบบ</button></div></div>
+      <p id="membershipStatus" class="membership-status" role="status" aria-live="polite">กำลังเตรียมระบบสมาชิก…</p>
+      <a id="memberAdminLink" href="membership-admin.html" hidden>จัดการสมาชิกสำหรับแอดมิน</a>
     </div>
   </div>
 
@@ -35,7 +42,7 @@
         <a href="#categories">หมวดหมู่</a>
         <a href="#about">เกี่ยวกับเรา</a>
         <button id="logoutVip" class="ghost" type="button">ออก</button>
-        <a class="admin-link" href="admin.html">Admin</a>
+        <a id="siteMemberAdminLink" class="admin-link" href="membership-admin.html" hidden>จัดการสมาชิก</a>
       </nav>
     </header>
 
@@ -102,7 +109,7 @@
     </div>
   </div>
 
-  <script src="js/config.js?v=20261016-1"></script>
+  <script src="js/game-hub-config.js?v=member-21-spark"></script>
   <script src="js/game-adapters.js?v=editor-20261016-12"></script>
 
   <script src="js/native-adapter-catalogue.js?v=shared-20"></script>
@@ -110,7 +117,8 @@
   <script src="js/shared-game-composer.js?v=shared-20"></script>
   <script src="js/personal-game-download.js?v=shared-20"></script>
   <script src="js/learning-options.js?v=choices-20261016-10"></script>
-  <script src="js/game-editor.js?v=shared-20"></script>
-  <script src="js/app.js?v=prompt-20261017-reference-v2-editor20"></script>
+  <script src="js/game-editor.js?v=member-21-spark"></script>
+  <script src="js/app.js?v=prompt-20261017-reference-v2-member21-spark"></script>
+<script type="module" src="js/membership-ui.mjs?v=member-21-spark"></script>
 </body>
 </html>

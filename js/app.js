@@ -1,8 +1,8 @@
 const vipLogin = document.getElementById("vipLogin");
 const site = document.getElementById("site");
 
-const vipPassword = document.getElementById("vipPassword");
-const vipError = document.getElementById("vipError");
+
+
 
 const grid = document.getElementById("games");
 const search = document.getElementById("searchInput");
@@ -122,58 +122,14 @@ function hasPrompt(game) {
   );
 }
 
-function vipOK() {
-  return localStorage.getItem("vip_ok") === "1";
-}
-
-
-/* =====================================
-   ระบบเข้าสู่เว็บไซต์
-===================================== */
-
-function showSite() {
-  vipLogin.classList.add("hidden");
-  site.classList.remove("hidden");
-
-  loadGames();
-}
-
-document.getElementById("vipLoginBtn").onclick = () => {
-  if (
-    vipPassword.value === APP_CONFIG.VIP_PASSWORD
-  ) {
-    localStorage.setItem("vip_ok", "1");
-
-    vipError.textContent = "";
-
-    showSite();
-  } else {
-    vipError.textContent =
-      "รหัส VIP ไม่ถูกต้อง";
-  }
-};
-
-vipPassword.addEventListener("keydown", event => {
-  if (event.key === "Enter") {
-    document
-      .getElementById("vipLoginBtn")
-      .click();
-  }
+let catalogueLoaded=false;
+addEventListener('vip-access-change',event=>{
+  const allowed=event.detail.allowed;
+  vipLogin.classList.toggle('hidden',allowed);site.classList.toggle('hidden',!allowed);
+  if(allowed&&!catalogueLoaded){catalogueLoaded=true;void loadGames();}
+  if(!allowed&&event.detail.wasAllowed){games=[];grid.replaceChildren();catalogueLoaded=false;closePrompt();}
 });
-
-document.getElementById("logoutVip").onclick = () => {
-  localStorage.removeItem("vip_ok");
-  location.reload();
-};
-
-if (vipOK()) {
-  showSite();
-}
-
-
-/* =====================================
-   โหลดเกมจาก Firestore
-===================================== */
+document.getElementById('logoutVip').onclick=async()=>{await window.VipAccess.logout();};
 
 async function loadGames() {
   grid.innerHTML =
@@ -186,12 +142,13 @@ async function loadGames() {
       .orderBy("createdAt", "desc")
       .get();
 
+    if(!window.VipAccess.allowed())return;
     games = snap.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
   } catch (error) {
-    console.error(error);
+    /* Error message shown below; do not log account/session objects. */
 
     grid.innerHTML = `
       <div class="empty">
@@ -451,8 +408,8 @@ function resetPromptDefaults() {
   document.getElementById("promptBody").scrollTop = 0;
 }
 
-function openPrompt(gameId) {
-  if(!window.VipAccess?.require())return;
+async function openPrompt(gameId) {
+  if(!await window.VipAccess?.authorize())return;
   const game = games.find(item => String(item.id) === String(gameId));
   if (!game || !hasPrompt(game)) { alert("เกมนี้ยังไม่มี Prompt"); return; }
   promptOpener = document.activeElement;

@@ -1,10 +1,73 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Admin operations go through callable backend, not a client role flag.
+    function signedIn() { return request.auth != null; }
+    function verified() { return signedIn() && request.auth.token.email_verified == true; }
+    // Created/revoked only by the project owner in Console, never by a browser.
+    function admin() { return verified() && exists(/databases/$(database)/documents/editorAdmins/$(request.auth.uid)) && get(/databases/$(database)/documents/editorAdmins/$(request.auth.uid)).data.enabled == true; }
+    function own(uid) { return signedIn() && request.auth.uid == uid; }
+    function approved() {
+      let m = get(/databases/$(database)/documents/editorMembers/$(request.auth.uid)).data;
+      return verified() && m.status == 'approved' && m.entitlement == 'lifetime' && m.email == request.auth.token.email && m.verifiedEmail == request.auth.token.email;
+    }
+    match /editorAdmins/{uid} {
+      allow get: if own(uid) && verified();
+      allow list, write: if false;
+    }
+    match /editorAccess/{id} {
+      allow get: if id == 'status' && approved();
+      allow list, write: if false;
+    }
     match /editorMembers/{uid} {
-      allow get: if request.auth != null && request.auth.uid == uid;
-      allow list, create, update, delete: if false;
+      allow get: if own(uid) || admin();
+      allow list: if admin() && request.query.limit != null && request.query.limit <= 100;
+      allow create: if own(uid)
+        && request.resource.data.keys().hasAll(['uid','email','emailKey','facebookName','facebookKey','status','entitlement','revision','createdAt','updatedAt','approvedAt','approvedBy','verifiedEmail'])
+        && request.resource.data.keys().hasOnly(['uid','email','emailKey','facebookName','facebookKey','status','entitlement','revision','createdAt','updatedAt','approvedAt','approvedBy','verifiedEmail'])
+        && request.resource.data.uid == uid && request.resource.data.email == request.auth.token.email
+        && request.resource.data.emailKey == request.auth.token.email.lower()
+        && request.resource.data.facebookName is string && request.resource.data.facebookName.size() > 0 && request.resource.data.facebookName.size() <= 120
+        && request.resource.data.facebookKey == request.resource.data.facebookName.lower()
+        && request.resource.data.status == 'pending' && request.resource.data.entitlement == null && request.resource.data.revision == 0
+        && request.resource.data.createdAt == request.time && request.resource.data.updatedAt == request.time
+        && request.resource.data.approvedAt == null && request.resource.data.approvedBy == null
+        && (request.resource.data.verifiedEmail == null || (verified() && request.resource.data.verifiedEmail == request.auth.token.email));
+      // Verified JWT attests the email; clients cannot forge verification for another user.
+      allow update: if own(uid) && verified() && resource.data.email == request.auth.token.email
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['verifiedEmail','updatedAt'])
+        && request.resource.data.verifiedEmail == request.auth.token.email && request.resource.data.updatedAt == request.time;
+      allow update: if admin() && request.auth.uid != uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','entitlement','revision','updatedAt','approvedAt','approvedBy','lastOperationId'])
+        && request.resource.data.revision == resource.data.revision + 1 && request.resource.data.updatedAt == request.time
+        && request.resource.data.lastOperationId is string && request.resource.data.lastOperationId.matches('^[A-Za-z0-9_-]{16,80}$')
+        && transition() && auditMatches(uid);
+      allow delete: if false;
+      function transition() {
+        let before = resource.data.status;
+        let after = request.resource.data.status;
+        return ((before in ['pending','rejected','disabled'] && after == 'approved'
+          && resource.data.verifiedEmail == resource.data.email
+          && request.resource.data.entitlement == 'lifetime' && request.resource.data.approvedAt == request.time && request.resource.data.approvedBy == request.auth.uid)
+          || (before == 'pending' && after == 'rejected' && request.resource.data.entitlement == null && request.resource.data.approvedAt == resource.data.approvedAt && request.resource.data.approvedBy == resource.data.approvedBy)
+          || (before == 'approved' && after == 'disabled' && request.resource.data.entitlement == null && request.resource.data.approvedAt == resource.data.approvedAt && request.resource.data.approvedBy == resource.data.approvedBy));
+      }
+      function auditMatches(uid) {
+        let a = getAfter(/databases/$(database)/documents/editorMemberAudit/$(request.resource.data.lastOperationId)).data;
+        return a.actor == request.auth.uid && a.uid == uid && a.from == resource.data.status && a.to == request.resource.data.status
+          && a.revision == request.resource.data.revision && a.createdAt == request.time;
+      }
+    }
+    match /editorMemberAudit/{id} {
+      allow get: if admin();
+      allow list: if admin() && request.query.limit != null && request.query.limit <= 100;
+      allow create: if admin() && request.resource.data.keys().hasOnly(['actor','uid','from','to','revision','createdAt'])
+        && request.resource.data.actor == request.auth.uid && request.resource.data.uid != request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && getAfter(/databases/$(database)/documents/editorMembers/$(request.resource.data.uid)).data.lastOperationId == id
+        && getAfter(/databases/$(database)/documents/editorMembers/$(request.resource.data.uid)).data.revision == request.resource.data.revision
+        && getAfter(/databases/$(database)/documents/editorMembers/$(request.resource.data.uid)).data.status == request.resource.data.to
+        && get(/databases/$(database)/documents/editorMembers/$(request.resource.data.uid)).data.status == request.resource.data.from;
+      allow update, delete: if false;
     }
     match /{document=**} { allow read, write: if false; }
   }

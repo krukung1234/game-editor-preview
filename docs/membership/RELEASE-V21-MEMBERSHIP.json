@@ -1,0 +1,26 @@
+{
+  "result": "PASS",
+  "date": "2026-10-18",
+  "mode": "Real Firebase Auth/Firestore demo emulators and CDN SDK; fixture game catalogue; real original Editor files",
+  "checks": [
+    "legacy vip_ok cannot unlock membership",
+    "real UI signup, verification link, pending denial, logout and password reset request",
+    "pending denied catalogue and direct Editor",
+    "pending cannot open any of the 31 Editors through direct JS calls",
+    "approved lifetime opens 31 existing game cards",
+    "approved session survives same-tab reload without another login",
+    "31 Editors open/edit/reset/close with real Firestore Rules access; 10 tab switches retain working copy",
+    "31 Prompt forms generate after real membership authorization",
+    "Career customized ZIP: CRC/extraction/title/offline load in independent unauthenticated context (60 files)",
+    "Mini City preview loads customized game title behind member authorization",
+    "server suspension closes editor/preview and hides tools without reload",
+    "admin search + confirm cancel/approve via Firestore transaction and Rules works",
+    "Admin UI approve/reject/disable/restore verified in Firestore",
+    "revoked Console admin registry blocks existing browser token",
+    "membership layouts 5 viewports no horizontal overflow"
+  ],
+  "errors": [],
+  "externalFailures": [],
+  "physicalCamera": "NOT TESTED",
+  "production": "NOT CONNECTED"
+}

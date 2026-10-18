@@ -1,0 +1,5 @@
+import {createMembershipClient} from './membership-client.mjs?v=member-21-spark';
+if(window.EDITOR_MEMBERSHIP_CONFIG?.mode==='emulator'){const note=document.createElement('aside');note.className='membership-environment';note.textContent='โหมดทดสอบในเครื่อง — ใช้บัญชีจำลองเท่านั้น ห้ามกรอกรหัสผ่านบัญชีจริง';note.setAttribute('role','note');document.body.prepend(note);}
+window.membershipReady=(async()=>{const config=window.EDITOR_MEMBERSHIP_CONFIG;if(config?.mode==='disabled')throw Error('ระบบสมาชิกจริงยังไม่เปิดใช้งาน');await Promise.all(['auth','firestore'].map(window.loadFirebaseProduct));const client=createMembershipClient(window.firebase,config);window.VipAccess.attach(client);return client;})();
+window.membershipReady.catch(()=>window.VipAccess.fail());
+let polling=false;const timer=setInterval(async()=>{if(polling||document.hidden||!window.VipAccess.allowed())return;polling=true;try{await window.VipAccess.authorize();}finally{polling=false;}},60000);addEventListener('pagehide',()=>{clearInterval(timer);window.VipAccess.dispose();},{once:true});

@@ -277,6 +277,7 @@
     await Promise.all(Array.from({length:4},worker));signal.throwIfAborted();return data;
   }
   async function downloadGame(){
+    if(!await window.VipAccess?.authorize())return;
     if(operation||pendingImages||!draft)return;
     const controller=new AbortController(),token=session;operation=controller;downloadButton.disabled=true;playButton.disabled=true;resetButton.disabled=true;body.inert=true;
     try{
@@ -289,6 +290,7 @@
   }
   function stopPreview(){if(adapter?.kind==='native')try{playPreview.querySelector('iframe')?.contentWindow?.document.getElementById('nativeGameFrame')?.contentWindow?.NativeGameSession?.dispose()}catch{}previewCleanup?.();previewCleanup=null;playPreview.replaceChildren();playPreview.hidden=true;delete dialog.dataset.nativePreview;body.hidden=false;footer.hidden=false;sectionTabs.hidden=false;playButton.focus()}
   async function startPreview(){
+    if(!await window.VipAccess?.authorize())return;
     if(operation||pendingImages||!playPreview.hidden||!draft)return;
     const controller=new AbortController(),token=session;operation=controller;playButton.disabled=true;downloadButton.disabled=true;resetButton.disabled=true;body.inert=true;
     try{
@@ -372,8 +374,9 @@
   });
   // Backdrop clicks can be window-activation clicks; only X/Escape request closing.
   document.body.append(dialog,closeConfirmation);
+  addEventListener('vip-access-change',event=>{if(!event.detail.allowed&&event.detail.wasAllowed&&(dialog.open||draft||loading))finishClose();});
   window.GameEditor={async open(game,button){
-    if(!window.VipAccess?.require())return;
+    if(!await window.VipAccess?.authorize())return;
     if(loading||dialog.open)return;adapter=GameAdapters.find(game);if(!adapter)return;
     sourceCover=game.cover||game.coverUrl||game.image||new URL('games/'+encodeURIComponent(adapter.folder||'AR mini city')+'/cover.png',hubRoot).href;
     loading=true;downloadedSignature=null;opener=button;session++;const token=session,controller=new AbortController();operation=controller;

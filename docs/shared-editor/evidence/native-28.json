@@ -1,49 +1,98 @@
 {
+  "result": "PASS",
   "id": "native-28",
-  "checks": {
+  "sourceHash": "dcb71f55f30f02b0c4a0d3d57976c02c44b83c96284c6b66260ef45d4748ad7d",
+  "fix": "Move unchanged legacy patch after its data declarations; remap adapter script IDs",
+  "raw": {
+    "result": "PASS",
+    "mode": "Unmodified served game after script-order fix; callback inputs; camera not exercised in raw test",
+    "assets": {
+      "count": 87,
+      "missing": []
+    },
+    "layouts": [
+      {
+        "width": 1440,
+        "height": 900,
+        "overflow": false
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "overflow": false
+      },
+      {
+        "width": 844,
+        "height": 390,
+        "overflow": false
+      }
+    ],
+    "gameplay": {
+      "callbackInputs": true,
+      "allFiveMissions": true,
+      "summary": true,
+      "correctAndWrong": true,
+      "scores": {
+        "mission1": 7,
+        "mission2": 5,
+        "mission3": 5,
+        "mission4": 5,
+        "mission5": 4
+      }
+    },
+    "errors": [],
+    "missing": [],
+    "originalScriptBytesPreserved": true,
+    "physicalCamera": "NOT TESTED"
+  },
+  "editorAndZip": {
+    "index": 29,
+    "title": "AR_ANATOMY_LAB_A01",
     "editor": true,
-    "uiEditCount": 6,
+    "editorResponsive": true,
     "preview": true,
+    "gameplay": {
+      "ar": {
+        "constructors": {
+          "Hands": 1
+        },
+        "frames": {
+          "Hands": 1
+        }
+      },
+      "callbackInputs": true,
+      "allFiveMissions": true,
+      "summary": true,
+      "correctAndWrong": true,
+      "scores": {
+        "score": 26
+      }
+    },
+    "instrumentedGameplay": "PASS",
     "zipCRC": true,
-    "zipOfflinePlay": true
-  },
-  "folder": "AR_ANATOMY_LAB_A01",
-  "preview": {
-    "ar": {
-      "constructors": {
-        "Hands": 1
+    "files": 103,
+    "zipGameplay": {
+      "ar": {
+        "constructors": {
+          "Hands": 1
+        },
+        "frames": {
+          "Hands": 1
+        }
       },
-      "frames": {
-        "Hands": 8
+      "callbackInputs": true,
+      "allFiveMissions": true,
+      "summary": true,
+      "correctAndWrong": true,
+      "scores": {
+        "score": 26
       }
     },
-    "callbackInputs": true,
-    "allFiveMissions": true,
-    "summary": true,
-    "correctAndWrong": true,
-    "scores": {
-      "score": 26
-    }
+    "extractedOfflineLoad": true,
+    "authIndependent": true,
+    "result": "PASS"
   },
-  "zip": {
-    "ar": {
-      "constructors": {
-        "Hands": 1
-      },
-      "frames": {
-        "Hands": 6
-      }
-    },
-    "callbackInputs": true,
-    "allFiveMissions": true,
-    "summary": true,
-    "correctAndWrong": true,
-    "scores": {
-      "score": 26
-    }
-  },
-  "zipBytes": 76388716,
-  "errors": [],
-  "outside": [],
-  "result": "PASS"
+  "allOtherGameAndResourceFilesUnchanged": true,
+  "originalScriptBodiesUnchanged": true,
+  "physicalHandsTested": false
 }

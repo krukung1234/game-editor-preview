@@ -1,7 +1,7 @@
 /* VIP entry using the existing local source catalogue. */
 window.APP_CONFIG={CATEGORIES:['สังคมศึกษา','ภาษาไทย','คณิตศาสตร์','วิทยาศาสตร์','ภาษาอังกฤษ','สุขศึกษา','ศิลปะ','การงานอาชีพ','วิทยาการคำนวณ','อื่น ๆ']};
 (async()=>{
-  if(!window.VipAccess?.require())return;
+  await window.VipAccess.ready;if(!await window.VipAccess.authorize()){location.replace('index.html');return;}
   const status=document.getElementById('catalogueStatus');
   try{
     const response=await fetch('js/editor-catalogue.json?v=editor-20261016-8',{credentials:'omit',cache:'no-store'});

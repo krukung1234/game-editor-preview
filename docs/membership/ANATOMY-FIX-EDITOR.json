@@ -1,0 +1,52 @@
+{
+  "mode": "Auth/Firestore emulators; all native engines and exported packages; no physical AR test",
+  "games": [
+    {
+      "index": 29,
+      "title": "AR_ANATOMY_LAB_A01",
+      "editor": true,
+      "editorResponsive": true,
+      "preview": true,
+      "gameplay": {
+        "ar": {
+          "constructors": {
+            "Hands": 1
+          },
+          "frames": {
+            "Hands": 1
+          }
+        },
+        "callbackInputs": true,
+        "allFiveMissions": true,
+        "summary": true,
+        "correctAndWrong": true,
+        "scores": {
+          "score": 26
+        }
+      },
+      "instrumentedGameplay": "PASS",
+      "zipCRC": true,
+      "files": 103,
+      "zipGameplay": {
+        "ar": {
+          "constructors": {
+            "Hands": 1
+          },
+          "frames": {
+            "Hands": 1
+          }
+        },
+        "callbackInputs": true,
+        "allFiveMissions": true,
+        "summary": true,
+        "correctAndWrong": true,
+        "scores": {
+          "score": 26
+        }
+      },
+      "extractedOfflineLoad": true,
+      "authIndependent": true,
+      "result": "PASS"
+    }
+  ]
+}

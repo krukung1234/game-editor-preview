@@ -1,8 +1,7 @@
 node_modules/
 functions/node_modules/
-.env*
-!.env.example
 *-debug.log
-.firebase/
-emulator-data/
-service-account*.json
+*-debug.*
+test/membership-exports/
+.env
+.env.*

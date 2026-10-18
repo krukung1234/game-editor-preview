@@ -1,0 +1,18 @@
+# Local development artifacts and credentials; never publish these.
+node_modules/
+**/node_modules/
+*.log
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+service-account*.json
+serviceAccount*.json
+membership-backend/test/membership-exports/
+membership-backend/test/native-http-cache/
+membership-backend/test/native-sdk-cache/
+test-results/
+playwright-report/
+.firebase/

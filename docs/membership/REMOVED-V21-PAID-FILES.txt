@@ -1,0 +1,16 @@
+Obsolete V21 paid-runtime preparation removed from the active workspace. If applying this update over an older copy, remove these obsolete files; do not run their old commands. Current firebase.json deploys Firestore only. Backups are outside the repository under work/legacy-paid-v21.
+
+membership-backend/functions/index.cjs
+membership-backend/functions/protected-resource.cjs
+membership-backend/functions/policy.cjs
+membership-backend/functions/package.json
+membership-backend/functions/package-lock.json
+membership-backend/functions/.env.example
+membership-backend/functions/test/client.test.cjs
+membership-backend/functions/test/policy.test.cjs
+membership-backend/functions/test/gate.test.cjs
+membership-backend/test/emulator.test.cjs
+membership-backend/scripts/bootstrap-admin.cjs
+membership-backend/scripts/upload-private-resources.cjs
+membership-backend/storage.rules
+tools/audit-private-game-files.cjs
