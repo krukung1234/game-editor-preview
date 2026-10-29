@@ -1,7 +1,7 @@
 // Krukung Game Hub V16 Professional
 // แก้รหัสได้ตรงนี้
-const VIP_PASSWORD = "vip2026";
-const ADMIN_PASSWORD = "admin69";
+const VIP_PASSWORD = "vipfun456";
+const ADMIN_PASSWORD = "admin456";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCVYn2hDEXG4J08hZwf5WMI6kyIJbWPVwg",
